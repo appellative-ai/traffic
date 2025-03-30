@@ -5,9 +5,9 @@ import "time"
 const (
 	TrafficOffPeak     = "off-peak"
 	TrafficPeak        = "peak"
-	TrafficScalingUp   = "scaling-up"
-	TrafficScalingDown = "scaling-down"
-	ProfileName        = "resiliency:type/traffic/metrics/traffic"
+	TrafficScaleUp     = "scale-up"
+	TrafficScaleDown   = "scale-down"
+	TrafficProfileName = "resiliency:type/traffic/metrics/traffic"
 )
 
 type TrafficProfile struct {

@@ -1,4 +1,4 @@
-package limiter
+package analytics
 
 import (
 	"github.com/behavioral-ai/collective/content"
