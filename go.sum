@@ -2,5 +2,7 @@ github.com/behavioral-ai/collective v0.0.0-20250329120032-a4b664f92d63 h1:0IIKPp
 github.com/behavioral-ai/collective v0.0.0-20250329120032-a4b664f92d63/go.mod h1:0XkA/kL0tkj9+IV0HD+iBdEy4/h3eFjNJuPx6g0WLUU=
 github.com/behavioral-ai/core v0.0.0-20250329124918-2930a274624b h1:NK/bnW8+ERgD0vaVNVKF9wfQdTiaWAAUDtjxYlIwX4A=
 github.com/behavioral-ai/core v0.0.0-20250329124918-2930a274624b/go.mod h1:sqpbaRPtMXUb4j6CbCuwWvQrD6pUKJm5oZEKPDynlPE=
+github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
+github.com/google/uuid v1.6.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 golang.org/x/time v0.11.0 h1:/bpjEDfN9tkoN/ryeYHnv5hcMlc8ncjMcM4XBk5NWV0=
 golang.org/x/time v0.11.0/go.mod h1:CDIdPxbZBQxdj6cxyCIdrNogrJKMJ7pr37NYpMcMDSg=
