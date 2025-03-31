@@ -107,8 +107,7 @@ func (a *agentT) Link(next httpx.Exchange) httpx.Exchange {
 		}
 		if next != nil {
 			resp, err = next(req)
-			// TODO: need to update the response metrics
-			//a.Message(nil)
+
 		} else {
 			resp = &http.Response{StatusCode: http.StatusOK}
 		}

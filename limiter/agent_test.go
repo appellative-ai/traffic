@@ -17,7 +17,7 @@ func ExampleNewAgent() {
 	//fmt.Printf("test: New() -> [%v] [name:%v] [path:%v] [kind:%v]\n", t, t.Name(), t.PkgPath(), t.Kind())
 
 	//Output:
-	//test: newAgent() -> [limiter:50] [burst:10] [uri:resiliency:agent/behavioral-ai/resiliency/rate-limiting}
+	//test: newAgent() -> [limiter:50] [burst:10] [uri:resiliency:agent/behavioral-ai/traffic/rate-limiting}
 
 }
 
