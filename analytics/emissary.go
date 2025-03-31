@@ -9,7 +9,6 @@ import (
 func emissaryAttend(agent *agentT, resolver *content.Resolution) {
 	agent.dispatch(agent.emissary, messaging.StartupEvent)
 	paused := false
-	//agent.reviseTicker(resolver, nil)
 
 	for {
 		select {

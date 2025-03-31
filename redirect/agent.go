@@ -26,7 +26,6 @@ var (
 
 type agentT struct {
 	running  bool
-	traffic  string
 	hostName string
 	timeout  time.Duration
 

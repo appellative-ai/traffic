@@ -2,13 +2,14 @@ package limiter
 
 import (
 	"github.com/behavioral-ai/collective/content"
+	"github.com/behavioral-ai/collective/eventing/eventtest"
 	"github.com/behavioral-ai/core/messaging"
 	"time"
 )
 
 func ExampleMaster() {
 	ch := make(chan struct{})
-	agent := newAgent(nil, -1, -1)
+	agent := newAgent(eventtest.New())
 
 	go func() {
 		go masterAttend(agent, content.Resolver)
@@ -39,7 +40,7 @@ func ExampleMaster_Observation() {
 	//if !status.OK() {
 	//	messaging.Notify(status)
 	//}
-	agent := newAgent(nil, -1, -1)
+	agent := newAgent(eventtest.New())
 
 	go func() {
 		go masterAttend(agent, content.Resolver)

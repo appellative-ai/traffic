@@ -2,10 +2,11 @@ package limiter
 
 import (
 	"fmt"
+	"github.com/behavioral-ai/collective/eventing/eventtest"
 )
 
 func ExampleNewAgent() {
-	a := newAgent(nil)
+	a := newAgent(eventtest.New())
 	fmt.Printf("test: newAgent() -> [limiter:%v] [burst:%v] [uri:%v}\n", a.limiter.Limit(), a.limiter.Burst(), a.Uri())
 
 	//agent := agentT{}

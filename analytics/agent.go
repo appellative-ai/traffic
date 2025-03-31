@@ -5,7 +5,6 @@ import (
 	"github.com/behavioral-ai/collective/eventing"
 	"github.com/behavioral-ai/core/httpx"
 	"github.com/behavioral-ai/core/messaging"
-	"golang.org/x/time/rate"
 	"net/http"
 	"time"
 )
@@ -17,13 +16,11 @@ const (
 	NamespaceName = "resiliency:agent/behavioral-ai/traffic/analytics"
 	minDuration   = time.Second * 10
 	maxDuration   = time.Second * 15
-	defaultLimit  = rate.Limit(50)
-	defaultBurst  = 10
 )
 
 type agentT struct {
 	running bool
-	traffic string
+	origin  Origin
 
 	exchange httpx.Exchange
 	handler  messaging.Agent
@@ -32,16 +29,16 @@ type agentT struct {
 	master   *messaging.Channel
 }
 
-// New - create a new agent1 agent
+// New - create a new analytics agent
 func New(handler messaging.Agent) messaging.Agent {
 	return newAgent(handler)
 }
 
 func newAgent(handler messaging.Agent) *agentT {
 	a := new(agentT)
-
 	a.exchange = httpx.Do
 	a.handler = handler
+
 	a.ticker = messaging.NewTicker(messaging.Emissary, maxDuration)
 	a.emissary = messaging.NewEmissaryChannel()
 	a.master = messaging.NewMasterChannel()
@@ -112,10 +109,6 @@ func (a *agentT) dispatch(channel any, event1 string) {
 	a.handler.Message(eventing.NewDispatchMessage(a, channel, event1))
 }
 
-func (a *agentT) reviseTicker(resolver *content.Resolution, s messaging.Spanner) {
-
-}
-
 func (a *agentT) emissaryShutdown() {
 	a.emissary.Close()
 	a.ticker.Stop()
@@ -126,5 +119,8 @@ func (a *agentT) masterShutdown() {
 }
 
 func (a *agentT) configure(m *messaging.Message) {
+	if o, ok := NewOriginFromMessage(a, m); ok {
+		a.origin = o
+	}
 	messaging.Reply(m, messaging.StatusOK(), a.Uri())
 }

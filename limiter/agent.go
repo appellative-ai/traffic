@@ -25,7 +25,6 @@ const (
 
 type agentT struct {
 	running bool
-	traffic string
 	limiter *rate.Limiter
 
 	exchange httpx.Exchange
