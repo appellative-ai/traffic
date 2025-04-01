@@ -107,7 +107,6 @@ func (a *agentT) Link(next httpx.Exchange) httpx.Exchange {
 		}
 		if next != nil {
 			resp, err = next(req)
-
 		} else {
 			resp = &http.Response{StatusCode: http.StatusOK}
 		}
