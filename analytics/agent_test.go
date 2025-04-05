@@ -1,12 +1,14 @@
 package analytics
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/behavioral-ai/collective/exchange"
+)
 
 func ExampleNew() {
-	a := New(nil)
-
-	fmt.Printf("test: ExampleNew() -> [%v]\n", a)
+	fmt.Printf("test: New() -> [%v]\n", exchange.Agent(NamespaceName))
 
 	//Output:
-	//fail
+	//test: New() -> [resiliency:agent/behavioral-ai/traffic/analytics]
+
 }

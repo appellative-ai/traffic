@@ -2,6 +2,8 @@ package analytics
 
 import (
 	"github.com/behavioral-ai/collective/content"
+	"github.com/behavioral-ai/collective/eventing"
+	"github.com/behavioral-ai/collective/exchange"
 	"github.com/behavioral-ai/collective/timeseries"
 	"github.com/behavioral-ai/core/httpx"
 	"github.com/behavioral-ai/core/messaging"
@@ -36,8 +38,9 @@ type agentT struct {
 }
 
 // New - create a new analytics agent
-func New(handler messaging.Agent) messaging.Agent {
-	return newAgent(handler)
+func init() {
+	a := newAgent(eventing.Agent)
+	exchange.Register(a)
 }
 
 func newAgent(handler messaging.Agent) *agentT {
@@ -94,7 +97,6 @@ func (a *agentT) run() {
 	}
 	go masterAttend(a, content.Resolver)
 	go emissaryAttend(a, timeseries.Functions)
-	// Need to start worker go routine, but need to wait for the traffic profile to be initialized
 	a.running = true
 }
 
@@ -112,12 +114,6 @@ func (a *agentT) Link(next httpx.Exchange) httpx.Exchange {
 		return
 	}
 }
-
-/*
-func (a *agentT) dispatch(channel any, event1 string) {
-	a.handler.Message(eventing.NewDispatchMessage(a, channel, event1))
-}
-*/
 
 func (a *agentT) emissaryShutdown() {
 	a.emissary.Close()
