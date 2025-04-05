@@ -35,7 +35,7 @@ func ExampleAgent_LoadContent() {
 		go emissaryAttend(agent, content.Resolver, s)
 		time.Sleep(testDuration * 5)
 
-		agent.Message(messaging.ShutdownMessage)
+		agent.Message(metrics.ShutdownMessage)
 		time.Sleep(testDuration * 2)
 		ch <- struct{}{}
 	}()

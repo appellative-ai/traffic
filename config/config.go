@@ -44,11 +44,11 @@ func hostName(agent messaging.Agent, m *messaging.Message, key string) (string, 
 }
 
 /*
-func SetOrigin(agent messaging.Agent, m *messaging.Message) (o Origin, ok bool) {
+func SetOrigin(agent metrics.Agent, m *metrics.Message) (o Origin, ok bool) {
 	a := agent
-	cfg := messaging.ConfigMapContent(m)
+	cfg := metrics.ConfigMapContent(m)
 	if cfg == nil {
-		messaging.Reply(m, messaging.ConfigEmptyStatusError(a), a.Uri())
+		metrics.Reply(m, metrics.ConfigEmptyStatusError(a), a.Uri())
 		return
 	}
 	region := cfg[regionKey]
@@ -58,27 +58,27 @@ func SetOrigin(agent messaging.Agent, m *messaging.Message) (o Origin, ok bool) 
 	o.Region = region
 	o.Zone = cfg[zoneKey]
 	if o.Zone == "" {
-		messaging.Reply(m, messaging.ConfigContentStatusError(a, zoneKey), a.Uri())
+		metrics.Reply(m, metrics.ConfigContentStatusError(a, zoneKey), a.Uri())
 		return
 	}
 	o.SubZone = cfg[subZoneKey]
 	if o.SubZone == "" {
-		messaging.Reply(m, messaging.ConfigContentStatusError(a, subZoneKey), a.Uri())
+		metrics.Reply(m, metrics.ConfigContentStatusError(a, subZoneKey), a.Uri())
 		return
 	}
 	o.Host = cfg[hostKey]
 	if o.Host == "" {
-		messaging.Reply(m, messaging.ConfigContentStatusError(a, hostKey), a.Uri())
+		metrics.Reply(m, metrics.ConfigContentStatusError(a, hostKey), a.Uri())
 		return
 	}
 	o.InstanceId = cfg[instanceIdKey]
 	if o.Host == "" {
-		messaging.Reply(m, messaging.ConfigContentStatusError(a, instanceIdKey), a.Uri())
+		metrics.Reply(m, metrics.ConfigContentStatusError(a, instanceIdKey), a.Uri())
 		return
 	}
 	origin = o
 	set = true
-	messaging.Reply(m, messaging.StatusOK(), a.Uri())
+	metrics.Reply(m, metrics.StatusOK(), a.Uri())
 	return o, true
 }
 

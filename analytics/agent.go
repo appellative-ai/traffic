@@ -107,7 +107,7 @@ func (a *agentT) Link(next httpx.Exchange) httpx.Exchange {
 		resp, err = next(req)
 		if a.enabled {
 			a.events.Enqueue(&timeseries.Event{Origin: a.origin, Start: start,
-				Duration: milliseconds(time.Since(start)), StatusCode: resp.StatusCode,
+				Duration: time.Since(start), StatusCode: resp.StatusCode,
 			})
 		}
 		return
@@ -138,12 +138,15 @@ func (a *agentT) configure(m *messaging.Message) {
 	messaging.Reply(m, messaging.StatusOK(), a.Uri())
 }
 
+/*
 func milliseconds(duration time.Duration) int {
 	if duration <= 0 {
 		return -1
 	}
 	return int(duration / time.Duration(1e6))
 }
+
+*/
 
 func (a *agentT) reviseTicker(cnt int) {
 	var (

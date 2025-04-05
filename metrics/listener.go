@@ -1,4 +1,4 @@
-package messaging
+package metrics
 
 import (
 	"github.com/behavioral-ai/core/messaging"

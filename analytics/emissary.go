@@ -1,8 +1,10 @@
 package analytics
 
 import (
+	"github.com/behavioral-ai/collective/exchange"
 	"github.com/behavioral-ai/collective/timeseries"
 	"github.com/behavioral-ai/core/messaging"
+	"github.com/behavioral-ai/traffic/metrics"
 )
 
 // emissary attention
@@ -13,14 +15,17 @@ func emissaryAttend(agent *agentT, ts *timeseries.Interface) {
 		select {
 		case <-agent.ticker.C():
 			if !paused {
-				events := make([]*timeseries.Event, loadSize)
+				m := metrics.NewMetrics()
 				for e := agent.events.Dequeue(); e != nil; {
-					events = append(events, e)
+					m.Update(e)
 				}
-				m := timeseries.NewLoadMessage(events)
-				ts.Message(m)
-				agent.Message(m.SetChannel(messaging.Master))
-				agent.reviseTicker(len(events))
+				// TODO : do wee need collective timeseries loading??
+				//m := timeseries.NewLoadMessage(events)
+				//ts.Message(m)
+
+				// Broadcast metrics to all agents
+				exchange.Broadcast(metrics.NewMetricsMessage(m))
+				agent.reviseTicker(m.Count)
 			}
 		default:
 		}

@@ -38,7 +38,7 @@ func _ExampleMaster_Observation() {
 	//test.LoadResiliencyContent()
 	//resolver, status := test.NewResiliencyResolver()
 	//if !status.OK() {
-	//	messaging.Notify(status)
+	//	metrics.Notify(status)
 	//}
 	agent := newAgent(eventtest.New())
 
