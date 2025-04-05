@@ -1,28 +1,32 @@
 package analytics
 
 import (
-	"github.com/behavioral-ai/collective/content"
+	"github.com/behavioral-ai/collective/timeseries"
 	"github.com/behavioral-ai/core/messaging"
 )
 
 // emissary attention
-func emissaryAttend(agent *agentT, resolver *content.Resolution) {
-	agent.dispatch(agent.emissary, messaging.StartupEvent)
+func emissaryAttend(agent *agentT, ts *timeseries.Interface) {
 	paused := false
 
 	for {
 		select {
 		case <-agent.ticker.C():
-			agent.dispatch(agent.ticker, messaging.ObservationEvent)
 			if !paused {
-
+				events := make([]*timeseries.Event, loadSize)
+				for e := agent.events.Dequeue(); e != nil; {
+					events = append(events, e)
+				}
+				m := timeseries.NewLoadMessage(events)
+				ts.Message(m)
+				agent.Message(m.SetChannel(messaging.Master))
+				agent.reviseTicker(len(events))
 			}
 		default:
 		}
 		select {
-		case msg := <-agent.emissary.C:
-			agent.dispatch(agent.emissary, msg.Event())
-			switch msg.Event() {
+		case m := <-agent.emissary.C:
+			switch m.Event() {
 			case messaging.PauseEvent:
 				paused = true
 			case messaging.ResumeEvent:

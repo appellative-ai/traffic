@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	contentTypeRequest = "content-type/request-metrics"
+	contentTypeRequest = "content-type/request-profile"
 )
 
 type requestMetrics struct {

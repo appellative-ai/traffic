@@ -1,7 +1,7 @@
 package limiter
 
 const (
-	metricsEvent = "event:metrics"
+	metricsEvent = "event:profile"
 )
 
 type metrics struct {

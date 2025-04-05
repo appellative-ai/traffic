@@ -1,4 +1,4 @@
-package metrics
+package profile
 
 import (
 	"encoding/json"
@@ -9,7 +9,7 @@ import (
 )
 
 func _ExampleMarshalTrafficProfile() {
-	p := NewTrafficProfile()
+	p := NewTraffic(nil, nil)
 	buf, err := json.Marshal(&p)
 
 	fmt.Printf("test: json.Marshal() -> [err:%v] [buf:%v]\n", err, string(buf))
@@ -18,8 +18,8 @@ func _ExampleMarshalTrafficProfile() {
 	//fail
 }
 
-func ExampleUnmarshalTrafficProfile() {
-	p := NewTrafficProfile()
+func _ExampleUnmarshalTrafficProfile() {
+	p := NewTraffic(nil, nil)
 	buf, err := iox.ReadFile(testrsc.ResiliencyTrafficProfile1)
 	fmt.Printf("test: iox.ReadFile() -> [err:%v] [buf:%v]\n", err, len(buf) > 0)
 
