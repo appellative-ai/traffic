@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/behavioral-ai/collective/content"
 	"github.com/behavioral-ai/collective/eventing"
+	"github.com/behavioral-ai/collective/exchange"
 	"github.com/behavioral-ai/core/access"
 	"github.com/behavioral-ai/core/httpx"
 	"github.com/behavioral-ai/core/messaging"
@@ -27,24 +28,26 @@ type agentT struct {
 	running bool
 	limiter *rate.Limiter
 
-	exchange httpx.Exchange
-	handler  messaging.Agent
-	ticker   *messaging.Ticker
-	emissary *messaging.Channel
-	master   *messaging.Channel
+	exchange   httpx.Exchange
+	handler    messaging.Agent
+	ticker     *messaging.Ticker
+	emissary   *messaging.Channel
+	master     *messaging.Channel
+	dispatcher messaging.Dispatcher
 }
 
-// New - create a new agent1 agent
-func New(handler messaging.Agent) messaging.Agent {
-	return newAgent(handler)
+// New - create a new agent
+func init() {
+	a := newAgent(eventing.Agent)
+	exchange.Register(a)
 }
 
 func newAgent(handler messaging.Agent) *agentT {
 	a := new(agentT)
 	a.limiter = rate.NewLimiter(defaultLimit, defaultBurst)
-
 	a.exchange = httpx.Do
 	a.handler = handler
+
 	a.ticker = messaging.NewTicker(messaging.Emissary, maxDuration)
 	a.emissary = messaging.NewEmissaryChannel()
 	a.master = messaging.NewMasterChannel()
@@ -114,8 +117,10 @@ func (a *agentT) Link(next httpx.Exchange) httpx.Exchange {
 	}
 }
 
-func (a *agentT) dispatch(channel any, event1 string) {
-	a.handler.Message(eventing.NewDispatchMessage(a, channel, event1))
+func (a *agentT) dispatch(channel any, event string) {
+	if a.dispatcher != nil {
+		a.dispatcher.Dispatch(a, channel, event)
+	}
 }
 
 func (a *agentT) reviseTicker(resolver *content.Resolution, s messaging.Spanner) {
@@ -132,5 +137,15 @@ func (a *agentT) masterShutdown() {
 }
 
 func (a *agentT) configure(m *messaging.Message) {
+	switch m.ContentType() {
+	case messaging.ContentTypeEventing:
+		if handler, ok := messaging.EventingHandlerContent(m); ok {
+			a.handler = handler
+		}
+	case messaging.ContentTypeDispatcher:
+		if dispatcher, ok := messaging.DispatcherContent(m); ok {
+			a.dispatcher = dispatcher
+		}
+	}
 	messaging.Reply(m, messaging.StatusOK(), a.Uri())
 }

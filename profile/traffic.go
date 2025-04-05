@@ -21,7 +21,7 @@ type Traffic struct {
 func NewTraffic(curr *Traffic, resolver *content.Resolution) *Traffic {
 	p, status := content.Resolve[Traffic](trafficName, 1, resolver)
 	if !status.OK() {
-		Agent.Message(messaging.NewStatusMessage(status, ""))
+		agent.Message(messaging.NewStatusMessage(status, ""))
 		if curr == nil {
 			curr = &Traffic{}
 		}

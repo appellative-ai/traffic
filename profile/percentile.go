@@ -17,7 +17,7 @@ type Percentile struct {
 func NewPercentile(curr *Percentile, resolver *content.Resolution) *Percentile {
 	p, status := content.Resolve[Percentile](percentileName, 1, resolver)
 	if !status.OK() {
-		Agent.Message(messaging.NewStatusMessage(status, ""))
+		agent.Message(messaging.NewStatusMessage(status, ""))
 		return curr
 	}
 	return &p

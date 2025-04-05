@@ -17,7 +17,7 @@ type StatusCode struct {
 func NewStatusCode(curr *StatusCode, resolver *content.Resolution) *StatusCode {
 	p, status := content.Resolve[StatusCode](statusCodeName, 1, content.Resolver)
 	if !status.OK() {
-		Agent.Message(messaging.NewStatusMessage(status, ""))
+		agent.Message(messaging.NewStatusMessage(status, ""))
 		return curr
 	}
 	return &p

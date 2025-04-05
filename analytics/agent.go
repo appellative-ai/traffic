@@ -7,7 +7,6 @@ import (
 	"github.com/behavioral-ai/collective/timeseries"
 	"github.com/behavioral-ai/core/httpx"
 	"github.com/behavioral-ai/core/messaging"
-	messaging2 "github.com/behavioral-ai/traffic/messaging"
 	"net/http"
 	"time"
 )
@@ -125,10 +124,17 @@ func (a *agentT) masterShutdown() {
 }
 
 func (a *agentT) configure(m *messaging.Message) {
-	if o, ok := timeseries.NewOriginFromMessage(a, m); ok {
-		a.origin = o
+	switch m.ContentType() {
+	case messaging.ContentTypeEventing:
+		if handler, ok := messaging.EventingHandlerContent(m); ok {
+			a.handler = handler
+		}
+	case messaging.ContentTypeMap:
+		if o, ok := timeseries.NewOriginFromMessage(a, m); ok {
+			a.origin = o
+		}
 	}
-	a.listener = messaging2.ConfigListenerContent(m)
+	//a.listener = messaging2.ConfigListenerContent(m)
 	messaging.Reply(m, messaging.StatusOK(), a.Uri())
 }
 

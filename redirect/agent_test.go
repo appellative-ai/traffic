@@ -3,7 +3,6 @@ package redirect
 import (
 	"fmt"
 	"github.com/behavioral-ai/collective/content"
-	"github.com/behavioral-ai/collective/eventing"
 	"github.com/behavioral-ai/collective/eventing/eventtest"
 	"github.com/behavioral-ai/core/messaging"
 	"github.com/behavioral-ai/core/messaging/messagingtest"
@@ -16,16 +15,16 @@ func ExampleNewAgent() {
 	fmt.Printf("test: newAgent() -> [host:%v] [uri:%v}\n", a.hostName, a.Uri())
 
 	//Output:
-	//test: newAgent() -> [host:localhost:8080] [uri:resiliency:agent/behavioral-ai/resiliency/redirect}
+	//test: newAgent() -> [host:localhost:8080] [uri:resiliency:agent/behavioral-ai/traffic/redirect}
 
 }
 
 func _ExampleAgent_LoadContent() {
 	ch := make(chan struct{})
-	dispatcher := eventing.NewTraceDispatcher()
 	s := messagingtest.NewTestSpanner(time.Second*2, testDuration)
 	//test.LoadResiliencyContent()
-	agent := newAgent(eventtest.NewWithDispatcher(dispatcher))
+	agent := newAgent(eventtest.New())
+	agent.dispatcher = messaging.NewTraceDispatcher()
 
 	go func() {
 		go masterAttend(agent, content.Resolver)
@@ -45,8 +44,8 @@ func _ExampleAgent_LoadContent() {
 
 func _ExampleAgent_NotFound() {
 	ch := make(chan struct{})
-	dispatcher := eventing.NewTraceDispatcher()
-	agent := newAgent(eventtest.NewWithDispatcher(dispatcher))
+	agent := newAgent(eventtest.New())
+	agent.dispatcher = messaging.NewTraceDispatcher()
 
 	go func() {
 		agent.Message(messaging.StartupMessage)
@@ -64,8 +63,8 @@ func _ExampleAgent_NotFound() {
 
 func _ExampleAgent_Resolver() {
 	ch := make(chan struct{})
-	dispatcher := eventing.NewTraceDispatcher()
-	agent := newAgent(eventtest.NewWithDispatcher(dispatcher))
+	agent := newAgent(eventtest.New())
+	agent.dispatcher = messaging.NewTraceDispatcher()
 	//test2.Startup()
 
 	go func() {
