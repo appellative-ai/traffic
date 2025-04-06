@@ -27,6 +27,7 @@ func ExampleMaster() {
 	}()
 	<-ch
 	close(ch)
+
 	//Output:
 	//fail
 }

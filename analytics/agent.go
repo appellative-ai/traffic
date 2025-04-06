@@ -1,7 +1,6 @@
 package analytics
 
 import (
-	"github.com/behavioral-ai/collective/content"
 	"github.com/behavioral-ai/collective/eventing"
 	"github.com/behavioral-ai/collective/exchange"
 	"github.com/behavioral-ai/collective/timeseries"
@@ -29,20 +28,19 @@ type agentT struct {
 	origin  timeseries.Origin
 	events  *list
 
-	listener messaging.Agent
-	handler  messaging.Agent
 	ticker   *messaging.Ticker
 	emissary *messaging.Channel
 	master   *messaging.Channel
+	handler  eventing.Agent
 }
 
 // New - create a new analytics agent
 func init() {
-	a := newAgent(eventing.Agent)
+	a := newAgent(eventing.Handler)
 	exchange.Register(a)
 }
 
-func newAgent(handler messaging.Agent) *agentT {
+func newAgent(handler eventing.Agent) *agentT {
 	a := new(agentT)
 	a.enabled = true
 	a.handler = handler
@@ -94,7 +92,7 @@ func (a *agentT) run() {
 	if a.running {
 		return
 	}
-	go masterAttend(a, content.Resolver)
+	go masterAttend(a)
 	go emissaryAttend(a, timeseries.Functions)
 	a.running = true
 }
@@ -125,10 +123,6 @@ func (a *agentT) masterShutdown() {
 
 func (a *agentT) configure(m *messaging.Message) {
 	switch m.ContentType() {
-	case messaging.ContentTypeEventing:
-		if handler, ok := messaging.EventingHandlerContent(m); ok {
-			a.handler = handler
-		}
 	case messaging.ContentTypeMap:
 		if o, ok := timeseries.NewOriginFromMessage(a, m); ok {
 			a.origin = o

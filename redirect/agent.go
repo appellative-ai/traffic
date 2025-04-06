@@ -30,21 +30,22 @@ type agentT struct {
 	hostName string
 	timeout  time.Duration
 
-	exchange   httpx.Exchange
-	handler    messaging.Agent
+	exchange httpx.Exchange
+
 	ticker     *messaging.Ticker
 	emissary   *messaging.Channel
 	master     *messaging.Channel
+	handler    eventing.Agent
 	dispatcher messaging.Dispatcher
 }
 
 // New - create a new agent
 func init() {
-	a := newAgent(eventing.Agent)
+	a := newAgent(eventing.Handler)
 	exchange.Register(a)
 }
 
-func newAgent(handler messaging.Agent) *agentT {
+func newAgent(handler eventing.Agent) *agentT {
 	a := new(agentT)
 	a.exchange = httpx.Do
 	a.handler = handler
@@ -140,10 +141,6 @@ func (a *agentT) masterShutdown() {
 
 func (a *agentT) configure(m *messaging.Message) {
 	switch m.ContentType() {
-	case messaging.ContentTypeEventing:
-		if handler, ok := messaging.EventingHandlerContent(m); ok {
-			a.handler = handler
-		}
 	case messaging.ContentTypeDispatcher:
 		if dispatcher, ok := messaging.DispatcherContent(m); ok {
 			a.dispatcher = dispatcher
