@@ -1,7 +1,13 @@
 package urn
 
+import (
+	"github.com/behavioral-ai/traffic/analytics"
+	"github.com/behavioral-ai/traffic/limiter"
+	"github.com/behavioral-ai/traffic/redirect"
+)
+
 const (
-	ResiliencyThreshold      = "resiliency:type/operative/agent/threshold"
-	ResiliencyInterpret      = "resiliency:type/operative/agent/interpret"
-	ResiliencyTrafficProfile = "resiliency:type/domain/profile/profile"
+	AnalyticsAgent = analytics.NamespaceName
+	LimiterAgent   = limiter.NamespaceName
+	RedirectAgent  = redirect.NamespaceName
 )
