@@ -130,7 +130,6 @@ func (a *agentT) configure(m *messaging.Message) {
 			a.origin = o
 		}
 	}
-	//a.listener = messaging2.ConfigListenerContent(m)
 	messaging.Reply(m, messaging.StatusOK(), a.Uri())
 }
 

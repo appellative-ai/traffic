@@ -6,6 +6,11 @@ import (
 	"time"
 )
 
+const (
+	AppHostKey = "app-host"
+	TimeoutKey = "timeout"
+)
+
 func Timeout(agent messaging.Agent, m *messaging.Message) (time.Duration, bool) {
 	cfg := messaging.ConfigMapContent(m)
 	if cfg == nil {
