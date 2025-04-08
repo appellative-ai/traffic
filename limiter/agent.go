@@ -2,15 +2,12 @@ package limiter
 
 import (
 	"fmt"
-	"github.com/behavioral-ai/collective/content"
 	"github.com/behavioral-ai/collective/eventing"
 	"github.com/behavioral-ai/collective/exchange"
 	"github.com/behavioral-ai/collective/timeseries"
 	"github.com/behavioral-ai/core/access"
 	"github.com/behavioral-ai/core/httpx"
 	"github.com/behavioral-ai/core/messaging"
-	"github.com/behavioral-ai/traffic/metrics"
-
 	"golang.org/x/time/rate"
 	"net/http"
 	"time"
@@ -32,7 +29,6 @@ type agentT struct {
 	limiter *rate.Limiter
 
 	ticker     *messaging.Ticker
-	emissary   *messaging.Channel
 	master     *messaging.Channel
 	handler    eventing.Agent
 	dispatcher messaging.Dispatcher
@@ -50,7 +46,6 @@ func newAgent(handler eventing.Agent) *agentT {
 	a.handler = handler
 
 	a.ticker = messaging.NewTicker(messaging.ChannelEmissary, maxDuration)
-	a.emissary = messaging.NewEmissaryChannel()
 	a.master = messaging.NewMasterChannel()
 	return a
 }
@@ -82,26 +77,18 @@ func (a *agentT) Message(m *messaging.Message) {
 		a.running = false
 	}
 	switch m.Channel() {
-	case messaging.ChannelEmissary:
-		a.emissary.C <- m
 	case messaging.ChannelMaster:
 		a.master.C <- m
 	case messaging.ChannelControl:
-		if m.Event() == metrics.Event {
-			a.master.C <- m
-		} else {
-			//a.emissary.C <- m
-			//a.master.C <- m
-		}
+		a.master.C <- m
 	default:
-		a.emissary.C <- m
+		fmt.Printf("limiter - invalid channel %v\n", m)
 	}
 }
 
 // Run - run the agent
 func (a *agentT) run() {
 	go masterAttend(a, timeseries.Functions)
-	go emissaryAttend(a, content.Resolver, nil)
 }
 
 // Link - chainable exchange
@@ -128,16 +115,8 @@ func (a *agentT) dispatch(channel any, event string) {
 	}
 }
 
-func (a *agentT) reviseTicker(resolver *content.Resolution, s messaging.Spanner) {
-
-}
-
-func (a *agentT) emissaryShutdown() {
-	a.emissary.Close()
-	a.ticker.Stop()
-}
-
 func (a *agentT) masterShutdown() {
+	a.ticker.Stop()
 	a.master.Close()
 }
 

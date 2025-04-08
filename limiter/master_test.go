@@ -6,6 +6,10 @@ import (
 	"time"
 )
 
+const (
+	testDuration = time.Second * 2
+)
+
 func ExampleMaster() {
 	ch := make(chan struct{})
 	agent := newAgent(eventtest.New())

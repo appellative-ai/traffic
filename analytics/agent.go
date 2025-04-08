@@ -1,6 +1,7 @@
 package analytics
 
 import (
+	"fmt"
 	"github.com/behavioral-ai/collective/eventing"
 	"github.com/behavioral-ai/collective/exchange"
 	"github.com/behavioral-ai/collective/timeseries"
@@ -31,7 +32,6 @@ type agentT struct {
 
 	ticker   *messaging.Ticker
 	emissary *messaging.Channel
-	master   *messaging.Channel
 	handler  eventing.Agent
 }
 
@@ -50,7 +50,6 @@ func newAgent(handler eventing.Agent) *agentT {
 
 	a.ticker = messaging.NewTicker(messaging.ChannelEmissary, duration)
 	a.emissary = messaging.NewEmissaryChannel()
-	a.master = messaging.NewMasterChannel()
 	return a
 }
 
@@ -83,19 +82,15 @@ func (a *agentT) Message(m *messaging.Message) {
 	switch m.Channel() {
 	case messaging.ChannelEmissary:
 		a.emissary.C <- m
-	case messaging.ChannelMaster:
-		a.master.C <- m
 	case messaging.ChannelControl:
 		a.emissary.C <- m
-		a.master.C <- m
 	default:
-		a.emissary.C <- m
+		fmt.Printf("analytics - invalid channel %v\n", m)
 	}
 }
 
 // Run - run the agent
 func (a *agentT) run() {
-	go masterAttend(a)
 	go emissaryAttend(a, timeseries.Functions)
 }
 
@@ -117,10 +112,6 @@ func (a *agentT) Link(next httpx.Exchange) httpx.Exchange {
 func (a *agentT) emissaryShutdown() {
 	a.emissary.Close()
 	a.ticker.Stop()
-}
-
-func (a *agentT) masterShutdown() {
-	a.master.Close()
 }
 
 func (a *agentT) configure(m *messaging.Message) {
