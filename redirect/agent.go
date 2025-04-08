@@ -67,16 +67,20 @@ func (a *agentT) Message(m *messaging.Message) {
 	if m == nil {
 		return
 	}
-	if m.Event() == messaging.ConfigEvent {
-		a.configure(m)
-		return
-	}
-	if m.Event() == messaging.StartupEvent {
-		a.run()
-		return
-	}
 	if !a.running {
+		if m.Event() == messaging.ConfigEvent {
+			a.configure(m)
+			return
+		}
+		if m.Event() == messaging.StartupEvent {
+			a.run()
+			a.running = true
+			return
+		}
 		return
+	}
+	if m.Event() == messaging.ShutdownEvent {
+		a.running = false
 	}
 	switch m.Channel() {
 	case messaging.Emissary:

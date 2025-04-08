@@ -63,16 +63,20 @@ func (a *agentT) Message(m *messaging.Message) {
 	if m == nil {
 		return
 	}
-	if m.Event() == messaging.ConfigEvent {
-		a.configure(m)
-		return
-	}
-	if m.Event() == messaging.StartupEvent {
-		a.run()
-		return
-	}
 	if !a.running {
+		if m.Event() == messaging.ConfigEvent {
+			a.configure(m)
+			return
+		}
+		if m.Event() == messaging.StartupEvent {
+			a.run()
+			a.running = true
+			return
+		}
 		return
+	}
+	if m.Event() == messaging.ShutdownEvent {
+		a.running = false
 	}
 	switch m.Channel() {
 	case messaging.Emissary:
@@ -89,12 +93,8 @@ func (a *agentT) Message(m *messaging.Message) {
 
 // Run - run the agent
 func (a *agentT) run() {
-	if a.running {
-		return
-	}
 	go masterAttend(a)
 	go emissaryAttend(a, timeseries.Functions)
-	a.running = true
 }
 
 // Link - chainable exchange
