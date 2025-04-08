@@ -27,6 +27,7 @@ type agentT struct {
 	traffic string
 	origin  timeseries.Origin
 	events  *list
+	catalog *messaging.Catalog
 
 	ticker   *messaging.Ticker
 	emissary *messaging.Channel
@@ -45,6 +46,7 @@ func newAgent(handler eventing.Agent) *agentT {
 	a.enabled = true
 	a.handler = handler
 	a.events = newList()
+	a.catalog = new(messaging.Catalog)
 
 	a.ticker = messaging.NewTicker(messaging.Emissary, duration)
 	a.emissary = messaging.NewEmissaryChannel()

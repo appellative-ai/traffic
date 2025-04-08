@@ -8,7 +8,7 @@ import (
 
 const (
 	Event       = "event:metrics"
-	ContentType = "application/metrics"
+	ContentType = "application/x-metrics"
 )
 
 type Metrics struct {
@@ -54,18 +54,18 @@ func requestsSecond(latency time.Duration, count int) int {
 	return count / secs
 }
 
-func NewMetricsMessage(metrics *Metrics) *messaging.Message {
+func NewMetricsMessage(metrics Metrics) *messaging.Message {
 	m := messaging.NewMessage(messaging.Control, Event)
 	m.SetContent(ContentType, metrics)
 	return m
 }
 
-func MetricsContent(m *messaging.Message) *Metrics {
+func MetricsContent(m *messaging.Message) (Metrics, bool) {
 	if m.Event() != Event || m.ContentType() != ContentType {
-		return nil
+		return Metrics{}, false
 	}
 	if v, ok := m.Body.(Metrics); ok {
-		return &v
+		return v, true
 	}
-	return nil
+	return Metrics{}, false
 }
