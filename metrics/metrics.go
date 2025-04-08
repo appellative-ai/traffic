@@ -55,13 +55,13 @@ func requestsSecond(latency time.Duration, count int) int {
 }
 
 func NewMetricsMessage(metrics Metrics) *messaging.Message {
-	m := messaging.NewMessage(messaging.Control, Event)
+	m := messaging.NewMessage(messaging.ChannelControl, Event)
 	m.SetContent(ContentType, metrics)
 	return m
 }
 
 func MetricsContent(m *messaging.Message) (Metrics, bool) {
-	if m.Event() != Event || m.ContentType() != ContentType {
+	if m != nil || m.Event() != Event || m.ContentType() != ContentType {
 		return Metrics{}, false
 	}
 	if v, ok := m.Body.(Metrics); ok {

@@ -1,14 +1,11 @@
 package metrics
 
-import (
-	"github.com/behavioral-ai/core/messaging"
-)
-
 const (
 	ListenerEvent    = "event:listener"
 	ContentTypeAgent = "content-type/agent"
 )
 
+/*
 func NewConfigListenerMessage(agent messaging.Agent) *messaging.Message {
 	m := messaging.NewMessage(messaging.Control, ListenerEvent)
 	m.SetContent(ContentTypeAgent, agent)
@@ -24,3 +21,6 @@ func ConfigListenerContent(m *messaging.Message) messaging.Agent {
 	}
 	return nil
 }
+
+
+*/

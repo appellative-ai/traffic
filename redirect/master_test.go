@@ -13,12 +13,12 @@ func _ExampleMaster() {
 
 	go func() {
 		go masterAttend(agent, content.Resolver)
-		agent.Message(messaging.NewMessage(messaging.Master, messaging.ObservationEvent))
+		agent.Message(messaging.NewMessage(messaging.ChannelMaster, messaging.ObservationEvent))
 
-		agent.Message(messaging.NewMessage(messaging.Master, messaging.PauseEvent))
-		agent.Message(messaging.NewMessage(messaging.Master, messaging.ObservationEvent))
-		agent.Message(messaging.NewMessage(messaging.Master, messaging.ResumeEvent))
-		agent.Message(messaging.NewMessage(messaging.Master, messaging.ObservationEvent))
+		agent.Message(messaging.NewMessage(messaging.ChannelMaster, messaging.PauseEvent))
+		agent.Message(messaging.NewMessage(messaging.ChannelMaster, messaging.ObservationEvent))
+		agent.Message(messaging.NewMessage(messaging.ChannelMaster, messaging.ResumeEvent))
+		agent.Message(messaging.NewMessage(messaging.ChannelMaster, messaging.ObservationEvent))
 
 		agent.Message(messaging.ShutdownMessage)
 		time.Sleep(testDuration)
@@ -33,7 +33,7 @@ func _ExampleMaster() {
 
 func _ExampleMaster_Observation() {
 	ch := make(chan struct{})
-	msg := messaging.NewMessage(messaging.Master, messaging.ObservationEvent)
+	msg := messaging.NewMessage(messaging.ChannelMaster, messaging.ObservationEvent)
 	//msg.SetContent(contentTypeObservation, observation{origin: origin, latency: 2350, gradient: 15})
 	//test.LoadResiliencyContent()
 	//resolver, status := test.NewResiliencyResolver()

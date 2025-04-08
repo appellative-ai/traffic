@@ -16,7 +16,7 @@ const (
 func masterAttend(agent *agentT, ts *timeseries.Interface) {
 	agent.dispatch(agent.master, messaging.StartupEvent)
 	paused := false
-	exchange.Message(messaging.NewSubscriptionCreateMessage(urn.AnalyticsAgent, NamespaceName, metrics.Event))
+	exchange.Message(messaging.NewSubscriptionCreateMessage(urn.AnalyticsAgent, messaging.ChannelMaster, NamespaceName, metrics.Event))
 
 	for {
 		select {

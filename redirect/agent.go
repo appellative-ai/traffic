@@ -49,7 +49,7 @@ func newAgent(handler eventing.Agent) *agentT {
 	a := new(agentT)
 	a.exchange = httpx.Do
 	a.handler = handler
-	a.ticker = messaging.NewTicker(messaging.Emissary, maxDuration)
+	a.ticker = messaging.NewTicker(messaging.ChannelEmissary, maxDuration)
 	a.emissary = messaging.NewEmissaryChannel()
 	a.master = messaging.NewMasterChannel()
 
@@ -83,11 +83,11 @@ func (a *agentT) Message(m *messaging.Message) {
 		a.running = false
 	}
 	switch m.Channel() {
-	case messaging.Emissary:
+	case messaging.ChannelEmissary:
 		a.emissary.C <- m
-	case messaging.Master:
+	case messaging.ChannelMaster:
 		a.master.C <- m
-	case messaging.Control:
+	case messaging.ChannelControl:
 		a.emissary.C <- m
 		a.master.C <- m
 	default:

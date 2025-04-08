@@ -40,7 +40,7 @@ func emissaryAttend(agent *agentT, ts *timeseries.Interface) {
 				_ = agent.catalog.CreateWithMessage(m)
 				if m.Reply != nil {
 					go func() {
-						messaging.Reply(messaging.NewMessage(messaging.Control, m.Event()), messaging.StatusOK(), NamespaceName)
+						messaging.Reply(messaging.NewMessage(messaging.ChannelControl, m.Event()), messaging.StatusOK(), NamespaceName)
 					}()
 				}
 			case messaging.SubscriptionCancelEvent:

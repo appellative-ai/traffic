@@ -1,7 +1,6 @@
 package limiter
 
 import (
-	"github.com/behavioral-ai/collective/content"
 	"github.com/behavioral-ai/collective/eventing/eventtest"
 	"github.com/behavioral-ai/core/messaging"
 	"time"
@@ -12,13 +11,13 @@ func ExampleMaster() {
 	agent := newAgent(eventtest.New())
 
 	go func() {
-		go masterAttend(agent, content.Resolver)
-		agent.Message(messaging.NewMessage(messaging.Master, messaging.ObservationEvent))
+		go masterAttend(agent, nil)
+		agent.Message(messaging.NewMessage(messaging.ChannelMaster, messaging.ObservationEvent))
 
-		agent.Message(messaging.NewMessage(messaging.Master, messaging.PauseEvent))
-		agent.Message(messaging.NewMessage(messaging.Master, messaging.ObservationEvent))
-		agent.Message(messaging.NewMessage(messaging.Master, messaging.ResumeEvent))
-		agent.Message(messaging.NewMessage(messaging.Master, messaging.ObservationEvent))
+		agent.Message(messaging.NewMessage(messaging.ChannelMaster, messaging.PauseEvent))
+		agent.Message(messaging.NewMessage(messaging.ChannelMaster, messaging.ObservationEvent))
+		agent.Message(messaging.NewMessage(messaging.ChannelMaster, messaging.ResumeEvent))
+		agent.Message(messaging.NewMessage(messaging.ChannelMaster, messaging.ObservationEvent))
 
 		agent.Message(messaging.ShutdownMessage)
 		time.Sleep(testDuration)
@@ -44,7 +43,7 @@ func ExampleMaster_Observation() {
 	agent := newAgent(eventtest.New())
 
 	go func() {
-		go masterAttend(agent, content.Resolver)
+		go masterAttend(agent, nil)
 		//agent.Message(msg)
 		time.Sleep(testDuration * 2)
 

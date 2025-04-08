@@ -48,7 +48,7 @@ func newAgent(handler eventing.Agent) *agentT {
 	a.events = newList()
 	a.catalog = new(messaging.Catalog)
 
-	a.ticker = messaging.NewTicker(messaging.Emissary, duration)
+	a.ticker = messaging.NewTicker(messaging.ChannelEmissary, duration)
 	a.emissary = messaging.NewEmissaryChannel()
 	a.master = messaging.NewMasterChannel()
 	return a
@@ -81,11 +81,11 @@ func (a *agentT) Message(m *messaging.Message) {
 		a.running = false
 	}
 	switch m.Channel() {
-	case messaging.Emissary:
+	case messaging.ChannelEmissary:
 		a.emissary.C <- m
-	case messaging.Master:
+	case messaging.ChannelMaster:
 		a.master.C <- m
-	case messaging.Control:
+	case messaging.ChannelControl:
 		a.emissary.C <- m
 		a.master.C <- m
 	default:
