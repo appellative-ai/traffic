@@ -1,13 +1,14 @@
 package analytics
 
 import (
-	"github.com/behavioral-ai/collective/timeseries"
 	"github.com/behavioral-ai/core/messaging"
 )
 
 // master attention
 func masterAttend(a *agentT) {
 	paused := false
+	if paused {
+	}
 
 	for {
 		select {
@@ -20,10 +21,6 @@ func masterAttend(a *agentT) {
 			case messaging.ShutdownEvent:
 				a.masterShutdown()
 				return
-			case timeseries.LoadEvent:
-				if paused {
-					continue
-				}
 			default:
 			}
 		default:

@@ -23,8 +23,7 @@ func emissaryAttend(agent *agentT, ts *timeseries.Interface) {
 				// Message based on subscriptions
 				if subs, ok := agent.catalog.Lookup(metrics.Event); ok {
 					for _, item := range subs {
-						msg := metrics.NewMetricsMessage(*m)
-						msg.SetTo(item.From)
+						msg := metrics.NewMetricsMessage(item, NamespaceName, *m)
 						exchange.Message(msg)
 					}
 				}

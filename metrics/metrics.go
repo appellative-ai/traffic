@@ -54,8 +54,10 @@ func requestsSecond(latency time.Duration, count int) int {
 	return count / secs
 }
 
-func NewMetricsMessage(metrics Metrics) *messaging.Message {
-	m := messaging.NewMessage(messaging.ChannelControl, Event)
+func NewMetricsMessage(s messaging.Subscription, from string, metrics Metrics) *messaging.Message {
+	m := messaging.NewMessage(s.Channel, Event)
+	m.SetTo(s.From)
+	m.SetFrom(from)
 	m.SetContent(ContentType, metrics)
 	return m
 }
