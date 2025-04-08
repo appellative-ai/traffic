@@ -5,9 +5,12 @@ import (
 	"github.com/behavioral-ai/collective/content"
 	"github.com/behavioral-ai/collective/eventing"
 	"github.com/behavioral-ai/collective/exchange"
+	"github.com/behavioral-ai/collective/timeseries"
 	"github.com/behavioral-ai/core/access"
 	"github.com/behavioral-ai/core/httpx"
 	"github.com/behavioral-ai/core/messaging"
+	"github.com/behavioral-ai/traffic/metrics"
+
 	"golang.org/x/time/rate"
 	"net/http"
 	"time"
@@ -84,8 +87,12 @@ func (a *agentT) Message(m *messaging.Message) {
 	case messaging.Master:
 		a.master.C <- m
 	case messaging.Control:
-		a.emissary.C <- m
-		a.master.C <- m
+		if m.Event() == metrics.Event {
+			a.master.C <- m
+		} else {
+			//a.emissary.C <- m
+			//a.master.C <- m
+		}
 	default:
 		a.emissary.C <- m
 	}
@@ -93,7 +100,7 @@ func (a *agentT) Message(m *messaging.Message) {
 
 // Run - run the agent
 func (a *agentT) run() {
-	go masterAttend(a, content.Resolver)
+	go masterAttend(a, timeseries.Functions)
 	go emissaryAttend(a, content.Resolver, nil)
 }
 
