@@ -101,7 +101,7 @@ func (a *agentT) Link(next httpx.Exchange) httpx.Exchange {
 
 		resp, err = next(req)
 		if a.enabled {
-			a.events.Enqueue(&timeseries.Event{Origin: a.origin, Start: start,
+			a.events.Enqueue(&timeseries.Event{Origin: a.origin, Path: req.URL.Path, Start: start,
 				Duration: time.Since(start), StatusCode: resp.StatusCode,
 			})
 		}

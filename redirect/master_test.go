@@ -13,12 +13,9 @@ func _ExampleMaster() {
 
 	go func() {
 		go masterAttend(agent, content.Resolver)
-		agent.Message(messaging.NewMessage(messaging.ChannelMaster, messaging.ObservationEvent))
 
 		agent.Message(messaging.NewMessage(messaging.ChannelMaster, messaging.PauseEvent))
-		agent.Message(messaging.NewMessage(messaging.ChannelMaster, messaging.ObservationEvent))
 		agent.Message(messaging.NewMessage(messaging.ChannelMaster, messaging.ResumeEvent))
-		agent.Message(messaging.NewMessage(messaging.ChannelMaster, messaging.ObservationEvent))
 
 		agent.Message(messaging.ShutdownMessage)
 		time.Sleep(testDuration)
@@ -33,7 +30,7 @@ func _ExampleMaster() {
 
 func _ExampleMaster_Observation() {
 	ch := make(chan struct{})
-	msg := messaging.NewMessage(messaging.ChannelMaster, messaging.ObservationEvent)
+	//msg := messaging.NewMessage(messaging.ChannelMaster, messaging.ObservationEvent)
 	//msg.SetContent(contentTypeObservation, observation{origin: origin, latency: 2350, gradient: 15})
 	//test.LoadResiliencyContent()
 	//resolver, status := test.NewResiliencyResolver()
@@ -44,8 +41,8 @@ func _ExampleMaster_Observation() {
 
 	go func() {
 		go masterAttend(agent, content.Resolver)
-		agent.Message(msg)
-		time.Sleep(testDuration * 2)
+		//agent.Message(msg)
+		//time.Sleep(testDuration * 2)
 
 		agent.Message(messaging.ShutdownMessage)
 		time.Sleep(testDuration)

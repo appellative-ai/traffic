@@ -16,12 +16,9 @@ func ExampleMaster() {
 
 	go func() {
 		go masterAttend(agent, nil)
-		agent.Message(messaging.NewMessage(messaging.ChannelMaster, messaging.ObservationEvent))
 
 		agent.Message(messaging.NewMessage(messaging.ChannelMaster, messaging.PauseEvent))
-		agent.Message(messaging.NewMessage(messaging.ChannelMaster, messaging.ObservationEvent))
 		agent.Message(messaging.NewMessage(messaging.ChannelMaster, messaging.ResumeEvent))
-		agent.Message(messaging.NewMessage(messaging.ChannelMaster, messaging.ObservationEvent))
 
 		agent.Message(messaging.ShutdownMessage)
 		time.Sleep(testDuration)

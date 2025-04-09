@@ -9,6 +9,8 @@ import (
 func masterAttend(agent *agentT, resolver *content.Resolution) {
 	agent.dispatch(agent.master, messaging.StartupEvent)
 	paused := false
+	if paused {
+	}
 
 	for {
 		select {
@@ -22,11 +24,6 @@ func masterAttend(agent *agentT, resolver *content.Resolution) {
 			case messaging.ShutdownEvent:
 				agent.masterShutdown()
 				return
-			case messaging.ObservationEvent:
-				if paused {
-					continue
-				}
-
 			default:
 			}
 		default:
