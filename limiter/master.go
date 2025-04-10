@@ -5,10 +5,6 @@ import (
 	"github.com/behavioral-ai/core/messaging"
 )
 
-const (
-	score = float64(0.95)
-)
-
 // master attention
 func masterAttend(agent *agentT, ts *timeseries.Interface) {
 	agent.dispatch(agent.master, messaging.StartupEvent)
@@ -25,8 +21,8 @@ func masterAttend(agent *agentT, ts *timeseries.Interface) {
 						alpha, beta := ts.LinearRegression(ms.Regression.X, ms.Regression.Y, ms.Regression.Weights, ms.Regression.Origin)
 						if alpha > 0.0 && beta > 0.0 {
 						}
-						p := ts.Percentile(ms.Percentile.X, ms.Percentile.Weights, false, float64(agent.threshold.Score))
-						if p.Latency > 0.0 {
+						ts.Percentile(ms.Regression.X, ms.Regression.Weights, false, &agent.actual)
+						if agent.actual.Latency > 0.0 {
 						}
 					}
 				}

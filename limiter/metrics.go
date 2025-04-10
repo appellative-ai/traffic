@@ -12,21 +12,18 @@ const (
 type metrics struct {
 	Count      int
 	Regression *RegressionSample
-	Percentile *PercentileSample
 	StatusCode *StatusCodeSample
 }
 
 func newMetrics() *metrics {
 	m := new(metrics)
 	m.Regression = new(RegressionSample)
-	m.Percentile = new(PercentileSample)
 	m.StatusCode = new(StatusCodeSample)
 	return m
 }
 
 func (m *metrics) Update(event *event) {
 	m.Count++
-	m.Percentile.Update(event)
 	m.Regression.Update(event)
 	m.StatusCode.Update(event)
 }

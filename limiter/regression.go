@@ -9,4 +9,5 @@ type RegressionSample struct {
 
 func (p *RegressionSample) Update(event *event) {
 	p.Y = append(p.Y, float64(event.Duration))
+	p.X = append(p.Y, float64(event.Start.UnixMilli()))
 }

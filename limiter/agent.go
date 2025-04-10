@@ -32,6 +32,7 @@ type agentT struct {
 	limiter   *rate.Limiter
 	events    *list
 	threshold timeseries.Percentile
+	actual    timeseries.Percentile
 
 	ticker     *messaging.Ticker
 	master     *messaging.Channel
@@ -117,9 +118,7 @@ func (a *agentT) Link(next httpx.Exchange) httpx.Exchange {
 			resp = &http.Response{StatusCode: http.StatusOK}
 		}
 		if a.enabled {
-			a.events.Enqueue(&event{Path: req.URL.Path, Start: start,
-				Duration: time.Since(start), StatusCode: resp.StatusCode,
-			})
+			a.events.Enqueue(&event{Start: start, Duration: time.Since(start), StatusCode: resp.StatusCode})
 		}
 		return
 	}
@@ -167,6 +166,7 @@ func (a *agentT) configure(m *messaging.Message) {
 		if a.threshold, ok = config.Percentile(a, m); !ok {
 			return
 		}
+		a.actual.Score = a.threshold.Score
 	case messaging.ContentTypeDispatcher:
 		if dispatcher, ok := messaging.DispatcherContent(m); ok {
 			a.dispatcher = dispatcher
