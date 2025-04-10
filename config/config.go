@@ -1,14 +1,18 @@
 package config
 
 import (
+	"github.com/behavioral-ai/collective/timeseries"
 	"github.com/behavioral-ai/core/fmtx"
 	"github.com/behavioral-ai/core/messaging"
+	"strconv"
 	"time"
 )
 
 const (
-	AppHostKey = "app-host"
-	TimeoutKey = "timeout"
+	AppHostKey = "app-host" // routing host name
+	TimeoutKey = "timeout"  // routing timeout
+	ScoreKey   = "score"    // limiter threshold score
+	LatencyKey = "latency"  // limiter threshold latency
 )
 
 func Timeout(agent messaging.Agent, m *messaging.Message) (time.Duration, bool) {
@@ -32,6 +36,38 @@ func Timeout(agent messaging.Agent, m *messaging.Message) (time.Duration, bool) 
 
 func AppHostName(agent messaging.Agent, m *messaging.Message) (string, bool) {
 	return hostName(agent, m, AppHostKey)
+}
+
+func Percentile(agent messaging.Agent, m *messaging.Message) (p timeseries.Percentile, ok bool) {
+	cfg := messaging.ConfigMapContent(m)
+	if cfg == nil {
+		messaging.Reply(m, messaging.ConfigEmptyStatusError(agent), agent.Uri())
+		return timeseries.Percentile{}, false
+	}
+	score := cfg[ScoreKey]
+	if score == "" {
+		messaging.Reply(m, messaging.ConfigContentStatusError(agent, ScoreKey), agent.Uri())
+		return timeseries.Percentile{}, false
+	}
+	var err error
+	p.Score, err = strconv.Atoi(score)
+	if err != nil {
+		messaging.Reply(m, messaging.ConfigContentStatusError(agent, ScoreKey), agent.Uri())
+		return timeseries.Percentile{}, false
+	}
+
+	latency := cfg[LatencyKey]
+	if latency == "" {
+		messaging.Reply(m, messaging.ConfigContentStatusError(agent, LatencyKey), agent.Uri())
+		return timeseries.Percentile{}, false
+	}
+	dur, err1 := fmtx.ParseDuration(latency)
+	if err1 != nil {
+		messaging.Reply(m, messaging.ConfigContentStatusError(agent, LatencyKey), agent.Uri())
+		return timeseries.Percentile{}, false
+	}
+	p.Latency = fmtx.Milliseconds(dur)
+	return p, true
 }
 
 func hostName(agent messaging.Agent, m *messaging.Message, key string) (string, bool) {

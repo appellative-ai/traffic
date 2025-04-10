@@ -15,7 +15,6 @@ type Metrics struct {
 	Count      int
 	Latency    *LatencySample
 	Regression *RegressionSample
-	Percentile *PercentileSample
 	StatusCode *StatusCodeSample
 }
 
@@ -23,14 +22,12 @@ func NewMetrics() *Metrics {
 	m := new(Metrics)
 	m.Latency = new(LatencySample)
 	m.Regression = new(RegressionSample)
-	m.Percentile = new(PercentileSample)
 	m.StatusCode = new(StatusCodeSample)
 	return m
 }
 
 func (m *Metrics) Update(event *timeseries.Event) {
 	m.Count++
-	m.Percentile.Update(event)
 	m.Regression.Update(event)
 	m.StatusCode.Update(event)
 	m.Latency.Update(event)

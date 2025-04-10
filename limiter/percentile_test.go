@@ -1,21 +1,20 @@
-package metrics
+package limiter
 
 import (
 	"fmt"
-	"github.com/behavioral-ai/collective/timeseries"
 	"time"
 )
 
 func ExamplePercentileSample() {
 	s := new(PercentileSample)
 
-	s.Update(&timeseries.Event{Duration: time.Second * 2})
+	s.Update(&event{Duration: time.Second * 2})
 	fmt.Printf("test: Update()  -> x:%v\n", s.X)
 
-	s.Update(&timeseries.Event{Duration: time.Millisecond * 1500})
+	s.Update(&event{Duration: time.Millisecond * 1500})
 	fmt.Printf("test: Update()  -> x:%v\n", s.X)
 
-	s.Update(&timeseries.Event{Duration: 0})
+	s.Update(&event{Duration: 0})
 	fmt.Printf("test: Update()  -> x:%v\n", s.X)
 
 	//Output:

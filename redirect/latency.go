@@ -10,6 +10,8 @@ package redirect
 // A. There needs to be information in the collective to consolidate this, and also configuration
 //    for the redirect. Also need to allow client overrides for success or failure.
 
+// Can always stop redirecting traffic if failure
+
 type LatencyProfile struct {
 	Percentile int `json:"percentile"` // Percentile number: 90, 95
 	Threshold  int `json:"threshold"`  // In milliseconds
