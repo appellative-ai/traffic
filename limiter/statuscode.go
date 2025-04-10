@@ -5,11 +5,11 @@ import (
 )
 
 type StatusCodeSample struct {
-	Status2xx int
-	Status4xx int
-	Status429 int // Too Many Requests
-	Status504 int // Gateway Timeout
-	Status5xx int
+	Status2xx int `json:"status-2xx"`
+	Status4xx int `json:"status-4xx"`
+	Status429 int `json:"status-429"` // Too Many Requests
+	Status504 int `json:"status-504"` // Gateway Timeout
+	Status5xx int `json:"status-5xx"`
 }
 
 func (s *StatusCodeSample) Update(event *event) {

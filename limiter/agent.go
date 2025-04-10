@@ -111,14 +111,13 @@ func (a *agentT) Link(next httpx.Exchange) httpx.Exchange {
 			h.Add(access.XRateBurst, fmt.Sprintf("%v", a.limiter.Burst()))
 			return &http.Response{StatusCode: http.StatusTooManyRequests, Header: h}, nil
 		}
-
 		if next != nil {
 			resp, err = next(req)
 		} else {
 			resp = &http.Response{StatusCode: http.StatusOK}
 		}
 		if a.enabled {
-			a.events.Enqueue(&event{Start: start, Duration: time.Since(start), StatusCode: resp.StatusCode})
+			a.events.Enqueue(&event{UnixMS: start.UnixMilli(), Duration: time.Since(start), StatusCode: resp.StatusCode})
 		}
 		return
 	}

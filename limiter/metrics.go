@@ -11,7 +11,7 @@ const (
 )
 
 type event struct {
-	Start      time.Time     `json:"start-ts"`
+	UnixMS     int64         `json:"unix-ms"`
 	Duration   time.Duration `json:"duration"`
 	StatusCode int           `json:"status-code"`
 }
