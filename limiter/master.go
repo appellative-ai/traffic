@@ -18,10 +18,12 @@ func masterAttend(agent *agentT, ts *timeseries.Interface) {
 			case metricsEvent:
 				if !paused {
 					if ms, ok := metricsContent(m); ok {
+						// run statics calculations
 						alpha, beta := ts.LinearRegression(ms.Regression.X, ms.Regression.Y, ms.Regression.Weights, ms.Regression.Origin)
+						ts.Percentile(ms.Regression.X, ms.Regression.Weights, false, &agent.actual)
+						// determine action
 						if alpha > 0.0 && beta > 0.0 {
 						}
-						ts.Percentile(ms.Regression.X, ms.Regression.Weights, false, &agent.actual)
 						if agent.actual.Latency > 0.0 {
 						}
 					}

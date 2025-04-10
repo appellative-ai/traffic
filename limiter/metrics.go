@@ -2,12 +2,19 @@ package limiter
 
 import (
 	"github.com/behavioral-ai/core/messaging"
+	"time"
 )
 
 const (
 	metricsEvent       = "event:metrics"
 	contentTypeMetrics = "application/x-metrics"
 )
+
+type event struct {
+	Start      time.Time     `json:"start-ts"`
+	Duration   time.Duration `json:"duration"`
+	StatusCode int           `json:"status-code"`
+}
 
 type metrics struct {
 	Count      int
