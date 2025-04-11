@@ -62,12 +62,12 @@ func masterAttend(agent *agentT, ts *timeseries.Interface) {
 }
 
 func newStats(agent *agentT, ts *timeseries.Interface, m metrics) stats {
-	s := stats{unixMS: time.Now().UTC().UnixMilli(), centile: timeseries.Percentile{Score: defaultScore}, status429: m.Status429}
+	s := stats{unixMS: time.Now().UTC().UnixMilli(), centile: timeseries.Percentile{Score: defaultScore}, status429: m.status429}
 
 	// run statics calculations
-	alpha, _ := ts.LinearRegression(m.Regression.X, m.Regression.Y, m.Regression.Weights, m.Regression.Origin)
+	alpha, _ := ts.LinearRegression(m.regression.x, m.regression.y, m.regression.weights, m.regression.origin)
 	s.gradiant = alpha
-	ts.Percentile(m.Regression.X, m.Regression.Weights, false, &s.centile)
+	ts.Percentile(m.regression.x, m.regression.weights, false, &s.centile)
 	// TODO : calculate timeToLive, intervals.
 	return s
 }

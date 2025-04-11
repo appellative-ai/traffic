@@ -112,7 +112,7 @@ func (a *agentT) Link(next httpx.Exchange) httpx.Exchange {
 			h.Add(access.XRateLimit, fmt.Sprintf("%v", a.limiter.Limit()))
 			h.Add(access.XRateBurst, fmt.Sprintf("%v", a.limiter.Burst()))
 			if a.enabled {
-				a.events.Enqueue(&event{Internal: true, UnixMS: start.UnixMilli(), Duration: time.Since(start), StatusCode: resp.StatusCode})
+				a.events.Enqueue(&event{internal: true, unixMS: start.UnixMilli(), duration: time.Since(start), statusCode: resp.StatusCode})
 			}
 			return &http.Response{StatusCode: http.StatusTooManyRequests, Header: h}, nil
 		}
@@ -122,7 +122,7 @@ func (a *agentT) Link(next httpx.Exchange) httpx.Exchange {
 			resp = &http.Response{StatusCode: http.StatusOK}
 		}
 		if a.enabled {
-			a.events.Enqueue(&event{UnixMS: start.UnixMilli(), Duration: time.Since(start), StatusCode: resp.StatusCode})
+			a.events.Enqueue(&event{unixMS: start.UnixMilli(), duration: time.Since(start), statusCode: resp.StatusCode})
 		}
 		return
 	}

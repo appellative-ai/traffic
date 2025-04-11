@@ -14,10 +14,10 @@ func emissaryAttend(agent *agentT) {
 			if !paused {
 				m := newMetrics()
 				for e := agent.events.Dequeue(); e != nil; {
-					m.Update(e)
+					m.update(e)
 				}
 				agent.Message(newMetricsMessage(*m))
-				agent.reviseTicker(m.Count)
+				agent.reviseTicker(m.count)
 			}
 		default:
 		}

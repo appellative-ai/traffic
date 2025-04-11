@@ -12,30 +12,30 @@ const (
 )
 
 type event struct {
-	Internal   bool          `json:"internal"`
-	UnixMS     int64         `json:"unix-ms"`
-	Duration   time.Duration `json:"duration"`
-	StatusCode int           `json:"status-code"`
+	internal   bool          `json:"internal"`
+	unixMS     int64         `json:"unix-ms"`
+	duration   time.Duration `json:"duration"`
+	statusCode int           `json:"status-code"`
 }
 
 type metrics struct {
-	Count      int
-	Status429  int
-	Regression *RegressionSample
+	count      int
+	status429  int
+	regression *regressionSample
 }
 
 func newMetrics() *metrics {
 	m := new(metrics)
-	m.Regression = new(RegressionSample)
+	m.regression = new(regressionSample)
 	return m
 }
 
-func (m *metrics) Update(event *event) {
-	m.Count++
-	if event.Internal && event.StatusCode == http.StatusTooManyRequests {
-		m.Status429++
+func (m *metrics) update(event *event) {
+	m.count++
+	if event.internal && event.statusCode == http.StatusTooManyRequests {
+		m.status429++
 	}
-	m.Regression.Update(event)
+	m.regression.update(event)
 
 }
 
