@@ -1,19 +1,18 @@
 package config
 
 import (
-	"github.com/behavioral-ai/collective/timeseries"
 	"github.com/behavioral-ai/core/fmtx"
 	"github.com/behavioral-ai/core/messaging"
-	"strconv"
 	"time"
 )
 
 const (
-	AppHostKey = "app-host" // routing host name
-	TimeoutKey = "timeout"  // routing timeout
-	ScoreKey   = "score"    // limiter threshold score
-	LatencyKey = "latency"  // limiter threshold latency
+	AppHostKey          = "app-host"          // routing host name
+	TimeoutKey          = "timeout"           // routing timeout
+	ThresholdLatencyKey = "threshold-latency" // limiter threshold latency
 )
+
+//ScoreKey   = "score"    // limiter threshold score
 
 func Timeout(agent messaging.Agent, m *messaging.Message) (time.Duration, bool) {
 	cfg := messaging.ConfigMapContent(m)
@@ -38,36 +37,39 @@ func AppHostName(agent messaging.Agent, m *messaging.Message) (string, bool) {
 	return hostName(agent, m, AppHostKey)
 }
 
-func Percentile(agent messaging.Agent, m *messaging.Message) (p timeseries.Percentile, ok bool) {
+func Threshold(agent messaging.Agent, m *messaging.Message) (latency int, ok bool) {
 	cfg := messaging.ConfigMapContent(m)
 	if cfg == nil {
 		messaging.Reply(m, messaging.ConfigEmptyStatusError(agent), agent.Uri())
-		return timeseries.Percentile{}, false
+		return -1, false
 	}
-	score := cfg[ScoreKey]
-	if score == "" {
-		messaging.Reply(m, messaging.ConfigContentStatusError(agent, ScoreKey), agent.Uri())
-		return timeseries.Percentile{}, false
-	}
-	var err error
-	p.Score, err = strconv.Atoi(score)
-	if err != nil {
-		messaging.Reply(m, messaging.ConfigContentStatusError(agent, ScoreKey), agent.Uri())
-		return timeseries.Percentile{}, false
-	}
+	/*
+		score := cfg[ScoreKey]
+		if score == "" {
+			messaging.Reply(m, messaging.ConfigContentStatusError(agent, ScoreKey), agent.Uri())
+			return timeseries.Percentile{}, false
+		}
+		var err error
+		p.Score, err = strconv.Atoi(score)
+		if err != nil {
+			messaging.Reply(m, messaging.ConfigContentStatusError(agent, ScoreKey), agent.Uri())
+			return timeseries.Percentile{}, false
+		}
 
-	latency := cfg[LatencyKey]
-	if latency == "" {
-		messaging.Reply(m, messaging.ConfigContentStatusError(agent, LatencyKey), agent.Uri())
-		return timeseries.Percentile{}, false
+
+	*/
+
+	s := cfg[ThresholdLatencyKey]
+	if s == "" {
+		messaging.Reply(m, messaging.ConfigContentStatusError(agent, ThresholdLatencyKey), agent.Uri())
+		return -1, false
 	}
-	dur, err1 := fmtx.ParseDuration(latency)
+	dur, err1 := fmtx.ParseDuration(s)
 	if err1 != nil {
-		messaging.Reply(m, messaging.ConfigContentStatusError(agent, LatencyKey), agent.Uri())
-		return timeseries.Percentile{}, false
+		messaging.Reply(m, messaging.ConfigContentStatusError(agent, ThresholdLatencyKey), agent.Uri())
+		return -1, false
 	}
-	p.Latency = fmtx.Milliseconds(dur)
-	return p, true
+	return fmtx.Milliseconds(dur), true
 }
 
 func hostName(agent messaging.Agent, m *messaging.Message, key string) (string, bool) {

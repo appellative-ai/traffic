@@ -6,6 +6,7 @@ import (
 	"github.com/behavioral-ai/collective/exchange"
 	"github.com/behavioral-ai/collective/timeseries"
 	"github.com/behavioral-ai/core/access"
+	"github.com/behavioral-ai/core/fmtx"
 	"github.com/behavioral-ai/core/httpx"
 	"github.com/behavioral-ai/core/messaging"
 	"github.com/behavioral-ai/traffic/config"
@@ -18,12 +19,13 @@ import (
 // NID + NSS
 // NamespaceName
 const (
-	NamespaceName   = "resiliency:agent/behavioral-ai/traffic/rate-limiting"
-	offPeakDuration = time.Minute * 5
-	peakDuration    = time.Minute * 2
-	defaultLimit    = rate.Limit(50)
-	defaultBurst    = 10
-	loadSize        = 200
+	NamespaceName    = "resiliency:agent/behavioral-ai/traffic/rate-limiting"
+	offPeakDuration  = time.Minute * 5
+	peakDuration     = time.Minute * 2
+	defaultLimit     = rate.Limit(50)
+	defaultBurst     = 10
+	loadSize         = 200
+	defaultThreshold = 3000 // milliseconds
 )
 
 type agentT struct {
@@ -31,8 +33,7 @@ type agentT struct {
 	enabled   bool
 	limiter   *rate.Limiter
 	events    *list
-	threshold timeseries.Percentile
-	actual    timeseries.Percentile
+	threshold int
 
 	ticker     *messaging.Ticker
 	master     *messaging.Channel
@@ -52,6 +53,7 @@ func newAgent(handler eventing.Agent) *agentT {
 	a.limiter = rate.NewLimiter(defaultLimit, defaultBurst)
 	a.handler = handler
 	a.events = newList()
+	a.threshold = defaultThreshold
 
 	a.ticker = messaging.NewTicker(messaging.ChannelEmissary, peakDuration)
 	a.master = messaging.NewMasterChannel()
@@ -109,6 +111,9 @@ func (a *agentT) Link(next httpx.Exchange) httpx.Exchange {
 			h := make(http.Header)
 			h.Add(access.XRateLimit, fmt.Sprintf("%v", a.limiter.Limit()))
 			h.Add(access.XRateBurst, fmt.Sprintf("%v", a.limiter.Burst()))
+			if a.enabled {
+				a.events.Enqueue(&event{Internal: true, UnixMS: start.UnixMilli(), Duration: time.Since(start), StatusCode: resp.StatusCode})
+			}
 			return &http.Response{StatusCode: http.StatusTooManyRequests, Header: h}, nil
 		}
 		if next != nil {
@@ -138,6 +143,10 @@ func (a *agentT) masterShutdown() {
 	a.master.Close()
 }
 
+func (a *agentT) bucket() int {
+	return fmtx.Milliseconds(a.ticker.Duration())
+}
+
 func (a *agentT) reviseTicker(cnt int) {
 	var (
 		newDuration time.Duration
@@ -162,10 +171,10 @@ func (a *agentT) configure(m *messaging.Message) {
 	switch m.ContentType() {
 	case messaging.ContentTypeMap:
 		var ok bool
-		if a.threshold, ok = config.Percentile(a, m); !ok {
+		if a.threshold, ok = config.Threshold(a, m); !ok {
+			a.threshold = defaultThreshold
 			return
 		}
-		a.actual.Score = a.threshold.Score
 	case messaging.ContentTypeDispatcher:
 		if dispatcher, ok := messaging.DispatcherContent(m); ok {
 			a.dispatcher = dispatcher
