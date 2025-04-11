@@ -3,6 +3,7 @@ package limiter
 import (
 	"github.com/behavioral-ai/collective/timeseries"
 	"github.com/behavioral-ai/core/messaging"
+	"time"
 )
 
 const (
@@ -13,6 +14,7 @@ const (
 // Q: Do we need percentage of status code 429?
 // A: No, any status code 429, given a stable service, needs to lead to an increase in the rate
 type stats struct {
+	unixMS      int64
 	gradiant    float64
 	timeToLive  int                   // milliseconds
 	intervals   int                   // number of intervals until reaching threshold
@@ -60,7 +62,7 @@ func masterAttend(agent *agentT, ts *timeseries.Interface) {
 }
 
 func newStats(agent *agentT, ts *timeseries.Interface, m metrics) stats {
-	s := stats{centile: timeseries.Percentile{Score: defaultScore}, status429: m.Status429}
+	s := stats{unixMS: time.Now().UTC().UnixMilli(), centile: timeseries.Percentile{Score: defaultScore}, status429: m.Status429}
 
 	// run statics calculations
 	alpha, _ := ts.LinearRegression(m.Regression.X, m.Regression.Y, m.Regression.Weights, m.Regression.Origin)
