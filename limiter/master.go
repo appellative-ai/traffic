@@ -13,12 +13,12 @@ const (
 // Q: Do we need percentage of status code 429?
 // A: No, any status code 429, given a stable service, needs to lead to an increase in the rate
 type stats struct {
-	gradiant   float64
-	timeToLive int                   // milliseconds
-	intervals  int                   // number of intervals until reaching threshold
-	centile    timeseries.Percentile // 99th percentile in milliseconds
-	status429  int                   // count of status code 429.
-	newLimit   float64
+	gradiant    float64
+	timeToLive  int                   // milliseconds
+	intervals   int                   // number of intervals until reaching threshold
+	centile     timeseries.Percentile // 99th percentile in milliseconds
+	status429   int                   // count of status code 429.
+	limitChange int                   // + or - percentage change
 }
 
 // master attention
