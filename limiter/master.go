@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	defaultScore = 99
+	defaultScore = float64(99.0)
 )
 
 // TODO : need to create a history of metrics + actions.
@@ -16,11 +16,11 @@ const (
 type stats struct {
 	unixMS      int64
 	gradiant    float64
-	timeToLive  int                   // milliseconds
-	intervals   int                   // number of intervals until reaching threshold
-	centile     timeseries.Percentile // 99th percentile in milliseconds
-	status429   int                   // count of status code 429.
-	limitChange int                   // + or - percentage change
+	timeToLive  int     // milliseconds
+	intervals   int     // number of intervals until reaching threshold
+	latency     float64 // 99th percentile in milliseconds
+	status429   int     // count of status code 429.
+	limitChange int     // + or - percentage change
 }
 
 // master attention
@@ -62,12 +62,12 @@ func masterAttend(agent *agentT, ts *timeseries.Interface) {
 }
 
 func newStats(agent *agentT, ts *timeseries.Interface, m metrics) stats {
-	s := stats{unixMS: time.Now().UTC().UnixMilli(), centile: timeseries.Percentile{Score: defaultScore}, status429: m.status429}
+	s := stats{unixMS: time.Now().UTC().UnixMilli(), status429: m.status429}
 
 	// run statics calculations
 	alpha, _ := ts.LinearRegression(m.regression.x, m.regression.y, m.regression.weights, m.regression.origin)
 	s.gradiant = alpha
-	ts.Percentile(m.regression.x, m.regression.weights, false, &s.centile)
+	s.latency = ts.Percentile(m.regression.x, m.regression.weights, false, defaultScore)
 	// TODO : calculate timeToLive, intervals.
 	return s
 }

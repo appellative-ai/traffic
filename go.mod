@@ -5,8 +5,8 @@ go 1.23.0
 //toolchain go1.23.7
 
 require (
-	github.com/behavioral-ai/collective v0.0.0-20250411100138-7e8bda7f11e5
-	github.com/behavioral-ai/core v0.0.0-20250410133412-246780ea9b8b
+	github.com/behavioral-ai/collective v0.0.0-20250412124327-fd9a63ef30c2
+	github.com/behavioral-ai/core v0.0.0-20250411142906-650fb3db3312
 	github.com/dustinxie/lockfree v0.0.0-20210712051436-ed0ed42fd0d6
 	golang.org/x/time v0.11.0
 )

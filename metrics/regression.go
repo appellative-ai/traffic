@@ -1,7 +1,5 @@
 package metrics
 
-import "github.com/behavioral-ai/collective/timeseries"
-
 type RegressionSample struct {
 	X       []float64
 	Y       []float64
@@ -9,6 +7,6 @@ type RegressionSample struct {
 	Origin  bool
 }
 
-func (p *RegressionSample) Update(event *timeseries.Event) {
+func (p *RegressionSample) Update(event *Event) {
 	p.Y = append(p.Y, float64(event.Duration))
 }

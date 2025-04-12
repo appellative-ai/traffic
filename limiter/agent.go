@@ -7,8 +7,8 @@ import (
 	"github.com/behavioral-ai/collective/timeseries"
 	"github.com/behavioral-ai/core/access"
 	"github.com/behavioral-ai/core/fmtx"
-	"github.com/behavioral-ai/core/httpx"
 	"github.com/behavioral-ai/core/messaging"
+	"github.com/behavioral-ai/core/rest"
 	"github.com/behavioral-ai/traffic/config"
 	"golang.org/x/time/rate"
 	"net/http"
@@ -104,7 +104,7 @@ func (a *agentT) run() {
 }
 
 // Link - chainable exchange
-func (a *agentT) Link(next httpx.Exchange) httpx.Exchange {
+func (a *agentT) Link(next rest.Exchange) rest.Exchange {
 	return func(req *http.Request) (resp *http.Response, err error) {
 		start := time.Now().UTC()
 		if !a.limiter.Allow() {

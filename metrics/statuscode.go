@@ -1,7 +1,6 @@
 package metrics
 
 import (
-	"github.com/behavioral-ai/collective/timeseries"
 	"net/http"
 )
 
@@ -13,7 +12,7 @@ type StatusCodeSample struct {
 	Status5xx int
 }
 
-func (s *StatusCodeSample) Update(event *timeseries.Event) {
+func (s *StatusCodeSample) Update(event *Event) {
 	if event.StatusCode >= http.StatusOK && event.StatusCode < http.StatusMultipleChoices {
 		s.Status2xx++
 		return

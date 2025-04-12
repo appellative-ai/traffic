@@ -6,6 +6,7 @@ import (
 	"github.com/behavioral-ai/collective/exchange"
 	"github.com/behavioral-ai/core/httpx"
 	"github.com/behavioral-ai/core/messaging"
+	"github.com/behavioral-ai/core/rest"
 	"github.com/behavioral-ai/traffic/config"
 	"net/http"
 	"time"
@@ -30,7 +31,7 @@ type agentT struct {
 	hostName string
 	timeout  time.Duration
 
-	exchange httpx.Exchange
+	exchange rest.Exchange
 
 	ticker     *messaging.Ticker
 	emissary   *messaging.Channel
@@ -110,7 +111,7 @@ func (a *agentT) enabled() bool {
 }
 
 // Link - chainable exchange
-func (a *agentT) Link(next httpx.Exchange) httpx.Exchange {
+func (a *agentT) Link(next rest.Exchange) rest.Exchange {
 	return func(req *http.Request) (resp *http.Response, err error) {
 		// TODO: if a redirect is configured, then process and ignore rest of pipeline
 		if a.enabled() {
