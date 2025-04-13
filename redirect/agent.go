@@ -113,16 +113,12 @@ func (a *agentT) enabled() bool {
 // Link - chainable exchange
 func (a *agentT) Link(next rest.Exchange) rest.Exchange {
 	return func(req *http.Request) (resp *http.Response, err error) {
-		// TODO: if a redirect is configured, then process and ignore rest of pipeline
+		nextReq := req
+
+		// If redirect is enabled, then create new next request
 		if a.enabled() {
-			return okResponse, nil
 		}
-		if next != nil {
-			resp, err = next(req)
-		} else {
-			resp = &http.Response{StatusCode: http.StatusOK}
-		}
-		return
+		return next(nextReq)
 	}
 }
 

@@ -116,11 +116,7 @@ func (a *agentT) Link(next rest.Exchange) rest.Exchange {
 			}
 			return &http.Response{StatusCode: http.StatusTooManyRequests, Header: h}, nil
 		}
-		if next != nil {
-			resp, err = next(req)
-		} else {
-			resp = &http.Response{StatusCode: http.StatusOK}
-		}
+		resp, err = next(req)
 		if a.enabled {
 			a.events.Enqueue(&event{unixMS: start.UnixMilli(), duration: time.Since(start), statusCode: resp.StatusCode})
 		}
