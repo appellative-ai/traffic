@@ -1,47 +1,17 @@
 package config
 
-type StatusCode struct {
-	MaxFailures int
-	Failures    int
-	Status2xx   int
-	Status4xx   int
-	Status5xx   int
-}
-
-func (s *StatusCode) Failed() bool {
-	return s.Failures >= s.MaxFailures
-}
-
-func (s *StatusCode) AddFailure() {
-	s.Failures++
-}
-
-type Percentile struct {
-	MaxFailures int
-	Failures    int
-	Score       int
-	Latency     int // milliseconds
-}
-
-func (p *Percentile) Failed() bool {
-	return p.Failures >= p.MaxFailures
-}
-
-func (p *Percentile) AddFailure() {
-	p.Failures++
-}
-
+// Redirect - configuration
 type Redirect struct {
 	OriginalPath string
 	NewPath      string
-	Codes        *StatusCode
-	Latency      *Percentile
+	Codes        *StatusCodeThreshold
+	Latency      *PercentileThreshold
 }
 
 func NewRedirect() *Redirect {
 	r := new(Redirect)
-	r.Codes = new(StatusCode)
-	r.Latency = new(Percentile)
+	r.Codes = new(StatusCodeThreshold)
+	r.Latency = new(PercentileThreshold)
 	return r
 }
 
@@ -51,4 +21,41 @@ func (r *Redirect) Enabled() bool {
 
 func (r *Redirect) Failed() bool {
 	return r.Latency.Failed() || r.Codes.Failed()
+}
+
+// StatusCodeThreshold - redirect status code thresholds
+type StatusCodeThreshold struct {
+	MaxFailures int
+	Failures    int
+	Status2xx   int
+	Status4xx   int
+	Status5xx   int
+}
+
+// Failed - threshold has been exceeded
+func (s *StatusCodeThreshold) Failed() bool {
+	return s.Failures >= s.MaxFailures
+}
+
+// AddFailure - add a failure
+func (s *StatusCodeThreshold) AddFailure() {
+	s.Failures++
+}
+
+// PercentileThreshold - redirect configured latency threshold
+type PercentileThreshold struct {
+	MaxFailures int
+	Failures    int
+	Score       int
+	Latency     int // milliseconds
+}
+
+// Failed - latency threshold exceeded
+func (p *PercentileThreshold) Failed() bool {
+	return p.Failures >= p.MaxFailures
+}
+
+// AddFailure - add a failure
+func (p *PercentileThreshold) AddFailure() {
+	p.Failures++
 }
