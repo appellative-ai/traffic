@@ -4,10 +4,10 @@ import (
 	"github.com/behavioral-ai/collective/content"
 	"github.com/behavioral-ai/collective/eventing"
 	"github.com/behavioral-ai/collective/exchange"
-	"github.com/behavioral-ai/core/httpx"
 	"github.com/behavioral-ai/core/messaging"
 	"github.com/behavioral-ai/core/rest"
 	"github.com/behavioral-ai/traffic/config"
+	"golang.org/x/time/rate"
 	"net/http"
 	"time"
 )
@@ -17,21 +17,16 @@ import (
 // NamespaceName
 const (
 	NamespaceName = "resiliency:agent/behavioral-ai/traffic/redirect"
-	minDuration   = time.Second * 10
-	maxDuration   = time.Second * 15
-	version       = 1
-)
-
-var (
-	okResponse = httpx.NewResponse(http.StatusOK, nil, nil)
+	maxDuration   = time.Minute * 2
+	defaultLimit  = rate.Limit(50)
+	defaultBurst  = 10
 )
 
 type agentT struct {
 	running  bool
-	hostName string
-	timeout  time.Duration
-
-	exchange rest.Exchange
+	events   *list
+	limiter  *rate.Limiter
+	redirect *config.Redirect
 
 	ticker     *messaging.Ticker
 	emissary   *messaging.Channel
@@ -48,12 +43,14 @@ func init() {
 
 func newAgent(handler eventing.Agent) *agentT {
 	a := new(agentT)
-	a.exchange = httpx.Do
-	a.handler = handler
+	a.limiter = rate.NewLimiter(defaultLimit, defaultBurst)
+	a.events = newList()
+	a.redirect = config.NewRedirect()
+
 	a.ticker = messaging.NewTicker(messaging.ChannelEmissary, maxDuration)
 	a.emissary = messaging.NewEmissaryChannel()
 	a.master = messaging.NewMasterChannel()
-
+	a.handler = handler
 	return a
 }
 
@@ -98,27 +95,36 @@ func (a *agentT) Message(m *messaging.Message) {
 
 // Run - run the agent
 func (a *agentT) run() {
-	if a.running {
-		return
-	}
 	go masterAttend(a, content.Resolver)
 	go emissaryAttend(a, content.Resolver, nil)
-	a.running = true
 }
 
 func (a *agentT) enabled() bool {
-	return false
+	if !a.redirect.Enabled() {
+		return false
+	}
+	if a.redirect.Failed() {
+		return false
+	}
+	if !a.limiter.Allow() {
+		return false
+	}
+	return true
 }
 
 // Link - chainable exchange
 func (a *agentT) Link(next rest.Exchange) rest.Exchange {
 	return func(req *http.Request) (resp *http.Response, err error) {
-		nextReq := req
-
-		// If redirect is enabled, then create new next request
-		if a.enabled() {
+		if !a.enabled() {
+			return next(req)
 		}
-		return next(nextReq)
+		var (
+			start  = time.Now().UTC()
+			newReq = req
+		)
+		resp, err = next(newReq)
+		a.events.Enqueue(&event{duration: time.Since(start), statusCode: resp.StatusCode})
+		return
 	}
 }
 
@@ -126,9 +132,6 @@ func (a *agentT) dispatch(channel any, event string) {
 	if a.dispatcher != nil {
 		a.dispatcher.Dispatch(a, channel, event)
 	}
-}
-
-func (a *agentT) reviseTicker(resolver *content.Resolution, s messaging.Spanner) {
 }
 
 func (a *agentT) emissaryShutdown() {
@@ -140,6 +143,7 @@ func (a *agentT) masterShutdown() {
 	a.master.Close()
 }
 
+// TODO : need to configure current and redirect URL's
 func (a *agentT) configure(m *messaging.Message) {
 	switch m.ContentType() {
 	case messaging.ContentTypeDispatcher:
@@ -147,13 +151,16 @@ func (a *agentT) configure(m *messaging.Message) {
 			a.dispatcher = dispatcher
 		}
 	case messaging.ContentTypeMap:
-		var ok bool
-		if a.hostName, ok = config.AppHostName(a, m); !ok {
-			return
-		}
-		if a.timeout, ok = config.Timeout(a, m); !ok {
-			return
-		}
+		/*
+			var ok bool
+			if a.hostName, ok = config.AppHostName(a, m); !ok {
+				return
+			}
+			if a.timeout, ok = config.Timeout(a, m); !ok {
+				return
+			}
+
+		*/
 	}
 	messaging.Reply(m, messaging.StatusOK(), a.Uri())
 }

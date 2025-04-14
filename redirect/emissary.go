@@ -7,16 +7,18 @@ import (
 
 // emissary attention
 func emissaryAttend(agent *agentT, resolver *content.Resolution, s messaging.Spanner) {
-	agent.dispatch(agent.emissary, messaging.StartupEvent)
+	//agent.dispatch(agent.emissary, messaging.StartupEvent)
 	paused := false
-	agent.reviseTicker(resolver, s)
 
 	for {
 		select {
 		case <-agent.ticker.C():
-			//agent.dispatch(agent.ticker, messaging.ObservationEvent)
 			if !paused {
-				agent.reviseTicker(resolver, s)
+				m := newMetrics()
+				for e := agent.events.Dequeue(); e != nil; {
+					m.update(e)
+				}
+				agent.Message(newMetricsMessage(*m))
 			}
 		default:
 		}

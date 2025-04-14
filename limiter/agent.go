@@ -51,13 +51,13 @@ func init() {
 func newAgent(handler eventing.Agent) *agentT {
 	a := new(agentT)
 	a.limiter = rate.NewLimiter(defaultLimit, defaultBurst)
-	a.handler = handler
 	a.events = newList()
 	a.threshold = defaultThreshold
 
 	a.ticker = messaging.NewTicker(messaging.ChannelEmissary, peakDuration)
 	a.master = messaging.NewMasterChannel()
 	a.emissary = messaging.NewEmissaryChannel()
+	a.handler = handler
 	return a
 }
 

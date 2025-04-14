@@ -1,22 +1,27 @@
 package redirect
 
 import (
-	"github.com/behavioral-ai/collective/content"
+	"github.com/behavioral-ai/collective/timeseries"
 	"github.com/behavioral-ai/core/messaging"
 )
 
 // master attention
-func masterAttend(agent *agentT, resolver *content.Resolution) {
+func masterAttend(agent *agentT, ts *timeseries.Interface) {
 	agent.dispatch(agent.master, messaging.StartupEvent)
 	paused := false
-	if paused {
-	}
 
 	for {
 		select {
 		case msg := <-agent.master.C:
 			agent.dispatch(agent.master, msg.Event())
 			switch msg.Event() {
+			case metricsEvent:
+				if !paused {
+					if m, ok := metricsContent(msg); ok {
+						updateRedirect(agent, ts, m)
+						//history = append(history, s)
+					}
+				}
 			case messaging.PauseEvent:
 				paused = true
 			case messaging.ResumeEvent:
@@ -29,4 +34,11 @@ func masterAttend(agent *agentT, resolver *content.Resolution) {
 		default:
 		}
 	}
+}
+
+func updateRedirect(agent *agentT, ts *timeseries.Interface, m metrics) {
+
+	ts.Percentile(m.x, m.weights, false, float64(agent.redirect.Latency.Score))
+	// TODO : calculate timeToLive, intervals.
+	//return s
 }
