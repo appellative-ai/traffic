@@ -1,8 +1,8 @@
 package redirect
 
 import (
-	"github.com/behavioral-ai/collective/content"
 	"github.com/behavioral-ai/collective/eventing/eventtest"
+	"github.com/behavioral-ai/collective/timeseries"
 	"github.com/behavioral-ai/core/messaging"
 	"time"
 )
@@ -12,7 +12,7 @@ func _ExampleMaster() {
 	agent := newAgent(eventtest.New())
 
 	go func() {
-		go masterAttend(agent, content.Resolver)
+		go masterAttend(agent, timeseries.Functions)
 
 		agent.Message(messaging.NewMessage(messaging.ChannelMaster, messaging.PauseEvent))
 		agent.Message(messaging.NewMessage(messaging.ChannelMaster, messaging.ResumeEvent))
@@ -40,7 +40,7 @@ func _ExampleMaster_Observation() {
 	agent := newAgent(eventtest.New())
 
 	go func() {
-		go masterAttend(agent, content.Resolver)
+		go masterAttend(agent, timeseries.Functions)
 		//agent.Message(msg)
 		//time.Sleep(testDuration * 2)
 

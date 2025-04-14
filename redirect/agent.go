@@ -1,9 +1,9 @@
 package redirect
 
 import (
-	"github.com/behavioral-ai/collective/content"
 	"github.com/behavioral-ai/collective/eventing"
 	"github.com/behavioral-ai/collective/exchange"
+	"github.com/behavioral-ai/collective/timeseries"
 	"github.com/behavioral-ai/core/messaging"
 	"github.com/behavioral-ai/core/rest"
 	"github.com/behavioral-ai/traffic/config"
@@ -95,8 +95,8 @@ func (a *agentT) Message(m *messaging.Message) {
 
 // Run - run the agent
 func (a *agentT) run() {
-	go masterAttend(a, content.Resolver)
-	go emissaryAttend(a, content.Resolver, nil)
+	go masterAttend(a, timeseries.Functions)
+	go emissaryAttend(a)
 }
 
 func (a *agentT) enabled() bool {

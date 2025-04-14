@@ -1,13 +1,11 @@
 package redirect
 
 import (
-	"github.com/behavioral-ai/collective/content"
 	"github.com/behavioral-ai/core/messaging"
 )
 
 // emissary attention
-func emissaryAttend(agent *agentT, resolver *content.Resolution, s messaging.Spanner) {
-	//agent.dispatch(agent.emissary, messaging.StartupEvent)
+func emissaryAttend(agent *agentT) {
 	paused := false
 
 	for {

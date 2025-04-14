@@ -2,33 +2,30 @@ package redirect
 
 import (
 	"fmt"
-	"github.com/behavioral-ai/collective/content"
 	"github.com/behavioral-ai/collective/eventing/eventtest"
+	"github.com/behavioral-ai/collective/timeseries"
 	"github.com/behavioral-ai/core/messaging"
-	"github.com/behavioral-ai/core/messaging/messagingtest"
 	"time"
 )
 
 func ExampleNewAgent() {
 	a := newAgent(eventtest.New())
-	a.hostName = "localhost:8080"
-	fmt.Printf("test: newAgent() -> [host:%v] [uri:%v}\n", a.hostName, a.Uri())
+
+	fmt.Printf("test: newAgent() -> [uri:%v}\n", a.Uri())
 
 	//Output:
-	//test: newAgent() -> [host:localhost:8080] [uri:resiliency:agent/behavioral-ai/traffic/redirect}
+	//test: newAgent() -> [uri:resiliency:agent/behavioral-ai/traffic/redirect}
 
 }
 
 func _ExampleAgent_LoadContent() {
 	ch := make(chan struct{})
-	s := messagingtest.NewTestSpanner(time.Second*2, testDuration)
-	//test.LoadResiliencyContent()
 	agent := newAgent(eventtest.New())
 	agent.dispatcher = messaging.NewTraceDispatcher()
 
 	go func() {
-		go masterAttend(agent, content.Resolver)
-		go emissaryAttend(agent, content.Resolver, s)
+		go masterAttend(agent, timeseries.Functions)
+		go emissaryAttend(agent)
 		time.Sleep(testDuration * 5)
 
 		agent.Message(messaging.ShutdownMessage)
