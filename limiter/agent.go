@@ -33,6 +33,7 @@ type agentT struct {
 	enabled   bool
 	limiter   *rate.Limiter
 	events    *list
+	timeout   time.Duration
 	threshold int
 
 	ticker     *messaging.Ticker
@@ -144,9 +145,7 @@ func (a *agentT) bucket() int {
 }
 
 func (a *agentT) reviseTicker(cnt int) {
-	var (
-		newDuration time.Duration
-	)
+	var newDuration time.Duration
 
 	if cnt == loadSize {
 		return
@@ -167,10 +166,18 @@ func (a *agentT) configure(m *messaging.Message) {
 	switch m.ContentType() {
 	case messaging.ContentTypeMap:
 		var ok bool
-		if a.threshold, ok = config.Threshold(a, m); !ok {
-			a.threshold = defaultThreshold
+
+		if a.timeout, ok = config.Timeout(a, m); !ok {
 			return
 		}
+		/*
+			var ok bool
+			if a.threshold, ok = config.Threshold(a, m); !ok {
+				a.threshold = defaultThreshold
+				return
+			}
+
+		*/
 	case messaging.ContentTypeDispatcher:
 		if dispatcher, ok := messaging.DispatcherContent(m); ok {
 			a.dispatcher = dispatcher
