@@ -5,7 +5,7 @@ import (
 	"github.com/behavioral-ai/collective/eventing"
 	"github.com/behavioral-ai/collective/exchange"
 	"github.com/behavioral-ai/collective/timeseries"
-	"github.com/behavioral-ai/core/access"
+	"github.com/behavioral-ai/core/access2"
 	"github.com/behavioral-ai/core/fmtx"
 	"github.com/behavioral-ai/core/messaging"
 	"github.com/behavioral-ai/core/rest"
@@ -110,8 +110,8 @@ func (a *agentT) Link(next rest.Exchange) rest.Exchange {
 		start := time.Now().UTC()
 		if !a.limiter.Allow() {
 			h := make(http.Header)
-			h.Add(access.XRateLimit, fmt.Sprintf("%v", a.limiter.Limit()))
-			h.Add(access.XRateBurst, fmt.Sprintf("%v", a.limiter.Burst()))
+			h.Add(access2.XRateLimit, fmt.Sprintf("%v", a.limiter.Limit()))
+			h.Add(access2.XRateBurst, fmt.Sprintf("%v", a.limiter.Burst()))
 			if a.enabled {
 				a.events.Enqueue(&event{internal: true, unixMS: start.UnixMilli(), duration: time.Since(start), statusCode: resp.StatusCode})
 			}
