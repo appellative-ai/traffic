@@ -3,10 +3,10 @@ package redirect
 import (
 	"github.com/behavioral-ai/collective/eventing"
 	"github.com/behavioral-ai/collective/exchange"
-	"github.com/behavioral-ai/collective/timeseries"
 	"github.com/behavioral-ai/core/messaging"
 	"github.com/behavioral-ai/core/rest"
 	"github.com/behavioral-ai/traffic/config"
+	"github.com/behavioral-ai/traffic/timeseries"
 	"golang.org/x/time/rate"
 	"net/http"
 	"time"

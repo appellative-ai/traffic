@@ -2,8 +2,8 @@ package redirect
 
 import (
 	"github.com/behavioral-ai/collective/eventing/eventtest"
-	"github.com/behavioral-ai/collective/timeseries"
 	"github.com/behavioral-ai/core/messaging"
+	"github.com/behavioral-ai/traffic/timeseries"
 	"time"
 )
 
