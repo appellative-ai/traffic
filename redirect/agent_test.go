@@ -11,10 +11,10 @@ import (
 func ExampleNewAgent() {
 	a := newAgent(eventtest.New())
 
-	fmt.Printf("test: newAgent() -> [uri:%v}\n", a.Uri())
+	fmt.Printf("test: newAgent() -> [%v}\n", a.Uri())
 
 	//Output:
-	//test: newAgent() -> [uri:resiliency:agent/behavioral-ai/traffic/redirect}
+	//test: newAgent() -> [unn:behavioral-ai.github.com:resiliency:agent/traffic/redirect}
 
 }
 

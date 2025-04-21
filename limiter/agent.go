@@ -19,7 +19,7 @@ import (
 // NID + NSS
 // NamespaceName
 const (
-	NamespaceName    = "resiliency:agent/behavioral-ai/traffic/rate-limiting"
+	NamespaceName    = "unn:behavioral-ai.github.com:resiliency:agent/traffic/rate-limiting"
 	offPeakDuration  = time.Minute * 5
 	peakDuration     = time.Minute * 2
 	defaultLimit     = rate.Limit(50)

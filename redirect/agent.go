@@ -16,7 +16,7 @@ import (
 // NID + NSS
 // NamespaceName
 const (
-	NamespaceName = "resiliency:agent/behavioral-ai/traffic/redirect"
+	NamespaceName = "unn:behavioral-ai.github.com:resiliency:agent/traffic/redirect"
 	maxDuration   = time.Minute * 2
 	defaultLimit  = rate.Limit(50)
 	defaultBurst  = 10

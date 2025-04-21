@@ -7,7 +7,7 @@ import (
 
 func ExampleNewAgent() {
 	a := newAgent(eventtest.New())
-	fmt.Printf("test: newAgent() -> [limiter:%v] [burst:%v] [uri:%v}\n", a.limiter.Limit(), a.limiter.Burst(), a.Uri())
+	fmt.Printf("test: newAgent() -> [limiter:%v] [burst:%v] [%v}\n", a.limiter.Limit(), a.limiter.Burst(), a.Uri())
 
 	//agent := agentT{}
 	//t := reflect.TypeOf(agent)
@@ -17,7 +17,7 @@ func ExampleNewAgent() {
 	//fmt.Printf("test: New() -> [%v] [name:%v] [path:%v] [kind:%v]\n", t, t.Name(), t.PkgPath(), t.Kind())
 
 	//Output:
-	//test: newAgent() -> [limiter:50] [burst:10] [uri:resiliency:agent/behavioral-ai/traffic/rate-limiting}
+	//test: newAgent() -> [limiter:50] [burst:10] [unn:behavioral-ai.github.com:resiliency:agent/traffic/rate-limiting}
 
 }
 
