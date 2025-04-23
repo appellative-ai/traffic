@@ -5,31 +5,31 @@ import (
 )
 
 // emissary attention
-func emissaryAttend(agent *agentT) {
+func emissaryAttend(a *agentT) {
 	paused := false
 
 	for {
 		select {
-		case <-agent.ticker.C():
+		case <-a.ticker.C():
 			if !paused {
 				m := newMetrics()
-				for e := agent.events.Dequeue(); e != nil; {
+				for e := a.events.Dequeue(); e != nil; {
 					m.update(e)
 				}
-				agent.Message(newMetricsMessage(*m))
+				a.Message(newMetricsMessage(*m))
 			}
 		default:
 		}
 		select {
-		case msg := <-agent.emissary.C:
-			agent.dispatch(agent.emissary, msg.Event())
+		case msg := <-a.emissary.C:
+			a.dispatch(a.emissary, msg.Event())
 			switch msg.Event() {
 			case messaging.PauseEvent:
 				paused = true
 			case messaging.ResumeEvent:
 				paused = false
 			case messaging.ShutdownEvent:
-				agent.emissaryShutdown()
+				a.emissaryShutdown()
 				return
 			default:
 			}

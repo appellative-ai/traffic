@@ -6,19 +6,19 @@ import (
 )
 
 // master attention
-func masterAttend(agent *agentT, ts *timeseries.Interface) {
-	agent.dispatch(agent.master, messaging.StartupEvent)
+func masterAttend(a *agentT, ts *timeseries.Interface) {
+	a.dispatch(a.master, messaging.StartupEvent)
 	paused := false
 
 	for {
 		select {
-		case msg := <-agent.master.C:
-			agent.dispatch(agent.master, msg.Event())
+		case msg := <-a.master.C:
+			a.dispatch(a.master, msg.Event())
 			switch msg.Event() {
 			case metricsEvent:
 				if !paused {
 					if m, ok := metricsContent(msg); ok {
-						updateRedirect(agent, ts, m)
+						updateRedirect(a, ts, m)
 						//history = append(history, s)
 					}
 				}
@@ -27,7 +27,7 @@ func masterAttend(agent *agentT, ts *timeseries.Interface) {
 			case messaging.ResumeEvent:
 				paused = false
 			case messaging.ShutdownEvent:
-				agent.masterShutdown()
+				a.masterShutdown()
 				return
 			default:
 			}

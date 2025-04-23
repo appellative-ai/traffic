@@ -24,20 +24,20 @@ type stats struct {
 }
 
 // master attention
-func masterAttend(agent *agentT, ts *timeseries.Interface) {
-	agent.dispatch(agent.master, messaging.StartupEvent)
+func masterAttend(a *agentT, ts *timeseries.Interface) {
+	a.dispatch(a.master, messaging.StartupEvent)
 	paused := false
 	var history []stats
 
 	for {
 		select {
-		case m := <-agent.master.C:
-			agent.dispatch(agent.master, m.Event())
+		case m := <-a.master.C:
+			a.dispatch(a.master, m.Event())
 			switch m.Event() {
 			case metricsEvent:
 				if !paused {
 					if ms, ok := metricsContent(m); ok {
-						s := newStats(agent, ts, ms)
+						s := newStats(a, ts, ms)
 						// TODO : determine action
 						// If the alpha is less than one, then determine if we need to increase the rate limiting
 						// based on the internal generated 429.
@@ -52,7 +52,7 @@ func masterAttend(agent *agentT, ts *timeseries.Interface) {
 			case messaging.ResumeEvent:
 				paused = false
 			case messaging.ShutdownEvent:
-				agent.masterShutdown()
+				a.masterShutdown()
 				return
 			default:
 			}
