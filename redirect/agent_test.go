@@ -2,7 +2,7 @@ package redirect
 
 import (
 	"fmt"
-	"github.com/behavioral-ai/collective/eventing/eventtest"
+	"github.com/behavioral-ai/core/eventing/eventtest"
 	"github.com/behavioral-ai/core/messaging"
 	"github.com/behavioral-ai/traffic/timeseries"
 	"time"
@@ -14,7 +14,7 @@ func ExampleNewAgent() {
 	fmt.Printf("test: newAgent() -> [%v}\n", a.Uri())
 
 	//Output:
-	//test: newAgent() -> [unn:behavioral-ai.github.com:resiliency:agent/traffic/redirect}
+	//test: newAgent() -> [resiliency:agent/traffic/redirect}
 
 }
 

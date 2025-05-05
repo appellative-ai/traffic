@@ -1,7 +1,7 @@
 package limiter
 
 import (
-	"github.com/behavioral-ai/collective/eventing/eventtest"
+	"github.com/behavioral-ai/core/eventing/eventtest"
 	"github.com/behavioral-ai/core/messaging"
 	"time"
 )

@@ -2,7 +2,7 @@ package limiter
 
 import (
 	"fmt"
-	"github.com/behavioral-ai/collective/eventing/eventtest"
+	"github.com/behavioral-ai/core/eventing/eventtest"
 )
 
 func ExampleNewAgent() {
@@ -17,7 +17,7 @@ func ExampleNewAgent() {
 	//fmt.Printf("test: New() -> [%v] [name:%v] [path:%v] [kind:%v]\n", t, t.Name(), t.PkgPath(), t.Kind())
 
 	//Output:
-	//test: newAgent() -> [limiter:50] [burst:10] [unn:behavioral-ai.github.com:resiliency:agent/traffic/rate-limiting}
+	//test: newAgent() -> [limiter:50] [burst:10] [resiliency:agent/traffic/rate-limiting}
 
 }
 

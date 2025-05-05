@@ -2,10 +2,10 @@ package limiter
 
 import (
 	"fmt"
-	"github.com/behavioral-ai/collective/eventing"
-	"github.com/behavioral-ai/collective/exchange"
 	"github.com/behavioral-ai/core/access2"
+	"github.com/behavioral-ai/core/eventing"
 	"github.com/behavioral-ai/core/fmtx"
+	"github.com/behavioral-ai/core/host"
 	"github.com/behavioral-ai/core/messaging"
 	"github.com/behavioral-ai/core/rest"
 	"github.com/behavioral-ai/traffic/config"
@@ -19,7 +19,7 @@ import (
 // NID + NSS
 // NamespaceName
 const (
-	NamespaceName    = "unn:behavioral-ai.github.com:resiliency:agent/traffic/rate-limiting"
+	NamespaceName    = "resiliency:agent/traffic/rate-limiting"
 	offPeakDuration  = time.Minute * 5
 	peakDuration     = time.Minute * 2
 	defaultLimit     = rate.Limit(50)
@@ -46,7 +46,7 @@ type agentT struct {
 // New - create a new agent
 func init() {
 	a := newAgent(eventing.Handler)
-	exchange.Register(a)
+	host.Register(a)
 }
 
 func newAgent(handler eventing.Agent) *agentT {
