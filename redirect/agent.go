@@ -16,7 +16,7 @@ import (
 // NID + NSS
 // NamespaceName
 const (
-	NamespaceName = "resiliency:agent/request/redirect"
+	NamespaceName = "resiliency:agent/redirect/request/http"
 	maxDuration   = time.Minute * 2
 	defaultLimit  = rate.Limit(50)
 	defaultBurst  = 10

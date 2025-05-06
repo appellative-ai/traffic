@@ -19,7 +19,7 @@ import (
 // NID + NSS
 // NamespaceName
 const (
-	NamespaceName    = "resiliency:agent/request/rate-limiting"
+	NamespaceName    = "resiliency:agent/rate-limiting/request/http"
 	offPeakDuration  = time.Minute * 5
 	peakDuration     = time.Minute * 2
 	defaultLimit     = rate.Limit(50)

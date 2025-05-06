@@ -1,6 +1,6 @@
 package urn
 
 const (
-	LimiterAgent  = "resiliency:agent/request/rate-limiting"
-	RedirectAgent = "resiliency:agent/request/redirect"
+	LimiterAgent  = "resiliency:agent/rate-limiting/request/http"
+	RedirectAgent = "resiliency:agent/redirect/request/http"
 )

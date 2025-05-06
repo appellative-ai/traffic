@@ -14,7 +14,7 @@ func ExampleNewAgent() {
 	fmt.Printf("test: newAgent() -> [%v}\n", a.Uri())
 
 	//Output:
-	//test: newAgent() -> [resiliency:agent/request/redirect}
+	//test: newAgent() -> [resiliency:agent/redirect/request/http}
 
 }
 
