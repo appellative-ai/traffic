@@ -1,8 +1,8 @@
 package redirect
 
 import (
+	"github.com/behavioral-ai/collective/repository"
 	"github.com/behavioral-ai/core/eventing"
-	"github.com/behavioral-ai/core/host"
 	"github.com/behavioral-ai/core/messaging"
 	"github.com/behavioral-ai/core/rest"
 	"github.com/behavioral-ai/traffic/config"
@@ -37,8 +37,9 @@ type agentT struct {
 
 // New - create a new agent
 func init() {
-	a := newAgent(eventing.Handler)
-	host.Register(a)
+	repository.RegisterConstructor(NamespaceName, func() messaging.Agent {
+		return newAgent(eventing.Handler)
+	})
 }
 
 func newAgent(handler eventing.Agent) *agentT {

@@ -1,5 +1,11 @@
+github.com/behavioral-ai/collective v0.0.0-20250516150405-b552f913d09a h1:i/7hHSSZKl7i6+/iqtDv8e6p1uDXzr5bcWE5wVBlFyM=
+github.com/behavioral-ai/collective v0.0.0-20250516150405-b552f913d09a/go.mod h1:MgH3ToUoieE7ZIUA1iFFL1TY/BCvYMUSAZApSM14eSk=
+github.com/behavioral-ai/collective v0.0.0-20250517215707-43563ae301ff h1:iKOYh2Vqz156BR/JzpK0+xRQt+z4kojGLahTSOyXsNE=
+github.com/behavioral-ai/collective v0.0.0-20250517215707-43563ae301ff/go.mod h1:efQFou3zMhOJw6ZdX8xvpe775MpW74CoUtdLKBjpFjQ=
 github.com/behavioral-ai/core v0.0.0-20250502122607-6a6b79298548 h1:xMG7gyFjvgGmQ1VMwrqkqOJdG7FEZ3HzABmLTRPUmW4=
 github.com/behavioral-ai/core v0.0.0-20250502122607-6a6b79298548/go.mod h1:sqpbaRPtMXUb4j6CbCuwWvQrD6pUKJm5oZEKPDynlPE=
+github.com/behavioral-ai/core v0.0.0-20250517214557-c35de3bb23c9 h1:zc55dY/7jJEMclOM+4Xh42IvqlLgFxiur0AiQj/HRTE=
+github.com/behavioral-ai/core v0.0.0-20250517214557-c35de3bb23c9/go.mod h1:sqpbaRPtMXUb4j6CbCuwWvQrD6pUKJm5oZEKPDynlPE=
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/dchest/siphash v1.2.2/go.mod h1:q+IRvb2gOSrUnYoPqHiyHXS0FOBBOdl6tONBlVnOnt4=
