@@ -11,7 +11,7 @@ require (
 )
 
 require (
-	github.com/behavioral-ai/collective v0.0.0-20250517215707-43563ae301ff // indirect
+	github.com/behavioral-ai/collective v0.0.0-20250517225522-4c4a1f5c75be // indirect
 	github.com/dchest/siphash v1.2.3 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 )
