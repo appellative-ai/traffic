@@ -11,7 +11,7 @@ import (
 func ExampleNewAgent() {
 	a := newAgent(eventtest.New())
 
-	fmt.Printf("test: newAgent() -> [%v}\n", a.Uri())
+	fmt.Printf("test: newAgent() -> [%v}\n", a.Name())
 
 	//Output:
 	//test: newAgent() -> [resiliency:agent/redirect/request/http}

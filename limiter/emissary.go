@@ -23,7 +23,7 @@ func emissaryAttend(a *agentT) {
 		}
 		select {
 		case m := <-a.emissary.C:
-			switch m.Event() {
+			switch m.Name() {
 			case messaging.PauseEvent:
 				paused = true
 			case messaging.ResumeEvent:
