@@ -8,33 +8,21 @@ import (
 	"github.com/behavioral-ai/core/fmtx"
 	"github.com/behavioral-ai/core/messaging"
 	"github.com/behavioral-ai/core/rest"
-	"github.com/behavioral-ai/traffic/config"
+	"github.com/behavioral-ai/traffic/limiter/representation1"
 	"github.com/behavioral-ai/traffic/timeseries"
 	"golang.org/x/time/rate"
 	"net/http"
 	"time"
 )
 
-// Namespace ID Namespace Specific String
-// NID + NSS
-// NamespaceName
 const (
-	NamespaceName    = "resiliency:agent/rate-limiting/request/http"
-	offPeakDuration  = time.Minute * 5
-	peakDuration     = time.Minute * 2
-	defaultLimit     = rate.Limit(50)
-	defaultBurst     = 10
-	loadSize         = 200
-	defaultThreshold = 3000 // milliseconds
+	NamespaceName = "resiliency:agent/rate-limiting/request/http"
 )
 
 type agentT struct {
-	running   bool
-	enabled   bool
-	limiter   *rate.Limiter
-	events    *list
-	timeout   time.Duration
-	threshold int
+	state   representation1.State
+	limiter *rate.Limiter
+	events  *list
 
 	ticker     *messaging.Ticker
 	master     *messaging.Channel
@@ -52,11 +40,12 @@ func init() {
 
 func newAgent(handler eventing.Agent) *agentT {
 	a := new(agentT)
-	a.limiter = rate.NewLimiter(defaultLimit, defaultBurst)
+	a.state = representation1.New()
+	a.state.Enabled = true
+	a.limiter = rate.NewLimiter(a.state.Limit, a.state.Burst)
 	a.events = newList()
-	a.threshold = defaultThreshold
 
-	a.ticker = messaging.NewTicker(messaging.ChannelEmissary, peakDuration)
+	a.ticker = messaging.NewTicker(messaging.ChannelEmissary, a.state.PeakDuration)
 	a.master = messaging.NewMasterChannel()
 	a.emissary = messaging.NewEmissaryChannel()
 	a.handler = handler
@@ -74,20 +63,20 @@ func (a *agentT) Message(m *messaging.Message) {
 	if m == nil {
 		return
 	}
-	if !a.running {
+	if !a.state.Running {
 		if m.Name() == messaging.ConfigEvent {
 			a.configure(m)
 			return
 		}
 		if m.Name() == messaging.StartupEvent {
 			a.run()
-			a.running = true
+			a.state.Running = true
 			return
 		}
 		return
 	}
 	if m.Name() == messaging.ShutdownEvent {
-		a.running = false
+		a.state.Running = false
 	}
 	switch m.Channel() {
 	case messaging.ChannelMaster:
@@ -113,13 +102,13 @@ func (a *agentT) Link(next rest.Exchange) rest.Exchange {
 			h := make(http.Header)
 			h.Add(access2.XRateLimit, fmt.Sprintf("%v", a.limiter.Limit()))
 			h.Add(access2.XRateBurst, fmt.Sprintf("%v", a.limiter.Burst()))
-			if a.enabled {
+			if a.state.Enabled {
 				a.events.Enqueue(&event{internal: true, unixMS: start.UnixMilli(), duration: time.Since(start), statusCode: resp.StatusCode})
 			}
 			return &http.Response{StatusCode: http.StatusTooManyRequests, Header: h}, nil
 		}
 		resp, err = next(req)
-		if a.enabled {
+		if a.state.Enabled {
 			a.events.Enqueue(&event{unixMS: start.UnixMilli(), duration: time.Since(start), statusCode: resp.StatusCode})
 		}
 		return
@@ -148,14 +137,14 @@ func (a *agentT) bucket() int {
 func (a *agentT) reviseTicker(cnt int) {
 	var newDuration time.Duration
 
-	if cnt == loadSize {
+	if cnt == a.state.LoadSize {
 		return
 	}
-	if cnt > 2*loadSize {
-		newDuration = peakDuration
+	if cnt > 2*a.state.LoadSize {
+		newDuration = a.state.PeakDuration
 	} else {
-		if cnt < loadSize/2 {
-			newDuration = offPeakDuration
+		if cnt < a.state.LoadSize/2 {
+			newDuration = a.state.OffPeakDuration
 		}
 	}
 	if newDuration != 0 {
@@ -165,20 +154,6 @@ func (a *agentT) reviseTicker(cnt int) {
 
 func (a *agentT) configure(m *messaging.Message) {
 	switch m.ContentType() {
-	case messaging.ContentTypeMap:
-		var ok bool
-
-		if a.timeout, ok = config.Timeout(a, m); !ok {
-			return
-		}
-		/*
-			var ok bool
-			if a.threshold, ok = config.Threshold(a, m); !ok {
-				a.threshold = defaultThreshold
-				return
-			}
-
-		*/
 	case messaging.ContentTypeDispatcher:
 		if dispatcher, ok := messaging.DispatcherContent(m); ok {
 			a.dispatcher = dispatcher

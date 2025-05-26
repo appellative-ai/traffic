@@ -5,7 +5,7 @@ import (
 	"github.com/behavioral-ai/core/eventing"
 	"github.com/behavioral-ai/core/messaging"
 	"github.com/behavioral-ai/core/rest"
-	"github.com/behavioral-ai/traffic/config"
+	"github.com/behavioral-ai/traffic/redirect/representation1"
 	"github.com/behavioral-ai/traffic/timeseries"
 	"golang.org/x/time/rate"
 	"net/http"
@@ -18,15 +18,12 @@ import (
 const (
 	NamespaceName = "resiliency:agent/redirect/request/http"
 	maxDuration   = time.Minute * 2
-	defaultLimit  = rate.Limit(50)
-	defaultBurst  = 10
 )
 
 type agentT struct {
-	running  bool
-	events   *list
-	limiter  *rate.Limiter
-	redirect *config.Redirect
+	events  *list
+	limiter *rate.Limiter
+	state   *representation1.Redirect
 
 	ticker     *messaging.Ticker
 	emissary   *messaging.Channel
@@ -44,9 +41,9 @@ func init() {
 
 func newAgent(handler eventing.Agent) *agentT {
 	a := new(agentT)
-	a.limiter = rate.NewLimiter(defaultLimit, defaultBurst)
+	a.state = representation1.NewRedirect()
+	a.limiter = rate.NewLimiter(a.state.Limit, a.state.Burst)
 	a.events = newList()
-	a.redirect = config.NewRedirect()
 
 	a.ticker = messaging.NewTicker(messaging.ChannelEmissary, maxDuration)
 	a.emissary = messaging.NewEmissaryChannel()
@@ -66,20 +63,20 @@ func (a *agentT) Message(m *messaging.Message) {
 	if m == nil {
 		return
 	}
-	if !a.running {
+	if !a.state.Running {
 		if m.Name() == messaging.ConfigEvent {
 			a.configure(m)
 			return
 		}
 		if m.Name() == messaging.StartupEvent {
 			a.run()
-			a.running = true
+			a.state.Running = true
 			return
 		}
 		return
 	}
 	if m.Name() == messaging.ShutdownEvent {
-		a.running = false
+		a.state.Running = false
 	}
 	switch m.Channel() {
 	case messaging.ChannelEmissary:
@@ -101,10 +98,10 @@ func (a *agentT) run() {
 }
 
 func (a *agentT) enabled() bool {
-	if !a.redirect.Enabled() {
+	if !a.state.Enabled() {
 		return false
 	}
-	if a.redirect.Failed() {
+	if a.state.Failed() {
 		return false
 	}
 	if !a.limiter.Allow() {

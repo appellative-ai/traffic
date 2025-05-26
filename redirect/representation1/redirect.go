@@ -1,7 +1,17 @@
-package config
+package representation1
+
+import "golang.org/x/time/rate"
+
+const (
+	defaultLimit = rate.Limit(50)
+	defaultBurst = 10
+)
 
 // Redirect - configuration
 type Redirect struct {
+	Running      bool
+	Limit        rate.Limit
+	Burst        int
 	OriginalPath string
 	NewPath      string
 	Codes        *StatusCodeThreshold
@@ -10,6 +20,8 @@ type Redirect struct {
 
 func NewRedirect() *Redirect {
 	r := new(Redirect)
+	r.Limit = defaultLimit
+	r.Burst = defaultBurst
 	r.Codes = new(StatusCodeThreshold)
 	r.Latency = new(PercentileThreshold)
 	return r
