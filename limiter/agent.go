@@ -20,7 +20,7 @@ const (
 )
 
 type agentT struct {
-	state   representation1.State
+	state   *representation1.Limiter
 	limiter *rate.Limiter
 	events  *list
 
@@ -34,13 +34,17 @@ type agentT struct {
 // New - create a new agent
 func init() {
 	repository.RegisterConstructor(NamespaceName, func() messaging.Agent {
-		return newAgent(eventing.Handler)
+		return newAgent(eventing.Handler, nil)
 	})
 }
 
-func newAgent(handler eventing.Agent) *agentT {
+func newAgent(handler eventing.Agent, state *representation1.Limiter) *agentT {
 	a := new(agentT)
-	a.state = representation1.New()
+	if state == nil {
+		a.state = representation1.NewLimiter(NamespaceName)
+	} else {
+		a.state = state
+	}
 	a.state.Enabled = true
 	a.limiter = rate.NewLimiter(a.state.Limit, a.state.Burst)
 	a.events = newList()

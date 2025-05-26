@@ -25,7 +25,7 @@ const (
 	threshold       = 3000 // milliseconds
 )
 
-type State struct {
+type Limiter struct {
 	Running         bool
 	Enabled         bool
 	Limit           rate.Limit
@@ -36,12 +36,12 @@ type State struct {
 	Threshold       int
 }
 
-func New() State {
+func NewLimiter(name string) *Limiter {
 	return new(nil)
 }
 
-func new(m map[string]string) State {
-	value := initialize()
+func new(m map[string]string) *Limiter {
+	value := Initialize()
 	if m == nil {
 		return value
 	}
@@ -61,8 +61,8 @@ func new(m map[string]string) State {
 	return value
 }
 
-func initialize() State {
-	return State{
+func Initialize() *Limiter {
+	return &Limiter{
 		Limit:           limit,
 		Burst:           burst,
 		PeakDuration:    peakDuration,

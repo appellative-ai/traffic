@@ -9,7 +9,7 @@ import (
 )
 
 func ExampleNewAgent() {
-	a := newAgent(eventtest.New())
+	a := newAgent(eventtest.New(), nil)
 
 	fmt.Printf("test: newAgent() -> [%v}\n", a.Name())
 
@@ -20,7 +20,7 @@ func ExampleNewAgent() {
 
 func _ExampleAgent_LoadContent() {
 	ch := make(chan struct{})
-	agent := newAgent(eventtest.New())
+	agent := newAgent(eventtest.New(), nil)
 	agent.dispatcher = messaging.NewTraceDispatcher()
 
 	go func() {
@@ -41,7 +41,7 @@ func _ExampleAgent_LoadContent() {
 
 func _ExampleAgent_NotFound() {
 	ch := make(chan struct{})
-	agent := newAgent(eventtest.New())
+	agent := newAgent(eventtest.New(), nil)
 	agent.dispatcher = messaging.NewTraceDispatcher()
 
 	go func() {
@@ -60,7 +60,7 @@ func _ExampleAgent_NotFound() {
 
 func _ExampleAgent_Resolver() {
 	ch := make(chan struct{})
-	agent := newAgent(eventtest.New())
+	agent := newAgent(eventtest.New(), nil)
 	agent.dispatcher = messaging.NewTraceDispatcher()
 	//test2.Startup()
 

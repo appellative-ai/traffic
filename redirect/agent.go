@@ -35,13 +35,17 @@ type agentT struct {
 // New - create a new agent
 func init() {
 	repository.RegisterConstructor(NamespaceName, func() messaging.Agent {
-		return newAgent(eventing.Handler)
+		return newAgent(eventing.Handler, nil)
 	})
 }
 
-func newAgent(handler eventing.Agent) *agentT {
+func newAgent(handler eventing.Agent, state *representation1.Redirect) *agentT {
 	a := new(agentT)
-	a.state = representation1.NewRedirect()
+	if state == nil {
+		a.state = representation1.NewRedirect(NamespaceName)
+	} else {
+		a.state = state
+	}
 	a.limiter = rate.NewLimiter(a.state.Limit, a.state.Burst)
 	a.events = newList()
 

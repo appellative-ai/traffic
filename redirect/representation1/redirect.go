@@ -18,7 +18,7 @@ type Redirect struct {
 	Latency      *PercentileThreshold
 }
 
-func NewRedirect() *Redirect {
+func NewRedirect(name string) *Redirect {
 	r := new(Redirect)
 	r.Limit = defaultLimit
 	r.Burst = defaultBurst
@@ -70,4 +70,13 @@ func (p *PercentileThreshold) Failed() bool {
 // AddFailure - add a failure
 func (p *PercentileThreshold) AddFailure() {
 	p.Failures++
+}
+
+func Initialize() *Redirect {
+	r := new(Redirect)
+	r.Limit = defaultLimit
+	r.Burst = defaultBurst
+	r.Codes = new(StatusCodeThreshold)
+	r.Latency = new(PercentileThreshold)
+	return r
 }
