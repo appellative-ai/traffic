@@ -148,17 +148,6 @@ func (a *agentT) configure(m *messaging.Message) {
 		if dispatcher, ok := messaging.DispatcherContent(m); ok {
 			a.dispatcher = dispatcher
 		}
-	case messaging.ContentTypeMap:
-		/*
-			var ok bool
-			if a.hostName, ok = config.AppHostName(a, m); !ok {
-				return
-			}
-			if a.timeout, ok = config.Timeout(a, m); !ok {
-				return
-			}
-
-		*/
 	}
 	messaging.Reply(m, messaging.StatusOK(), a.Name())
 }
