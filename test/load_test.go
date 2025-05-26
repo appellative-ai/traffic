@@ -9,6 +9,8 @@ func ExampleLoad() {
 	fmt.Printf("test: LoadTest() -> [%v]\n", "test")
 
 	//Output:
-	//fail
+	//test: LoadTest() -> [resiliency:agent/rate-limiting/request/http]
+	//test: LoadTest() -> [resiliency:agent/redirect/request/http]
+	//test: LoadTest() -> [test]
 
 }
