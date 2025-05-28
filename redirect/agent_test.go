@@ -10,7 +10,7 @@ import (
 )
 
 func ExampleNewAgent() {
-	a := newAgent(eventtest.New(), representation1.Initialize())
+	a := newAgent(eventtest.New(), nil)
 
 	fmt.Printf("test: newAgent() -> [%v}\n", a.Name())
 

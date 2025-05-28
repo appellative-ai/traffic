@@ -40,7 +40,11 @@ func init() {
 
 func newAgent(handler eventing.Agent, state *representation1.Redirect) *agentT {
 	a := new(agentT)
-	a.state = state
+	if state == nil {
+		a.state = representation1.Initialize()
+	} else {
+		a.state = state
+	}
 	a.limiter = rate.NewLimiter(a.state.Limit, a.state.Burst)
 	a.events = newList()
 
