@@ -34,17 +34,13 @@ type agentT struct {
 // New - create a new agent
 func init() {
 	repository.RegisterConstructor(NamespaceName, func() messaging.Agent {
-		return newAgent(eventing.Handler, nil)
+		return newAgent(eventing.Handler, representation1.NewLimiter(NamespaceName))
 	})
 }
 
 func newAgent(handler eventing.Agent, state *representation1.Limiter) *agentT {
 	a := new(agentT)
-	if state == nil {
-		a.state = representation1.NewLimiter(NamespaceName)
-	} else {
-		a.state = state
-	}
+	a.state = state
 	a.state.Enabled = true
 	a.limiter = rate.NewLimiter(a.state.Limit, a.state.Burst)
 	a.events = newList()
@@ -158,6 +154,13 @@ func (a *agentT) reviseTicker(cnt int) {
 
 func (a *agentT) configure(m *messaging.Message) {
 	switch m.ContentType() {
+	case messaging.ContentTypeMap:
+		cfg := messaging.ConfigMapContent(m)
+		if cfg == nil {
+			messaging.Reply(m, messaging.ConfigEmptyStatusError(a), a.Name())
+			return
+		}
+		a.state.Update(cfg)
 	case messaging.ContentTypeDispatcher:
 		if dispatcher, ok := messaging.DispatcherContent(m); ok {
 			a.dispatcher = dispatcher

@@ -17,7 +17,6 @@ import (
 // NamespaceName
 const (
 	NamespaceName = "resiliency:agent/redirect/request/http"
-	maxDuration   = time.Minute * 2
 )
 
 type agentT struct {
@@ -35,21 +34,17 @@ type agentT struct {
 // New - create a new agent
 func init() {
 	repository.RegisterConstructor(NamespaceName, func() messaging.Agent {
-		return newAgent(eventing.Handler, nil)
+		return newAgent(eventing.Handler, representation1.NewRedirect(NamespaceName))
 	})
 }
 
 func newAgent(handler eventing.Agent, state *representation1.Redirect) *agentT {
 	a := new(agentT)
-	if state == nil {
-		a.state = representation1.NewRedirect(NamespaceName)
-	} else {
-		a.state = state
-	}
+	a.state = state
 	a.limiter = rate.NewLimiter(a.state.Limit, a.state.Burst)
 	a.events = newList()
 
-	a.ticker = messaging.NewTicker(messaging.ChannelEmissary, maxDuration)
+	a.ticker = messaging.NewTicker(messaging.ChannelEmissary, a.state.Interval)
 	a.emissary = messaging.NewEmissaryChannel()
 	a.master = messaging.NewMasterChannel()
 	a.handler = handler
@@ -148,6 +143,13 @@ func (a *agentT) masterShutdown() {
 // TODO : need to configure current and redirect URL's
 func (a *agentT) configure(m *messaging.Message) {
 	switch m.ContentType() {
+	case messaging.ContentTypeMap:
+		cfg := messaging.ConfigMapContent(m)
+		if cfg == nil {
+			messaging.Reply(m, messaging.ConfigEmptyStatusError(a), a.Name())
+			return
+		}
+		a.state.Update(cfg)
 	case messaging.ContentTypeDispatcher:
 		if dispatcher, ok := messaging.DispatcherContent(m); ok {
 			a.dispatcher = dispatcher

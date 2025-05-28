@@ -1,6 +1,7 @@
 package representation1
 
 import (
+	"github.com/behavioral-ai/core/fmtx"
 	"golang.org/x/time/rate"
 	"strconv"
 	"time"
@@ -8,12 +9,12 @@ import (
 
 const (
 	Fragment           = "v1"
-	rateLimitKey       = "rate-limit"
-	rateBurstKey       = "rate-burst"
-	peakDurationKey    = "peak-duration"
-	offPeakDurationKey = "off-peak-duration"
-	loadSizeKey        = "load-size"
-	thresholdKey       = "threshold"
+	RateLimitKey       = "rate-limit"
+	RateBurstKey       = "rate-burst"
+	PeakDurationKey    = "peak-duration"
+	OffPeakDurationKey = "off-peak-duration"
+	LoadSizeKey        = "load-size"
+	ThresholdKey       = "threshold"
 )
 
 const (
@@ -36,31 +37,6 @@ type Limiter struct {
 	Threshold       int
 }
 
-func NewLimiter(name string) *Limiter {
-	return new(nil)
-}
-
-func new(m map[string]string) *Limiter {
-	value := Initialize()
-	if m == nil {
-		return value
-	}
-
-	s := m[rateLimitKey]
-	if s != "" {
-		if i, err := strconv.Atoi(s); err == nil {
-			value.Limit = rate.Limit(i)
-		}
-	}
-	s = m[rateBurstKey]
-	if s != "" {
-		if i, err := strconv.Atoi(s); err == nil {
-			value.Burst = i
-		}
-	}
-	return value
-}
-
 func Initialize() *Limiter {
 	return &Limiter{
 		Limit:           limit,
@@ -69,5 +45,69 @@ func Initialize() *Limiter {
 		OffPeakDuration: offPeakDuration,
 		LoadSize:        loadSize,
 		Threshold:       threshold,
+	}
+}
+
+func NewLimiter(name string) *Limiter {
+	m := make(map[string]string)
+	return newLimiter(name, m)
+}
+
+func newLimiter(name string, m map[string]string) *Limiter {
+	l := Initialize()
+	parseLimiter(l, m)
+	return l
+}
+
+func (l *Limiter) Update(m map[string]string) {
+	parseLimiter(l, m)
+}
+
+func parseLimiter(l *Limiter, m map[string]string) {
+	if l == nil || m == nil {
+		return
+	}
+	s := m[RateLimitKey]
+	if s != "" {
+		if i, err := strconv.Atoi(s); err == nil {
+			l.Limit = rate.Limit(i)
+		}
+	}
+	s = m[RateBurstKey]
+	if s != "" {
+		if i, err := strconv.Atoi(s); err == nil {
+			l.Burst = i
+		}
+	}
+	s = m[PeakDurationKey]
+	if s != "" {
+		dur, err := fmtx.ParseDuration(s)
+		if err != nil {
+			//messaging.Reply(m, messaging.ConfigContentStatusError(agent, TimeoutKey), agent.Name())
+			return
+		}
+		l.PeakDuration = dur
+	}
+	s = m[OffPeakDurationKey]
+	if s != "" {
+		dur, err := fmtx.ParseDuration(s)
+		if err != nil {
+			//messaging.Reply(m, messaging.ConfigContentStatusError(agent, TimeoutKey), agent.Name())
+			return
+		}
+		l.OffPeakDuration = dur
+	}
+
+	s = m[LoadSizeKey]
+	if s != "" {
+		if i, err := strconv.Atoi(s); err == nil {
+			l.LoadSize = i
+		}
+	}
+	s = m[ThresholdKey]
+	if s != "" {
+		if i, err := strconv.Atoi(s); err == nil {
+			l.Threshold = i
+		}
 	}
 }

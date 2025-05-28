@@ -1,29 +1,54 @@
 package representation1
 
-import "golang.org/x/time/rate"
+import (
+	"golang.org/x/time/rate"
+	"strconv"
+	"time"
+)
 
 const (
+	Fragment        = "v1"
+	RateLimitKey    = "rate-limit"
+	RateBurstKey    = "rate-burst"
+	OriginalPathKey = "original-path"
+	NewPathKey      = "new-path"
+
 	defaultLimit = rate.Limit(50)
 	defaultBurst = 10
+	maxInterval  = time.Minute * 2
 )
 
 // Redirect - configuration
+// TODO : Add thresholds for status code and latency failures
 type Redirect struct {
 	Running      bool
 	Limit        rate.Limit
 	Burst        int
+	Interval     time.Duration
 	OriginalPath string
 	NewPath      string
 	Codes        *StatusCodeThreshold
 	Latency      *PercentileThreshold
 }
 
-func NewRedirect(name string) *Redirect {
+func Initialize() *Redirect {
 	r := new(Redirect)
 	r.Limit = defaultLimit
 	r.Burst = defaultBurst
+	r.Interval = maxInterval
 	r.Codes = new(StatusCodeThreshold)
 	r.Latency = new(PercentileThreshold)
+	return r
+}
+
+func NewRedirect(name string) *Redirect {
+	m := make(map[string]string)
+	return newRedirect(name, m)
+}
+
+func newRedirect(name string, m map[string]string) *Redirect {
+	r := new(Redirect)
+	parseRedirect(r, m)
 	return r
 }
 
@@ -33,6 +58,38 @@ func (r *Redirect) Enabled() bool {
 
 func (r *Redirect) Failed() bool {
 	return r.Latency.Failed() || r.Codes.Failed()
+}
+
+func (r *Redirect) Update(m map[string]string) {
+	if m == nil {
+		return
+	}
+}
+
+func parseRedirect(r *Redirect, m map[string]string) {
+	if r == nil || m == nil {
+		return
+	}
+	s := m[RateLimitKey]
+	if s != "" {
+		if i, err := strconv.Atoi(s); err == nil {
+			r.Limit = rate.Limit(i)
+		}
+	}
+	s = m[RateBurstKey]
+	if s != "" {
+		if i, err := strconv.Atoi(s); err == nil {
+			r.Burst = i
+		}
+	}
+	s = m[OriginalPathKey]
+	if s != "" {
+		r.OriginalPath = s
+	}
+	s = m[NewPathKey]
+	if s != "" {
+		r.NewPath = s
+	}
 }
 
 // StatusCodeThreshold - redirect status code thresholds
@@ -70,13 +127,4 @@ func (p *PercentileThreshold) Failed() bool {
 // AddFailure - add a failure
 func (p *PercentileThreshold) AddFailure() {
 	p.Failures++
-}
-
-func Initialize() *Redirect {
-	r := new(Redirect)
-	r.Limit = defaultLimit
-	r.Burst = defaultBurst
-	r.Codes = new(StatusCodeThreshold)
-	r.Latency = new(PercentileThreshold)
-	return r
 }

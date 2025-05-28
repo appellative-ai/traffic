@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"github.com/behavioral-ai/core/eventing/eventtest"
 	"github.com/behavioral-ai/core/messaging"
+	"github.com/behavioral-ai/traffic/redirect/representation1"
 	"github.com/behavioral-ai/traffic/timeseries"
 	"time"
 )
 
 func ExampleNewAgent() {
-	a := newAgent(eventtest.New(), nil)
+	a := newAgent(eventtest.New(), representation1.Initialize())
 
 	fmt.Printf("test: newAgent() -> [%v}\n", a.Name())
 
@@ -20,7 +21,7 @@ func ExampleNewAgent() {
 
 func _ExampleAgent_LoadContent() {
 	ch := make(chan struct{})
-	agent := newAgent(eventtest.New(), nil)
+	agent := newAgent(eventtest.New(), representation1.Initialize())
 	agent.dispatcher = messaging.NewTraceDispatcher()
 
 	go func() {
@@ -41,7 +42,7 @@ func _ExampleAgent_LoadContent() {
 
 func _ExampleAgent_NotFound() {
 	ch := make(chan struct{})
-	agent := newAgent(eventtest.New(), nil)
+	agent := newAgent(eventtest.New(), representation1.Initialize())
 	agent.dispatcher = messaging.NewTraceDispatcher()
 
 	go func() {
