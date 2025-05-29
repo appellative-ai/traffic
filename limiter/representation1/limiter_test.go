@@ -20,7 +20,7 @@ var (
 	}
 )
 
-func ExampleLimiterParse() {
+func ExampleParseLimiter() {
 	var limiter Limiter
 	parseLimiter(&limiter, m)
 

@@ -19,7 +19,7 @@ var (
 	}
 )
 
-func ExampleRedirectParse() {
+func ExampleParseRedirect() {
 	var redirect Redirect
 	parseRedirect(&redirect, m)
 
