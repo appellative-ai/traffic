@@ -1,6 +1,7 @@
 package representation1
 
 import (
+	"github.com/behavioral-ai/collective/resource"
 	"github.com/behavioral-ai/core/fmtx"
 	"golang.org/x/time/rate"
 	"strconv"
@@ -49,11 +50,11 @@ func Initialize() *Limiter {
 }
 
 func NewLimiter(name string) *Limiter {
-	m := make(map[string]string)
-	return newLimiter(name, m)
+	m, _ := resource.Resolve[map[string]string](name, Fragment, resource.Resolver)
+	return newLimiter(m)
 }
 
-func newLimiter(name string, m map[string]string) *Limiter {
+func newLimiter(m map[string]string) *Limiter {
 	l := Initialize()
 	parseLimiter(l, m)
 	return l

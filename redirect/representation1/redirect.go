@@ -1,6 +1,8 @@
 package representation1
 
 import (
+	"github.com/behavioral-ai/collective/resource"
+	"github.com/behavioral-ai/core/fmtx"
 	"golang.org/x/time/rate"
 	"strconv"
 	"time"
@@ -12,6 +14,7 @@ const (
 	RateBurstKey    = "rate-burst"
 	OriginalPathKey = "original-path"
 	NewPathKey      = "new-path"
+	IntervalKey     = "interval-key"
 
 	defaultLimit = rate.Limit(50)
 	defaultBurst = 10
@@ -42,11 +45,11 @@ func Initialize() *Redirect {
 }
 
 func NewRedirect(name string) *Redirect {
-	m := make(map[string]string)
-	return newRedirect(name, m)
+	m, _ := resource.Resolve[map[string]string](name, Fragment, resource.Resolver)
+	return newRedirect(m)
 }
 
-func newRedirect(name string, m map[string]string) *Redirect {
+func newRedirect(m map[string]string) *Redirect {
 	r := new(Redirect)
 	parseRedirect(r, m)
 	return r
@@ -89,6 +92,16 @@ func parseRedirect(r *Redirect, m map[string]string) {
 	s = m[NewPathKey]
 	if s != "" {
 		r.NewPath = s
+	}
+
+	s = m[IntervalKey]
+	if s != "" {
+		dur, err := fmtx.ParseDuration(s)
+		if err != nil {
+			//messaging.Reply(m, messaging.ConfigContentStatusError(agent, TimeoutKey), agent.Name())
+			return
+		}
+		r.Interval = dur
 	}
 }
 
