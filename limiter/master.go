@@ -1,6 +1,7 @@
 package limiter
 
 import (
+	"github.com/behavioral-ai/collective/resource"
 	"github.com/behavioral-ai/core/messaging"
 	"github.com/behavioral-ai/traffic/timeseries"
 	"time"
@@ -24,7 +25,7 @@ type stats struct {
 }
 
 // master attention
-func masterAttend(a *agentT, ts *timeseries.Interface) {
+func masterAttend(a *agentT, ts *timeseries.Interface, _ *resource.Resolution) {
 	a.dispatch(a.master, messaging.StartupEvent)
 	paused := false
 	var history []stats

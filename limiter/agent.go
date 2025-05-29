@@ -110,7 +110,7 @@ func (a *agentT) Message(m *messaging.Message) {
 // Run - run the agent
 func (a *agentT) run() {
 	go emissaryAttend(a)
-	go masterAttend(a, timeseries.Functions)
+	go masterAttend(a, timeseries.Functions, a.resolver)
 }
 
 // Link - chainable exchange
