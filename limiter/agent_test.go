@@ -6,7 +6,7 @@ import (
 )
 
 func ExampleNewAgent() {
-	a := newAgent(eventtest.New(), nil)
+	a := newAgent(eventtest.New(), nil, nil)
 	fmt.Printf("test: newAgent() -> [limiter:%v] [burst:%v] [%v}\n", a.limiter.Limit(), a.limiter.Burst(), a.Name())
 
 	//agent := agentT{}

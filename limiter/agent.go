@@ -3,6 +3,7 @@ package limiter
 import (
 	"fmt"
 	"github.com/behavioral-ai/collective/repository"
+	"github.com/behavioral-ai/collective/resource"
 	"github.com/behavioral-ai/core/access2"
 	"github.com/behavioral-ai/core/eventing"
 	"github.com/behavioral-ai/core/fmtx"
@@ -20,9 +21,10 @@ const (
 )
 
 type agentT struct {
-	state   *representation1.Limiter
-	limiter *rate.Limiter
-	events  *list
+	state    *representation1.Limiter
+	limiter  *rate.Limiter
+	events   *list
+	resolver *resource.Resolution
 
 	ticker     *messaging.Ticker
 	master     *messaging.Channel
@@ -31,19 +33,32 @@ type agentT struct {
 	dispatcher messaging.Dispatcher
 }
 
-// New - create a new agent
+// init - register an agent constructor
 func init() {
 	repository.RegisterConstructor(NamespaceName, func() messaging.Agent {
-		return newAgent(eventing.Handler, representation1.NewLimiter(NamespaceName))
+		return newAgent(eventing.Handler, representation1.NewLimiter(NamespaceName), nil)
 	})
 }
 
-func newAgent(handler eventing.Agent, state *representation1.Limiter) *agentT {
+func ConstructorOverride(m map[string]string, resolver *resource.Resolution) {
+	repository.RegisterConstructor(NamespaceName, func() messaging.Agent {
+		c := representation1.Initialize()
+		c.Update(m)
+		return newAgent(eventing.Handler, c, resolver)
+	})
+}
+
+func newAgent(handler eventing.Agent, state *representation1.Limiter, resolver *resource.Resolution) *agentT {
 	a := new(agentT)
 	if state == nil {
 		a.state = representation1.Initialize()
 	} else {
 		a.state = state
+	}
+	if resolver == nil {
+		a.resolver = resource.Resolver
+	} else {
+		a.resolver = resolver
 	}
 	a.state.Enabled = true
 	a.limiter = rate.NewLimiter(a.state.Limit, a.state.Burst)
