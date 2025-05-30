@@ -1,7 +1,6 @@
 package representation1
 
 import (
-	"github.com/behavioral-ai/collective/resource"
 	"github.com/behavioral-ai/core/fmtx"
 	"golang.org/x/time/rate"
 	"strconv"
@@ -15,18 +14,25 @@ const (
 	PeakDurationKey    = "peak-duration"
 	OffPeakDurationKey = "off-peak-duration"
 	LoadSizeKey        = "load-size"
-	ThresholdKey       = "threshold"
 )
 
 const (
-	offPeakDuration = time.Minute * 5
-	peakDuration    = time.Minute * 2
 	limit           = rate.Limit(50)
 	burst           = 10
+	offPeakDuration = time.Minute * 5
+	peakDuration    = time.Minute * 2
 	loadSize        = 200
-	threshold       = 3000 // milliseconds
 )
 
+// Limiter - values used by the agent for rate limiting.
+// //         Peak,off-peak and load size adjust how often events are dequeued and sent to the master
+//
+//	to be analyzed via linear regression.
+//
+//	The load size is the threshold between peak and off-peak durations.
+//
+//	Limit and burst are the starting values for rate-limiting. These get changed based on regression
+//	analysis of the events.
 type Limiter struct {
 	Running         bool
 	Enabled         bool
@@ -35,7 +41,6 @@ type Limiter struct {
 	PeakDuration    time.Duration
 	OffPeakDuration time.Duration
 	LoadSize        int
-	Threshold       int
 }
 
 func Initialize() *Limiter {
@@ -45,13 +50,14 @@ func Initialize() *Limiter {
 		PeakDuration:    peakDuration,
 		OffPeakDuration: offPeakDuration,
 		LoadSize:        loadSize,
-		Threshold:       threshold,
 	}
 }
 
+// NewLimiter - create a limiter using default values and overrides
 func NewLimiter(name string) *Limiter {
-	m, _ := resource.Resolve[map[string]string](name, Fragment, resource.Resolver)
-	return newLimiter(m)
+	// Rel
+	//m, _ := resource.Resolve[map[string]string](name, Fragment, resource.Resolver)
+	return newLimiter(nil)
 }
 
 func newLimiter(m map[string]string) *Limiter {
@@ -103,12 +109,6 @@ func parseLimiter(l *Limiter, m map[string]string) {
 	if s != "" {
 		if i, err := strconv.Atoi(s); err == nil {
 			l.LoadSize = i
-		}
-	}
-	s = m[ThresholdKey]
-	if s != "" {
-		if i, err := strconv.Atoi(s); err == nil {
-			l.Threshold = i
 		}
 	}
 }

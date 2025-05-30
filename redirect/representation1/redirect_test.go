@@ -26,7 +26,7 @@ func ExampleParseRedirect() {
 	fmt.Printf("test: parseRedirect() -> %v\n", redirect)
 
 	//Output:
-	//test: parseRedirect() -> {false 1234 12 750ms /google/search:v1 /yahoo/search:v2 <nil> <nil>}
+	//test: parseRedirect() -> {false 1234 12 750ms /google/search:v1 /yahoo/search:v2 0 0 <nil> <nil>}
 
 }
 
@@ -50,6 +50,6 @@ func ExampleNewRedirect() {
 	//test: AddRepresentation() -> [status:OK]
 	//test: Representation() -> [ct:fragment: v1 type: application/json value: true] [status:OK]
 	//test: Representation() -> [value:128] [status:OK]
-	//test: NewRedirect() -> &{false 1234 12 750ms /google/search:v1 /yahoo/search:v2 <nil> <nil>}
+	//test: NewRedirect() -> &{false 1234 12 750ms /google/search:v1 /yahoo/search:v2 0 0 <nil> <nil>}
 
 }

@@ -9,29 +9,35 @@ import (
 )
 
 const (
-	Fragment        = "v1"
-	RateLimitKey    = "rate-limit"
-	RateBurstKey    = "rate-burst"
-	OriginalPathKey = "original-path"
-	NewPathKey      = "new-path"
-	IntervalKey     = "interval-key"
+	Fragment            = "v1"
+	RateLimitKey        = "rate-limit"
+	RateBurstKey        = "rate-burst"
+	OriginalPathKey     = "original-path"
+	NewPathKey          = "new-path"
+	IntervalKey         = "interval-key"
+	StatusCodeThreshold = "status-code-threshold"
+	PercentileThreshold = "percentile-threshold"
 
-	defaultLimit = rate.Limit(50)
-	defaultBurst = 10
-	maxInterval  = time.Minute * 2
+	defaultLimit               = rate.Limit(50)
+	defaultBurst               = 10
+	maxInterval                = time.Minute * 2
+	defaultStatusCodeThreshold = 10 // Percentage traffic
+	defaultPercentileThreshold = 95 // Milliseconds for 95 percentile
 )
 
 // Redirect - configuration
-// TODO : Add thresholds for status code and latency failures
+// TODO : document
 type Redirect struct {
-	Running      bool
-	Limit        rate.Limit
-	Burst        int
-	Interval     time.Duration
-	OriginalPath string
-	NewPath      string
-	Codes        *StatusCodeThreshold
-	Latency      *PercentileThreshold
+	Running             bool
+	Limit               rate.Limit
+	Burst               int
+	Interval            time.Duration
+	OriginalPath        string
+	NewPath             string
+	StatusCodeThreshold int
+	PercentileThreshold int
+	Codes               *StatusCodeMetrics
+	Latency             *PercentileMetrics
 }
 
 func Initialize() *Redirect {
@@ -39,8 +45,10 @@ func Initialize() *Redirect {
 	r.Limit = defaultLimit
 	r.Burst = defaultBurst
 	r.Interval = maxInterval
-	r.Codes = new(StatusCodeThreshold)
-	r.Latency = new(PercentileThreshold)
+	r.StatusCodeThreshold = defaultStatusCodeThreshold
+	r.PercentileThreshold = defaultPercentileThreshold
+	r.Codes = new(StatusCodeMetrics)
+	r.Latency = new(PercentileMetrics)
 	return r
 }
 
@@ -103,10 +111,23 @@ func parseRedirect(r *Redirect, m map[string]string) {
 		}
 		r.Interval = dur
 	}
+
+	s = m[StatusCodeThreshold]
+	if s != "" {
+		if i, err := strconv.Atoi(s); err == nil {
+			r.StatusCodeThreshold = i
+		}
+	}
+	s = m[PercentileThreshold]
+	if s != "" {
+		if i, err := strconv.Atoi(s); err == nil {
+			r.PercentileThreshold = i
+		}
+	}
 }
 
-// StatusCodeThreshold - redirect status code thresholds
-type StatusCodeThreshold struct {
+// StatusCodeMetrics - redirect status code thresholds
+type StatusCodeMetrics struct {
 	MaxFailures int
 	Failures    int
 	Status2xx   int
@@ -115,17 +136,17 @@ type StatusCodeThreshold struct {
 }
 
 // Failed - threshold has been exceeded
-func (s *StatusCodeThreshold) Failed() bool {
+func (s *StatusCodeMetrics) Failed() bool {
 	return s.Failures >= s.MaxFailures
 }
 
 // AddFailure - add a failure
-func (s *StatusCodeThreshold) AddFailure() {
+func (s *StatusCodeMetrics) AddFailure() {
 	s.Failures++
 }
 
-// PercentileThreshold - redirect configured latency threshold
-type PercentileThreshold struct {
+// PercentileMetrics - redirect configured latency threshold
+type PercentileMetrics struct {
 	MaxFailures int
 	Failures    int
 	Score       int
@@ -133,11 +154,11 @@ type PercentileThreshold struct {
 }
 
 // Failed - latency threshold exceeded
-func (p *PercentileThreshold) Failed() bool {
+func (p *PercentileMetrics) Failed() bool {
 	return p.Failures >= p.MaxFailures
 }
 
 // AddFailure - add a failure
-func (p *PercentileThreshold) AddFailure() {
+func (p *PercentileMetrics) AddFailure() {
 	p.Failures++
 }

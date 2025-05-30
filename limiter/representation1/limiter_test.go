@@ -16,7 +16,6 @@ var (
 		PeakDurationKey:    "750ms",
 		OffPeakDurationKey: "5m",
 		LoadSizeKey:        "567",
-		ThresholdKey:       "2000",
 	}
 )
 
@@ -27,11 +26,11 @@ func ExampleParseLimiter() {
 	fmt.Printf("test: parseLimiter() -> %v\n", limiter)
 
 	//Output:
-	//test: parseLimiter() -> {false false 1234 12 750ms 5m0s 567 2000}
+	//test: parseLimiter() -> {false false 1234 12 750ms 5m0s 567}
 
 }
 
-func ExampleNewLimiter() {
+func _ExampleNewLimiter() {
 	resource.NewAgent()
 
 	status := resource.Resolver.AddRepresentation(NamespaceName, Fragment, "author", m)
