@@ -15,7 +15,7 @@ func ExampleMaster() {
 	agent := newAgent(eventtest.New(), nil, nil)
 
 	go func() {
-		go masterAttend(agent, nil, nil)
+		go masterAttend(agent, nil)
 
 		agent.Message(messaging.NewMessage(messaging.ChannelMaster, messaging.PauseEvent))
 		agent.Message(messaging.NewMessage(messaging.ChannelMaster, messaging.ResumeEvent))
@@ -44,7 +44,7 @@ func ExampleMaster_Observation() {
 	agent := newAgent(eventtest.New(), nil, nil)
 
 	go func() {
-		go masterAttend(agent, nil, nil)
+		go masterAttend(agent, nil)
 		//agent.Message(msg)
 		time.Sleep(testDuration * 2)
 

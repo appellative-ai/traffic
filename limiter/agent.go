@@ -17,7 +17,8 @@ import (
 )
 
 const (
-	NamespaceName = "resiliency:agent/rate-limiting/request/http"
+	NamespaceName     = "resiliency:agent/rate-limiting/request/http"
+	NamespaceTaskName = "resiliency:task/analyze/traffic"
 )
 
 type agentT struct {
@@ -26,6 +27,7 @@ type agentT struct {
 	events   *list
 	resolver *resource.Resolution
 
+	review     *messaging.Review
 	ticker     *messaging.Ticker
 	master     *messaging.Channel
 	emissary   *messaging.Channel
@@ -140,6 +142,19 @@ func (a *agentT) dispatch(channel any, event string) {
 	}
 }
 
+func (a *agentT) trace(task, observation, action string) {
+	if a.review == nil {
+		return
+	}
+	if !a.review.Started() {
+		a.review.Start()
+	}
+	if a.review.Expired() {
+		return
+	}
+	a.resolver.AddTrace(a.Name(), "origin", task, observation, action)
+}
+
 func (a *agentT) emissaryShutdown() {
 	a.ticker.Stop()
 	a.emissary.Close()
@@ -176,10 +191,17 @@ func (a *agentT) configure(m *messaging.Message) {
 	case messaging.ContentTypeMap:
 		cfg := messaging.ConfigMapContent(m)
 		if cfg == nil {
-			messaging.Reply(m, messaging.ConfigEmptyStatusError(a), a.Name())
+			messaging.Reply(m, messaging.ConfigEmptyMapError(a), a.Name())
 			return
 		}
 		a.state.Update(cfg)
+	case messaging.ContentTypeReview:
+		r := messaging.ReviewContent(m)
+		if r == nil {
+			messaging.Reply(m, messaging.ConfigEmptyReviewError(a), a.Name())
+			return
+		}
+		a.review = r
 	case messaging.ContentTypeDispatcher:
 		if dispatcher, ok := messaging.DispatcherContent(m); ok {
 			a.dispatcher = dispatcher

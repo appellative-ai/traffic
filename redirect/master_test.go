@@ -3,14 +3,13 @@ package redirect
 import (
 	"github.com/behavioral-ai/core/eventing/eventtest"
 	"github.com/behavioral-ai/core/messaging"
-	"github.com/behavioral-ai/traffic/redirect/representation1"
 	"github.com/behavioral-ai/traffic/timeseries"
 	"time"
 )
 
 func _ExampleMaster() {
 	ch := make(chan struct{})
-	agent := newAgent(eventtest.New(), representation1.Initialize())
+	agent := newAgent(eventtest.New(), nil, nil)
 
 	go func() {
 		go masterAttend(agent, timeseries.Functions)
@@ -38,7 +37,7 @@ func _ExampleMaster_Observation() {
 	//if !status.OK() {
 	//	metrics.Notify(status)
 	//}
-	agent := newAgent(eventtest.New(), representation1.Initialize())
+	agent := newAgent(eventtest.New(), nil, nil)
 
 	go func() {
 		go masterAttend(agent, timeseries.Functions)

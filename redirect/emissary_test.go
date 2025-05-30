@@ -3,7 +3,6 @@ package redirect
 import (
 	"github.com/behavioral-ai/core/eventing/eventtest"
 	"github.com/behavioral-ai/core/messaging"
-	"github.com/behavioral-ai/traffic/redirect/representation1"
 	"time"
 )
 
@@ -13,7 +12,7 @@ const (
 
 func ExampleEmissary() {
 	ch := make(chan struct{})
-	agent := newAgent(eventtest.New(), representation1.Initialize())
+	agent := newAgent(eventtest.New(), nil, nil)
 
 	go func() {
 		go emissaryAttend(agent)
@@ -35,7 +34,7 @@ func ExampleEmissary() {
 
 func ExampleEmissary_Observation() {
 	ch := make(chan struct{})
-	agent := newAgent(eventtest.New(), representation1.Initialize())
+	agent := newAgent(eventtest.New(), nil, nil)
 
 	go func() {
 		go emissaryAttend(agent)

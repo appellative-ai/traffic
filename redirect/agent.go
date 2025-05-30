@@ -2,6 +2,7 @@ package redirect
 
 import (
 	"github.com/behavioral-ai/collective/repository"
+	"github.com/behavioral-ai/collective/resource"
 	"github.com/behavioral-ai/core/eventing"
 	"github.com/behavioral-ai/core/messaging"
 	"github.com/behavioral-ai/core/rest"
@@ -12,17 +13,15 @@ import (
 	"time"
 )
 
-// Namespace ID Namespace Specific String
-// NID + NSS
-// NamespaceName
 const (
 	NamespaceName = "resiliency:agent/redirect/request/http"
 )
 
 type agentT struct {
-	events  *list
-	limiter *rate.Limiter
-	state   *representation1.Redirect
+	events   *list
+	limiter  *rate.Limiter
+	state    *representation1.Redirect
+	resolver *resource.Resolution
 
 	ticker     *messaging.Ticker
 	emissary   *messaging.Channel
@@ -34,24 +33,29 @@ type agentT struct {
 // init - register an agent constructor
 func init() {
 	repository.RegisterConstructor(NamespaceName, func() messaging.Agent {
-		return newAgent(eventing.Handler, representation1.NewRedirect(NamespaceName))
+		return newAgent(eventing.Handler, representation1.NewRedirect(NamespaceName), nil)
 	})
 }
 
-func ConstructorOverride(m map[string]string) {
+func ConstructorOverride(m map[string]string, resolver *resource.Resolution) {
 	repository.RegisterConstructor(NamespaceName, func() messaging.Agent {
 		c := representation1.Initialize()
 		c.Update(m)
-		return newAgent(eventing.Handler, c)
+		return newAgent(eventing.Handler, c, resolver)
 	})
 }
 
-func newAgent(handler eventing.Agent, state *representation1.Redirect) *agentT {
+func newAgent(handler eventing.Agent, state *representation1.Redirect, resolver *resource.Resolution) *agentT {
 	a := new(agentT)
 	if state == nil {
 		a.state = representation1.Initialize()
 	} else {
 		a.state = state
+	}
+	if resolver == nil {
+		a.resolver = resource.Resolver
+	} else {
+		a.resolver = resolver
 	}
 	a.limiter = rate.NewLimiter(a.state.Limit, a.state.Burst)
 	a.events = newList()
@@ -143,6 +147,10 @@ func (a *agentT) dispatch(channel any, event string) {
 	}
 }
 
+func (a *agentT) trace(task, observation, action string) {
+	a.resolver.AddTrace(a.Name(), "origin", task, observation, action)
+}
+
 func (a *agentT) emissaryShutdown() {
 	a.emissary.Close()
 	a.ticker.Stop()
@@ -158,7 +166,7 @@ func (a *agentT) configure(m *messaging.Message) {
 	case messaging.ContentTypeMap:
 		cfg := messaging.ConfigMapContent(m)
 		if cfg == nil {
-			messaging.Reply(m, messaging.ConfigEmptyStatusError(a), a.Name())
+			messaging.Reply(m, messaging.ConfigEmptyMapError(a), a.Name())
 			return
 		}
 		a.state.Update(cfg)
