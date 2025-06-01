@@ -43,25 +43,14 @@ type Limiter struct {
 	LoadSize        int
 }
 
-func Initialize() *Limiter {
-	return &Limiter{
+func Initialize(m map[string]string) *Limiter {
+	l := &Limiter{
 		Limit:           limit,
 		Burst:           burst,
 		PeakDuration:    peakDuration,
 		OffPeakDuration: offPeakDuration,
 		LoadSize:        loadSize,
 	}
-}
-
-// NewLimiter - create a limiter using default values and overrides
-func NewLimiter(name string) *Limiter {
-	// Rel
-	//m, _ := resource.Resolve[map[string]string](name, Fragment, resource.Resolver)
-	return newLimiter(nil)
-}
-
-func newLimiter(m map[string]string) *Limiter {
-	l := Initialize()
 	parseLimiter(l, m)
 	return l
 }

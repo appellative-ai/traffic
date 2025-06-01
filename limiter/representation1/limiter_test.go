@@ -43,8 +43,8 @@ func _ExampleNewLimiter() {
 		fmt.Printf("test: Representation() -> [value:%v] [status:%v]\n", len(buf), status2)
 	}
 
-	l := NewLimiter(NamespaceName)
-	fmt.Printf("test: NewLimiter() -> %v\n", l)
+	//l := NewLimiter(NamespaceName)
+	//	fmt.Printf("test: NewLimiter() -> %v\n", l)
 
 	//Output:
 	//test: AddRepresentation() -> [status:OK]

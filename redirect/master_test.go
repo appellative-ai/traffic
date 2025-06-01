@@ -2,7 +2,6 @@ package redirect
 
 import (
 	centertest "github.com/behavioral-ai/center/messaging/messagingtest"
-	"github.com/behavioral-ai/collective/resource/resourcetest"
 	"github.com/behavioral-ai/core/messaging"
 	"github.com/behavioral-ai/traffic/redirect/representation1"
 	"github.com/behavioral-ai/traffic/timeseries"
@@ -11,7 +10,7 @@ import (
 
 func _ExampleMaster() {
 	ch := make(chan struct{})
-	agent := newAgent(representation1.Initialize(), resourcetest.Resolver, centertest.Comms)
+	agent := newAgent(representation1.Initialize(nil), centertest.Comms)
 
 	go func() {
 		go masterAttend(agent, timeseries.Functions)
@@ -39,7 +38,7 @@ func _ExampleMaster_Observation() {
 	//if !status.OK() {
 	//	metrics.Notify(status)
 	//}
-	agent := newAgent(representation1.Initialize(), resourcetest.Resolver, centertest.Comms)
+	agent := newAgent(representation1.Initialize(nil), centertest.Comms)
 
 	go func() {
 		go masterAttend(agent, timeseries.Functions)

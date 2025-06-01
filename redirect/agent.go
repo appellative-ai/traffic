@@ -3,8 +3,6 @@ package redirect
 import (
 	center "github.com/behavioral-ai/center/messaging"
 	"github.com/behavioral-ai/collective/repository"
-	"github.com/behavioral-ai/collective/resource"
-	"github.com/behavioral-ai/core/eventing"
 	"github.com/behavioral-ai/core/messaging"
 	"github.com/behavioral-ai/core/rest"
 	"github.com/behavioral-ai/traffic/redirect/representation1"
@@ -19,38 +17,33 @@ const (
 )
 
 type agentT struct {
-	events   *list
-	limiter  *rate.Limiter
-	state    *representation1.Redirect
-	resolver *resource.Resolution
-	comms    *center.Communication
+	events  *list
+	limiter *rate.Limiter
+	state   *representation1.Redirect
+	comms   *center.Communication
 
 	ticker     *messaging.Ticker
 	emissary   *messaging.Channel
 	master     *messaging.Channel
-	handler    eventing.Agent
 	dispatcher messaging.Dispatcher
 }
 
 // init - register an agent constructor
 func init() {
 	repository.RegisterConstructor(NamespaceName, func() messaging.Agent {
-		return newAgent(representation1.Initialize(), resource.Resolver, center.Comms)
+		return newAgent(representation1.Initialize(nil), center.Comms)
 	})
 }
 
-func ConstructorOverride(m map[string]string, resolver *resource.Resolution, comms *center.Communication) {
+func ConstructorOverride(m map[string]string, comms *center.Communication) {
 	repository.RegisterConstructor(NamespaceName, func() messaging.Agent {
-		c := representation1.Initialize()
-		c.Update(m)
-		return newAgent(c, resolver, comms)
+		return newAgent(representation1.Initialize(m), comms)
 	})
 }
 
-func newAgent(state *representation1.Redirect, resolver *resource.Resolution, comms *center.Communication) *agentT {
+func newAgent(state *representation1.Redirect, comms *center.Communication) *agentT {
 	a := new(agentT)
 	a.state = state
-	a.resolver = resolver
 	a.comms = comms
 
 	a.limiter = rate.NewLimiter(a.state.Limit, a.state.Burst)
@@ -143,7 +136,7 @@ func (a *agentT) dispatch(channel any, event string) {
 }
 
 func (a *agentT) trace(task, observation, action string) {
-	a.resolver.AddTrace(a.Name(), task, observation, action)
+	a.comms.Trace(a.Name(), task, observation, action)
 }
 
 func (a *agentT) emissaryShutdown() {

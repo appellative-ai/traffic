@@ -5,14 +5,14 @@ go 1.23.0
 //toolchain go1.23.7
 
 require (
-	github.com/behavioral-ai/collective v0.0.0-20250601154512-7ceaa1872458
+	github.com/behavioral-ai/collective v0.0.0-20250601164721-68e0e7a466e4
 	github.com/behavioral-ai/core v0.0.0-20250601153451-5ea3d8f097b7
 	github.com/dustinxie/lockfree v0.0.0-20210712051436-ed0ed42fd0d6
 	golang.org/x/time v0.11.0
 )
 
 require (
-	github.com/behavioral-ai/center v0.0.0-20250601160030-ac7b0c8abdef // indirect
+	github.com/behavioral-ai/center v0.0.0-20250601164439-3be72475075e // indirect
 	github.com/dchest/siphash v1.2.3 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 )

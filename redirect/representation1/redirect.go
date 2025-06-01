@@ -1,7 +1,6 @@
 package representation1
 
 import (
-	"github.com/behavioral-ai/collective/resource"
 	"github.com/behavioral-ai/core/fmtx"
 	"golang.org/x/time/rate"
 	"strconv"
@@ -40,7 +39,7 @@ type Redirect struct {
 	Latency             *PercentileMetrics
 }
 
-func Initialize() *Redirect {
+func Initialize(m map[string]string) *Redirect {
 	r := new(Redirect)
 	r.Limit = defaultLimit
 	r.Burst = defaultBurst
@@ -49,19 +48,16 @@ func Initialize() *Redirect {
 	r.PercentileThreshold = defaultPercentileThreshold
 	r.Codes = new(StatusCodeMetrics)
 	r.Latency = new(PercentileMetrics)
+	parseRedirect(r, m)
 	return r
 }
 
+/*
 func NewRedirect(name string) *Redirect {
 	m, _ := resource.Resolve[map[string]string](name, Fragment, resource.Resolver)
 	return newRedirect(m)
 }
-
-func newRedirect(m map[string]string) *Redirect {
-	r := new(Redirect)
-	parseRedirect(r, m)
-	return r
-}
+*/
 
 func (r *Redirect) Enabled() bool {
 	return r.OriginalPath != "" && r.NewPath != ""

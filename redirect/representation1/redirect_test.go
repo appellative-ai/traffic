@@ -43,8 +43,8 @@ func ExampleNewRedirect() {
 		fmt.Printf("test: Representation() -> [value:%v] [status:%v]\n", len(buf), status2)
 	}
 
-	r := NewRedirect(NamespaceName)
-	fmt.Printf("test: NewRedirect() -> %v\n", r)
+	//r := NewRedirect(NamespaceName)
+	//fmt.Printf("test: NewRedirect() -> %v\n", r)
 
 	//Output:
 	//test: AddRepresentation() -> [status:OK]

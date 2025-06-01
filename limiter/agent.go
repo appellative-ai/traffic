@@ -4,7 +4,6 @@ import (
 	"fmt"
 	center "github.com/behavioral-ai/center/messaging"
 	"github.com/behavioral-ai/collective/repository"
-	"github.com/behavioral-ai/collective/resource"
 	"github.com/behavioral-ai/core/access2"
 	"github.com/behavioral-ai/core/fmtx"
 	"github.com/behavioral-ai/core/messaging"
@@ -22,11 +21,10 @@ const (
 )
 
 type agentT struct {
-	state    *representation1.Limiter
-	limiter  *rate.Limiter
-	events   *list
-	resolver *resource.Resolution
-	comms    *center.Communication
+	state   *representation1.Limiter
+	limiter *rate.Limiter
+	events  *list
+	comms   *center.Communication
 
 	review     *messaging.Review
 	ticker     *messaging.Ticker
@@ -38,23 +36,22 @@ type agentT struct {
 // init - register an agent constructor
 func init() {
 	repository.RegisterConstructor(NamespaceName, func() messaging.Agent {
-		return newAgent(representation1.Initialize(), resource.Resolver, center.Comms)
+		return newAgent(representation1.Initialize(nil), center.Comms)
 	})
 }
 
-func ConstructorOverride(m map[string]string, resolver *resource.Resolution, comms *center.Communication) {
+func ConstructorOverride(m map[string]string, comms *center.Communication) {
 	repository.RegisterConstructor(NamespaceName, func() messaging.Agent {
-		c := representation1.Initialize()
+		c := representation1.Initialize(m)
 		c.Update(m)
-		return newAgent(c, resolver, comms)
+		return newAgent(c, comms)
 	})
 }
 
-func newAgent(state *representation1.Limiter, resolver *resource.Resolution, comms *center.Communication) *agentT {
+func newAgent(state *representation1.Limiter, comms *center.Communication) *agentT {
 	a := new(agentT)
 	a.state = state
 	a.state.Enabled = true
-	a.resolver = resolver
 	a.comms = comms
 
 	a.limiter = rate.NewLimiter(a.state.Limit, a.state.Burst)
@@ -146,7 +143,7 @@ func (a *agentT) trace(task, observation, action string) {
 	if a.review.Expired() {
 		return
 	}
-	a.resolver.AddTrace(a.Name(), task, observation, action)
+	a.comms.Trace(a.Name(), task, observation, action)
 }
 
 func (a *agentT) emissaryShutdown() {
