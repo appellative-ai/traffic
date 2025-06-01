@@ -11,7 +11,7 @@ import (
 
 func _ExampleMaster() {
 	ch := make(chan struct{})
-	agent := newAgent(representation1.Initialize(), resourcetest.Resolver, centertest.Handler)
+	agent := newAgent(representation1.Initialize(), resourcetest.Resolver, centertest.Comms)
 
 	go func() {
 		go masterAttend(agent, timeseries.Functions)
@@ -39,7 +39,7 @@ func _ExampleMaster_Observation() {
 	//if !status.OK() {
 	//	metrics.Notify(status)
 	//}
-	agent := newAgent(representation1.Initialize(), resourcetest.Resolver, centertest.Handler)
+	agent := newAgent(representation1.Initialize(), resourcetest.Resolver, centertest.Comms)
 
 	go func() {
 		go masterAttend(agent, timeseries.Functions)

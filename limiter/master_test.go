@@ -14,7 +14,7 @@ const (
 
 func ExampleMaster() {
 	ch := make(chan struct{})
-	agent := newAgent(representation1.Initialize(), resourcetest.Resolver, centertest.Handler)
+	agent := newAgent(representation1.Initialize(), resourcetest.Resolver, centertest.Comms)
 
 	go func() {
 		go masterAttend(agent, nil)
@@ -37,13 +37,12 @@ func ExampleMaster() {
 func ExampleMaster_Observation() {
 	ch := make(chan struct{})
 	//msg := metrics.NewMessage(metrics.Master, metrics.ObservationEvent)
-	//msg.SetContent(contentTypeObservation, observation{origin: origin, latency: 2350, gradient: 15})
 	//test.LoadResiliencyContent()
 	//resolver, status := test.NewResiliencyResolver()
 	//if !status.OK() {
 	//	metrics.Notify(status)
 	//}
-	agent := newAgent(representation1.Initialize(), resourcetest.Resolver, centertest.Handler)
+	agent := newAgent(representation1.Initialize(), resourcetest.Resolver, centertest.Comms)
 
 	go func() {
 		go masterAttend(agent, nil)

@@ -12,7 +12,7 @@ require (
 )
 
 require (
-	github.com/behavioral-ai/center v0.0.0-20250601153507-2a19a6433618 // indirect
+	github.com/behavioral-ai/center v0.0.0-20250601160030-ac7b0c8abdef // indirect
 	github.com/dchest/siphash v1.2.3 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 )

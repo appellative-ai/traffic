@@ -11,7 +11,7 @@ import (
 )
 
 func ExampleNewAgent() {
-	a := newAgent(representation1.Initialize(), resourcetest.Resolver, centertest.Handler)
+	a := newAgent(representation1.Initialize(), resourcetest.Resolver, centertest.Comms)
 
 	fmt.Printf("test: newAgent() -> [%v}\n", a.Name())
 
@@ -22,7 +22,7 @@ func ExampleNewAgent() {
 
 func _ExampleAgent_LoadContent() {
 	ch := make(chan struct{})
-	agent := newAgent(representation1.Initialize(), resourcetest.Resolver, centertest.Handler)
+	agent := newAgent(representation1.Initialize(), resourcetest.Resolver, centertest.Comms)
 	agent.dispatcher = messaging.NewTraceDispatcher()
 
 	go func() {
@@ -43,7 +43,7 @@ func _ExampleAgent_LoadContent() {
 
 func _ExampleAgent_NotFound() {
 	ch := make(chan struct{})
-	agent := newAgent(representation1.Initialize(), resourcetest.Resolver, centertest.Handler)
+	agent := newAgent(representation1.Initialize(), resourcetest.Resolver, centertest.Comms)
 	agent.dispatcher = messaging.NewTraceDispatcher()
 
 	go func() {
@@ -62,7 +62,7 @@ func _ExampleAgent_NotFound() {
 
 func _ExampleAgent_Resolver() {
 	ch := make(chan struct{})
-	agent := newAgent(representation1.Initialize(), resourcetest.Resolver, centertest.Handler)
+	agent := newAgent(representation1.Initialize(), resourcetest.Resolver, centertest.Comms)
 	agent.dispatcher = messaging.NewTraceDispatcher()
 	//test2.Startup()
 

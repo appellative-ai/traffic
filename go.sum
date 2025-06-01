@@ -1,5 +1,7 @@
 github.com/behavioral-ai/center v0.0.0-20250601153507-2a19a6433618 h1:ZoNNRZM4yA/wcRV/cAwsGgkRXWmvcRSn9GW2ok5+YhQ=
 github.com/behavioral-ai/center v0.0.0-20250601153507-2a19a6433618/go.mod h1:IrH16tcOgL5ZaPgILCSOaZFaQOOVBr+tWHyRpeK0UsQ=
+github.com/behavioral-ai/center v0.0.0-20250601160030-ac7b0c8abdef h1:hyGUK70H647iPdWytq8j4lzcIb55W9dgq22lXS4MT1E=
+github.com/behavioral-ai/center v0.0.0-20250601160030-ac7b0c8abdef/go.mod h1:IrH16tcOgL5ZaPgILCSOaZFaQOOVBr+tWHyRpeK0UsQ=
 github.com/behavioral-ai/collective v0.0.0-20250529130750-23ea56659ad2 h1:U0HyE1W6OxtgHARsYFKf8U3H5tV2Xg0CRiWcopj+sMQ=
 github.com/behavioral-ai/collective v0.0.0-20250529130750-23ea56659ad2/go.mod h1:DTZZRpDQleQ3XQQi2wASeDZg6UwjzTlGpfvuBFFEGMg=
 github.com/behavioral-ai/collective v0.0.0-20250529185706-f2d77d8c87b2 h1:b8k0XFnOKWZCNSJlAo0UVSHZ/xKcIEiGD5CQ98FERMo=

@@ -35,7 +35,7 @@ type agentT struct {
 // init - register an agent constructor
 func init() {
 	repository.RegisterConstructor(NamespaceName, func() messaging.Agent {
-		return newAgent(representation1.Initialize(), resource.Resolver, center.Handler)
+		return newAgent(representation1.Initialize(), resource.Resolver, center.Comms)
 	})
 }
 

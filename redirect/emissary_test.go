@@ -14,7 +14,7 @@ const (
 
 func ExampleEmissary() {
 	ch := make(chan struct{})
-	agent := newAgent(representation1.Initialize(), resourcetest.Resolver, centertest.Handler)
+	agent := newAgent(representation1.Initialize(), resourcetest.Resolver, centertest.Comms)
 
 	go func() {
 		go emissaryAttend(agent)
@@ -36,7 +36,7 @@ func ExampleEmissary() {
 
 func ExampleEmissary_Observation() {
 	ch := make(chan struct{})
-	agent := newAgent(representation1.Initialize(), resourcetest.Resolver, centertest.Handler)
+	agent := newAgent(representation1.Initialize(), resourcetest.Resolver, centertest.Comms)
 
 	go func() {
 		go emissaryAttend(agent)

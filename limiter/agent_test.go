@@ -8,7 +8,7 @@ import (
 )
 
 func ExampleNewAgent() {
-	a := newAgent(representation1.Initialize(), resourcetest.Resolver, centertest.Handler)
+	a := newAgent(representation1.Initialize(), resourcetest.Resolver, centertest.Comms)
 	fmt.Printf("test: newAgent() -> [limiter:%v] [burst:%v] [%v}\n", a.limiter.Limit(), a.limiter.Burst(), a.Name())
 
 	//agent := agentT{}
@@ -27,10 +27,9 @@ func ExampleNewAgent() {
 func ExampleAgent_LoadContent() {
 	ch := make(chan struct{})
 	dispatcher := event.NewTraceDispatcher()
-	origin := common.Origin{Region: common.WestRegion, Zone: common.WestZoneA}
 	s := messagingtest.NewTestSpanner(time.Second*2, testDuration)
 	//test.LoadResiliencyContent()
-	agent := newAgent(origin, eventtest.New(dispatcher))
+	agent := newAgent()
 
 	go func() {
 		go masterAttend(agent, content.Resolver)
