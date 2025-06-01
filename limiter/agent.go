@@ -85,18 +85,18 @@ func (a *agentT) Message(m *messaging.Message) {
 		return
 	}
 	if !a.state.Running {
-		if m.Name() == messaging.ConfigEvent {
+		if m.Name == messaging.ConfigEvent {
 			a.configure(m)
 			return
 		}
-		if m.Name() == messaging.StartupEvent {
+		if m.Name == messaging.StartupEvent {
 			a.run()
 			a.state.Running = true
 			return
 		}
 		return
 	}
-	if m.Name() == messaging.ShutdownEvent {
+	if m.Name == messaging.ShutdownEvent {
 		a.state.Running = false
 	}
 	switch m.Channel() {
@@ -152,7 +152,7 @@ func (a *agentT) trace(task, observation, action string) {
 	if a.review.Expired() {
 		return
 	}
-	a.resolver.AddTrace(a.Name(), "origin", task, observation, action)
+	a.resolver.AddTrace(a.Name(), task, observation, action)
 }
 
 func (a *agentT) emissaryShutdown() {
@@ -191,14 +191,14 @@ func (a *agentT) configure(m *messaging.Message) {
 	case messaging.ContentTypeMap:
 		cfg := messaging.ConfigMapContent(m)
 		if cfg == nil {
-			messaging.Reply(m, messaging.ConfigEmptyMapError(a), a.Name())
+			messaging.Reply(m, messaging.ConfigEmptyMapError(a.Name()), a.Name())
 			return
 		}
 		a.state.Update(cfg)
 	case messaging.ContentTypeReview:
 		r := messaging.ReviewContent(m)
 		if r == nil {
-			messaging.Reply(m, messaging.ConfigEmptyReviewError(a), a.Name())
+			messaging.Reply(m, messaging.ConfigEmptyReviewError(a.Name()), a.Name())
 			return
 		}
 		a.review = r
