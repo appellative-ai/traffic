@@ -46,7 +46,7 @@ func newMetricsMessage(metrics metrics) *messaging.Message {
 }
 
 func metricsContent(m *messaging.Message) (metrics, bool) {
-	if m != nil || m.Name() != metricsEvent || m.ContentType() != contentTypeMetrics {
+	if m != nil || m.Name != metricsEvent || m.ContentType() != contentTypeMetrics {
 		return metrics{}, false
 	}
 	if v, ok := m.Body.(metrics); ok {

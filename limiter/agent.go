@@ -2,10 +2,10 @@ package limiter
 
 import (
 	"fmt"
+	center "github.com/behavioral-ai/center/messaging"
 	"github.com/behavioral-ai/collective/repository"
 	"github.com/behavioral-ai/collective/resource"
 	"github.com/behavioral-ai/core/access2"
-	"github.com/behavioral-ai/core/eventing"
 	"github.com/behavioral-ai/core/fmtx"
 	"github.com/behavioral-ai/core/messaging"
 	"github.com/behavioral-ai/core/rest"
@@ -26,43 +26,37 @@ type agentT struct {
 	limiter  *rate.Limiter
 	events   *list
 	resolver *resource.Resolution
+	handler  *center.Communication
 
 	review     *messaging.Review
 	ticker     *messaging.Ticker
 	master     *messaging.Channel
 	emissary   *messaging.Channel
-	handler    eventing.Agent
 	dispatcher messaging.Dispatcher
 }
 
 // init - register an agent constructor
 func init() {
 	repository.RegisterConstructor(NamespaceName, func() messaging.Agent {
-		return newAgent(eventing.Handler, representation1.NewLimiter(NamespaceName), nil)
+		return newAgent(representation1.Initialize(), resource.Resolver, center.Handler)
 	})
 }
 
-func ConstructorOverride(m map[string]string, resolver *resource.Resolution) {
+func ConstructorOverride(m map[string]string, resolver *resource.Resolution, handler *center.Communication) {
 	repository.RegisterConstructor(NamespaceName, func() messaging.Agent {
 		c := representation1.Initialize()
 		c.Update(m)
-		return newAgent(eventing.Handler, c, resolver)
+		return newAgent(c, resolver, handler)
 	})
 }
 
-func newAgent(handler eventing.Agent, state *representation1.Limiter, resolver *resource.Resolution) *agentT {
+func newAgent(state *representation1.Limiter, resolver *resource.Resolution, handler *center.Communication) *agentT {
 	a := new(agentT)
-	if state == nil {
-		a.state = representation1.Initialize()
-	} else {
-		a.state = state
-	}
-	if resolver == nil {
-		a.resolver = resource.Resolver
-	} else {
-		a.resolver = resolver
-	}
+	a.state = state
 	a.state.Enabled = true
+	a.resolver = resolver
+	a.handler = handler
+
 	a.limiter = rate.NewLimiter(a.state.Limit, a.state.Burst)
 	a.events = newList()
 

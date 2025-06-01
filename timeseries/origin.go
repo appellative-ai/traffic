@@ -46,7 +46,7 @@ func NewOriginFromMessage(agent messaging.Agent, m *messaging.Message) (o Origin
 	a := agent
 	cfg := messaging.ConfigMapContent(m)
 	if cfg == nil {
-		messaging.Reply(m, messaging.ConfigEmptyMapError(a), a.Name())
+		messaging.Reply(m, messaging.ConfigEmptyMapError(a.Name()), a.Name())
 		return
 	}
 	region := cfg[RegionKey]
@@ -56,22 +56,22 @@ func NewOriginFromMessage(agent messaging.Agent, m *messaging.Message) (o Origin
 	o.Region = region
 	o.Zone = cfg[ZoneKey]
 	if o.Zone == "" {
-		messaging.Reply(m, messaging.ConfigMapContentError(a, ZoneKey), a.Name())
+		messaging.Reply(m, messaging.ConfigMapContentError(a.Name(), ZoneKey), a.Name())
 		return
 	}
 	o.SubZone = cfg[SubZoneKey]
 	if o.SubZone == "" {
-		messaging.Reply(m, messaging.ConfigMapContentError(a, SubZoneKey), a.Name())
+		messaging.Reply(m, messaging.ConfigMapContentError(a.Name(), SubZoneKey), a.Name())
 		return
 	}
 	o.Host = cfg[HostKey]
 	if o.Host == "" {
-		messaging.Reply(m, messaging.ConfigMapContentError(a, HostKey), a.Name())
+		messaging.Reply(m, messaging.ConfigMapContentError(a.Name(), HostKey), a.Name())
 		return
 	}
 	o.InstanceId = cfg[InstanceIdKey]
 	if o.Host == "" {
-		messaging.Reply(m, messaging.ConfigMapContentError(a, InstanceIdKey), a.Name())
+		messaging.Reply(m, messaging.ConfigMapContentError(a.Name(), InstanceIdKey), a.Name())
 		return
 	}
 	messaging.Reply(m, messaging.StatusOK(), a.Name())
