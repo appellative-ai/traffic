@@ -2,14 +2,16 @@ package redirect
 
 import (
 	"fmt"
-	"github.com/behavioral-ai/core/eventing/eventtest"
+	centertest "github.com/behavioral-ai/center/messaging/messagingtest"
+	"github.com/behavioral-ai/collective/resource/resourcetest"
 	"github.com/behavioral-ai/core/messaging"
+	"github.com/behavioral-ai/traffic/redirect/representation1"
 	"github.com/behavioral-ai/traffic/timeseries"
 	"time"
 )
 
 func ExampleNewAgent() {
-	a := newAgent(eventtest.New(), nil, nil)
+	a := newAgent(representation1.Initialize(), resourcetest.Resolver, centertest.Handler)
 
 	fmt.Printf("test: newAgent() -> [%v}\n", a.Name())
 
@@ -20,7 +22,7 @@ func ExampleNewAgent() {
 
 func _ExampleAgent_LoadContent() {
 	ch := make(chan struct{})
-	agent := newAgent(eventtest.New(), nil, nil)
+	agent := newAgent(representation1.Initialize(), resourcetest.Resolver, centertest.Handler)
 	agent.dispatcher = messaging.NewTraceDispatcher()
 
 	go func() {
@@ -41,7 +43,7 @@ func _ExampleAgent_LoadContent() {
 
 func _ExampleAgent_NotFound() {
 	ch := make(chan struct{})
-	agent := newAgent(eventtest.New(), nil, nil)
+	agent := newAgent(representation1.Initialize(), resourcetest.Resolver, centertest.Handler)
 	agent.dispatcher = messaging.NewTraceDispatcher()
 
 	go func() {
@@ -60,7 +62,7 @@ func _ExampleAgent_NotFound() {
 
 func _ExampleAgent_Resolver() {
 	ch := make(chan struct{})
-	agent := newAgent(eventtest.New(), nil, nil)
+	agent := newAgent(representation1.Initialize(), resourcetest.Resolver, centertest.Handler)
 	agent.dispatcher = messaging.NewTraceDispatcher()
 	//test2.Startup()
 

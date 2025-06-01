@@ -1,6 +1,7 @@
 package redirect
 
 import (
+	center "github.com/behavioral-ai/center/messaging"
 	"github.com/behavioral-ai/collective/repository"
 	"github.com/behavioral-ai/collective/resource"
 	"github.com/behavioral-ai/core/eventing"
@@ -22,6 +23,7 @@ type agentT struct {
 	limiter  *rate.Limiter
 	state    *representation1.Redirect
 	resolver *resource.Resolution
+	comms    *center.Communication
 
 	ticker     *messaging.Ticker
 	emissary   *messaging.Channel
@@ -33,37 +35,30 @@ type agentT struct {
 // init - register an agent constructor
 func init() {
 	repository.RegisterConstructor(NamespaceName, func() messaging.Agent {
-		return newAgent(eventing.Handler, representation1.NewRedirect(NamespaceName), nil)
+		return newAgent(representation1.Initialize(), resource.Resolver, center.Handler)
 	})
 }
 
-func ConstructorOverride(m map[string]string, resolver *resource.Resolution) {
+func ConstructorOverride(m map[string]string, resolver *resource.Resolution, comms *center.Communication) {
 	repository.RegisterConstructor(NamespaceName, func() messaging.Agent {
 		c := representation1.Initialize()
 		c.Update(m)
-		return newAgent(eventing.Handler, c, resolver)
+		return newAgent(c, resolver, comms)
 	})
 }
 
-func newAgent(handler eventing.Agent, state *representation1.Redirect, resolver *resource.Resolution) *agentT {
+func newAgent(state *representation1.Redirect, resolver *resource.Resolution, comms *center.Communication) *agentT {
 	a := new(agentT)
-	if state == nil {
-		a.state = representation1.Initialize()
-	} else {
-		a.state = state
-	}
-	if resolver == nil {
-		a.resolver = resource.Resolver
-	} else {
-		a.resolver = resolver
-	}
+	a.state = state
+	a.resolver = resolver
+	a.comms = comms
+
 	a.limiter = rate.NewLimiter(a.state.Limit, a.state.Burst)
 	a.events = newList()
 
 	a.ticker = messaging.NewTicker(messaging.ChannelEmissary, a.state.Interval)
 	a.emissary = messaging.NewEmissaryChannel()
 	a.master = messaging.NewMasterChannel()
-	a.handler = handler
 	return a
 }
 
@@ -79,18 +74,18 @@ func (a *agentT) Message(m *messaging.Message) {
 		return
 	}
 	if !a.state.Running {
-		if m.Name() == messaging.ConfigEvent {
+		if m.Name == messaging.ConfigEvent {
 			a.configure(m)
 			return
 		}
-		if m.Name() == messaging.StartupEvent {
+		if m.Name == messaging.StartupEvent {
 			a.run()
 			a.state.Running = true
 			return
 		}
 		return
 	}
-	if m.Name() == messaging.ShutdownEvent {
+	if m.Name == messaging.ShutdownEvent {
 		a.state.Running = false
 	}
 	switch m.Channel() {
@@ -148,7 +143,7 @@ func (a *agentT) dispatch(channel any, event string) {
 }
 
 func (a *agentT) trace(task, observation, action string) {
-	a.resolver.AddTrace(a.Name(), "origin", task, observation, action)
+	a.resolver.AddTrace(a.Name(), task, observation, action)
 }
 
 func (a *agentT) emissaryShutdown() {
@@ -166,7 +161,7 @@ func (a *agentT) configure(m *messaging.Message) {
 	case messaging.ContentTypeMap:
 		cfg := messaging.ConfigMapContent(m)
 		if cfg == nil {
-			messaging.Reply(m, messaging.ConfigEmptyMapError(a), a.Name())
+			messaging.Reply(m, messaging.ConfigEmptyMapError(a.Name()), a.Name())
 			return
 		}
 		a.state.Update(cfg)

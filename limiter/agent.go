@@ -26,7 +26,7 @@ type agentT struct {
 	limiter  *rate.Limiter
 	events   *list
 	resolver *resource.Resolution
-	handler  *center.Communication
+	comms    *center.Communication
 
 	review     *messaging.Review
 	ticker     *messaging.Ticker
@@ -42,20 +42,20 @@ func init() {
 	})
 }
 
-func ConstructorOverride(m map[string]string, resolver *resource.Resolution, handler *center.Communication) {
+func ConstructorOverride(m map[string]string, resolver *resource.Resolution, comms *center.Communication) {
 	repository.RegisterConstructor(NamespaceName, func() messaging.Agent {
 		c := representation1.Initialize()
 		c.Update(m)
-		return newAgent(c, resolver, handler)
+		return newAgent(c, resolver, comms)
 	})
 }
 
-func newAgent(state *representation1.Limiter, resolver *resource.Resolution, handler *center.Communication) *agentT {
+func newAgent(state *representation1.Limiter, resolver *resource.Resolution, comms *center.Communication) *agentT {
 	a := new(agentT)
 	a.state = state
 	a.state.Enabled = true
 	a.resolver = resolver
-	a.handler = handler
+	a.comms = comms
 
 	a.limiter = rate.NewLimiter(a.state.Limit, a.state.Burst)
 	a.events = newList()
@@ -63,7 +63,7 @@ func newAgent(state *representation1.Limiter, resolver *resource.Resolution, han
 	a.ticker = messaging.NewTicker(messaging.ChannelEmissary, a.state.PeakDuration)
 	a.master = messaging.NewMasterChannel()
 	a.emissary = messaging.NewEmissaryChannel()
-	a.handler = handler
+
 	return a
 }
 

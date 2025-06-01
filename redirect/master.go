@@ -13,8 +13,8 @@ func masterAttend(a *agentT, ts *timeseries.Interface) {
 	for {
 		select {
 		case msg := <-a.master.C:
-			a.dispatch(a.master, msg.Name())
-			switch msg.Name() {
+			a.dispatch(a.master, msg.Name)
+			switch msg.Name {
 			case metricsEvent:
 				if !paused {
 					if m, ok := metricsContent(msg); ok {
