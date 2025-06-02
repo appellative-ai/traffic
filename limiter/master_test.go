@@ -1,6 +1,7 @@
 package limiter
 
 import (
+	"github.com/behavioral-ai/collective/operations/operationstest"
 	"github.com/behavioral-ai/core/messaging"
 	"github.com/behavioral-ai/traffic/limiter/representation1"
 	"time"
@@ -12,7 +13,7 @@ const (
 
 func ExampleMaster() {
 	ch := make(chan struct{})
-	agent := newAgent(representation1.Initialize(nil), nil)
+	agent := newAgent(representation1.Initialize(nil), operationstest.NewService())
 
 	go func() {
 		go masterAttend(agent, nil)
@@ -40,7 +41,7 @@ func ExampleMaster_Observation() {
 	//if !status.OK() {
 	//	metrics.Notify(status)
 	//}
-	agent := newAgent(representation1.Initialize(nil), nil)
+	agent := newAgent(representation1.Initialize(nil), operationstest.NewService())
 
 	go func() {
 		go masterAttend(agent, nil)
