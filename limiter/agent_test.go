@@ -2,12 +2,11 @@ package limiter
 
 import (
 	"fmt"
-	centertest "github.com/behavioral-ai/center/messaging/messagingtest"
 	"github.com/behavioral-ai/traffic/limiter/representation1"
 )
 
 func ExampleNewAgent() {
-	a := newAgent(representation1.Initialize(nil), centertest.Comms)
+	a := newAgent(representation1.Initialize(nil), nil)
 	fmt.Printf("test: newAgent() -> [limiter:%v] [burst:%v] [%v}\n", a.limiter.Limit(), a.limiter.Burst(), a.Name())
 
 	//agent := agentT{}

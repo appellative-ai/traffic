@@ -2,7 +2,7 @@ package limiter
 
 import (
 	"fmt"
-	center "github.com/behavioral-ai/center/messaging"
+	"github.com/behavioral-ai/collective/operations"
 	"github.com/behavioral-ai/collective/repository"
 	"github.com/behavioral-ai/core/access2"
 	"github.com/behavioral-ai/core/fmtx"
@@ -24,7 +24,7 @@ type agentT struct {
 	state   *representation1.Limiter
 	limiter *rate.Limiter
 	events  *list
-	comms   *center.Communication
+	service *operations.Service
 
 	review     *messaging.Review
 	ticker     *messaging.Ticker
@@ -36,23 +36,21 @@ type agentT struct {
 // init - register an agent constructor
 func init() {
 	repository.RegisterConstructor(NamespaceName, func() messaging.Agent {
-		return newAgent(representation1.Initialize(nil), center.Comms)
+		return newAgent(representation1.Initialize(nil), operations.Serve)
 	})
 }
 
-func ConstructorOverride(m map[string]string, comms *center.Communication) {
+func ConstructorOverride(m map[string]string, service *operations.Service) {
 	repository.RegisterConstructor(NamespaceName, func() messaging.Agent {
-		c := representation1.Initialize(m)
-		c.Update(m)
-		return newAgent(c, comms)
+		return newAgent(representation1.Initialize(m), service)
 	})
 }
 
-func newAgent(state *representation1.Limiter, comms *center.Communication) *agentT {
+func newAgent(state *representation1.Limiter, service *operations.Service) *agentT {
 	a := new(agentT)
 	a.state = state
 	a.state.Enabled = true
-	a.comms = comms
+	a.service = service
 
 	a.limiter = rate.NewLimiter(a.state.Limit, a.state.Burst)
 	a.events = newList()
@@ -143,7 +141,7 @@ func (a *agentT) trace(task, observation, action string) {
 	if a.review.Expired() {
 		return
 	}
-	a.comms.Trace(a.Name(), task, observation, action)
+	a.service.Trace(a.Name(), task, observation, action)
 }
 
 func (a *agentT) emissaryShutdown() {
