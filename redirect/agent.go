@@ -1,7 +1,7 @@
 package redirect
 
 import (
-	center "github.com/behavioral-ai/center/messaging"
+	"github.com/behavioral-ai/collective/operations"
 	"github.com/behavioral-ai/collective/repository"
 	"github.com/behavioral-ai/core/messaging"
 	"github.com/behavioral-ai/core/rest"
@@ -20,7 +20,7 @@ type agentT struct {
 	events  *list
 	limiter *rate.Limiter
 	state   *representation1.Redirect
-	comms   *center.Communication
+	service *operations.Service
 
 	ticker     *messaging.Ticker
 	emissary   *messaging.Channel
@@ -31,20 +31,20 @@ type agentT struct {
 // init - register an agent constructor
 func init() {
 	repository.RegisterConstructor(NamespaceName, func() messaging.Agent {
-		return newAgent(representation1.Initialize(nil), center.Comms)
+		return newAgent(representation1.Initialize(nil), operations.Serve)
 	})
 }
 
-func ConstructorOverride(m map[string]string, comms *center.Communication) {
+func ConstructorOverride(m map[string]string, service *operations.Service) {
 	repository.RegisterConstructor(NamespaceName, func() messaging.Agent {
-		return newAgent(representation1.Initialize(m), comms)
+		return newAgent(representation1.Initialize(m), service)
 	})
 }
 
-func newAgent(state *representation1.Redirect, comms *center.Communication) *agentT {
+func newAgent(state *representation1.Redirect, service *operations.Service) *agentT {
 	a := new(agentT)
 	a.state = state
-	a.comms = comms
+	a.service = service
 
 	a.limiter = rate.NewLimiter(a.state.Limit, a.state.Burst)
 	a.events = newList()
@@ -136,7 +136,7 @@ func (a *agentT) dispatch(channel any, event string) {
 }
 
 func (a *agentT) trace(task, observation, action string) {
-	a.comms.Trace(a.Name(), task, observation, action)
+	a.service.Trace(a.Name(), task, observation, action)
 }
 
 func (a *agentT) emissaryShutdown() {

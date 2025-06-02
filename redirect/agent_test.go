@@ -2,7 +2,6 @@ package redirect
 
 import (
 	"fmt"
-	centertest "github.com/behavioral-ai/center/messaging/messagingtest"
 	"github.com/behavioral-ai/core/messaging"
 	"github.com/behavioral-ai/traffic/redirect/representation1"
 	"github.com/behavioral-ai/traffic/timeseries"
@@ -10,7 +9,7 @@ import (
 )
 
 func ExampleNewAgent() {
-	a := newAgent(representation1.Initialize(nil), centertest.Comms)
+	a := newAgent(representation1.Initialize(nil), operationstest.NewService())
 
 	fmt.Printf("test: newAgent() -> [%v}\n", a.Name())
 
@@ -21,7 +20,7 @@ func ExampleNewAgent() {
 
 func _ExampleAgent_LoadContent() {
 	ch := make(chan struct{})
-	agent := newAgent(representation1.Initialize(nil), centertest.Comms)
+	agent := newAgent(representation1.Initialize(nil), operationstest.NewService())
 	agent.dispatcher = messaging.NewTraceDispatcher()
 
 	go func() {
@@ -42,7 +41,7 @@ func _ExampleAgent_LoadContent() {
 
 func _ExampleAgent_NotFound() {
 	ch := make(chan struct{})
-	agent := newAgent(representation1.Initialize(nil), centertest.Comms)
+	agent := newAgent(representation1.Initialize(nil), operationstest.NewService())
 	agent.dispatcher = messaging.NewTraceDispatcher()
 
 	go func() {
@@ -61,7 +60,7 @@ func _ExampleAgent_NotFound() {
 
 func _ExampleAgent_Resolver() {
 	ch := make(chan struct{})
-	agent := newAgent(representation1.Initialize(nil), centertest.Comms)
+	agent := newAgent(representation1.Initialize(nil), operationstest.NewService())
 	agent.dispatcher = messaging.NewTraceDispatcher()
 	//test2.Startup()
 

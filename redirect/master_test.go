@@ -38,7 +38,7 @@ func _ExampleMaster_Observation() {
 	//if !status.OK() {
 	//	metrics.Notify(status)
 	//}
-	agent := newAgent(representation1.Initialize(nil), centertest.Comms)
+	agent := newAgent(representation1.Initialize(nil), operationstest.NewService())
 
 	go func() {
 		go masterAttend(agent, timeseries.Functions)
