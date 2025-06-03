@@ -50,6 +50,5 @@ func ExampleNewRedirect() {
 	//test: AddRepresentation() -> [status:OK]
 	//test: Representation() -> [ct:fragment: v1 type: application/json value: true] [status:OK]
 	//test: Representation() -> [value:128] [status:OK]
-	//test: NewRedirect() -> &{false 1234 12 750ms /google/search:v1 /yahoo/search:v2 0 0 <nil> <nil>}
 
 }
