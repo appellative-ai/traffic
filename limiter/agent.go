@@ -16,8 +16,8 @@ import (
 )
 
 const (
-	NamespaceName     = "resiliency:agent/rate-limiting/request/http"
-	NamespaceTaskName = "resiliency:task/analyze/traffic"
+	NamespaceName     = "test:resiliency:agent/rate-limiting/request/http"
+	NamespaceTaskName = "test:resiliency:task/analyze/traffic"
 )
 
 type agentT struct {

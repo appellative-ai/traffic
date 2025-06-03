@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	NamespaceName = "resiliency:agent/redirect/request/http"
+	NamespaceName = "test:resiliency:agent/redirect/request/http"
 )
 
 var (
