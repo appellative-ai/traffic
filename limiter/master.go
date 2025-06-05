@@ -22,7 +22,7 @@ func masterAttend(a *agentT, ts *timeseries.Interface) {
 			switch m.Name {
 			case metricsEvent:
 				if !paused {
-					if ms, ok := metricsContent(m); ok {
+					if ms, status := metricsContent(m); status.OK() {
 						s := newStats(a, ts, ms)
 						// TODO : determine action
 						// If the alpha is less than one, then determine if we need to increase the rate limiting

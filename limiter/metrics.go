@@ -40,17 +40,12 @@ func (m *metrics) update(event *event) {
 }
 
 func newMetricsMessage(metrics metrics) *messaging.Message {
-	m := messaging.NewMessage(messaging.ChannelMaster, metricsEvent)
-	m.SetContent(contentTypeMetrics, metrics)
-	return m
+	return messaging.NewMessage(messaging.ChannelMaster, metricsEvent).SetContent(contentTypeMetrics, metrics)
 }
 
-func metricsContent(m *messaging.Message) (metrics, bool) {
-	if m != nil || m.Name != metricsEvent || m.ContentType() != contentTypeMetrics {
-		return metrics{}, false
+func metricsContent(m *messaging.Message) (metrics, *messaging.Status) {
+	if !messaging.ValidContent(m, metricsEvent, contentTypeMetrics) {
+		return metrics{}, messaging.NewStatus(messaging.StatusInvalidContent, "")
 	}
-	if v, ok := m.Body.(metrics); ok {
-		return v, true
-	}
-	return metrics{}, false
+	return messaging.New[metrics](m.Content)
 }

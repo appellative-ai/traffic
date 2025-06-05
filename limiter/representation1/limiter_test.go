@@ -3,6 +3,7 @@ package representation1
 import (
 	"fmt"
 	"github.com/behavioral-ai/collective/resource"
+	"github.com/behavioral-ai/core/messaging"
 )
 
 const (
@@ -33,15 +34,15 @@ func ExampleParseLimiter() {
 func _ExampleNewLimiter() {
 	resource.NewAgent()
 
-	status := resource.Resolver.AddRepresentation(NamespaceName, Fragment, "author", m)
+	status := resource.Resolver.AddRepresentation(NamespaceName, "author", messaging.ContentTypeText, "test content")
 	fmt.Printf("test: AddRepresentation() -> [status:%v]\n", status)
 
-	ct, status2 := resource.Resolver.Representation(NamespaceName, Fragment)
+	ct, status2 := resource.Resolver.Representation(NamespaceName)
 	fmt.Printf("test: Representation() -> [ct:%v] [status:%v]\n", ct, status2)
 
-	if buf, ok := ct.Value.([]byte); ok {
-		fmt.Printf("test: Representation() -> [value:%v] [status:%v]\n", len(buf), status2)
-	}
+	//if buf, ok := ct.Value.([]byte); ok {
+	//	fmt.Printf("test: Representation() -> [value:%v] [status:%v]\n", len(buf), status2)
+	//}
 
 	//l := NewLimiter(NamespaceName)
 	//	fmt.Printf("test: NewLimiter() -> %v\n", l)

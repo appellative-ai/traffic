@@ -152,9 +152,9 @@ func (a *agentT) masterShutdown() {
 func (a *agentT) configure(m *messaging.Message) {
 	switch m.ContentType() {
 	case messaging.ContentTypeMap:
-		cfg := messaging.ConfigMapContent(m)
-		if cfg == nil {
-			messaging.Reply(m, messaging.ConfigEmptyMapError(a.Name()), a.Name())
+		cfg, status := messaging.MapContent(m)
+		if !status.OK() {
+			messaging.Reply(m, status, a.Name())
 			return
 		}
 		a.state.Update(cfg)

@@ -17,7 +17,7 @@ func masterAttend(a *agentT, ts *timeseries.Interface) {
 			switch msg.Name {
 			case metricsEvent:
 				if !paused {
-					if m, ok := metricsContent(msg); ok {
+					if m, status := metricsContent(msg); status.OK() {
 						updateRedirect(a, ts, m)
 						//history = append(history, s)
 					}
