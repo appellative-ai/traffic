@@ -13,7 +13,7 @@ const (
 	RateBurstKey        = "rate-burst"
 	OriginalPathKey     = "original-path"
 	NewPathKey          = "new-path"
-	IntervalKey         = "interval-key"
+	IntervalKey         = "interval"
 	StatusCodeThreshold = "status-code-threshold"
 	PercentileThreshold = "percentile-threshold"
 

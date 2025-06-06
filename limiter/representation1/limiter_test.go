@@ -1,6 +1,7 @@
 package representation1
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/behavioral-ai/collective/resource"
 	"github.com/behavioral-ai/core/messaging"
@@ -25,6 +26,9 @@ func ExampleParseLimiter() {
 	parseLimiter(&limiter, m)
 
 	fmt.Printf("test: parseLimiter() -> %v\n", limiter)
+
+	buf, err := json.Marshal(limiter)
+	fmt.Printf("test: json.Marshal() -> %v [err:%v]\n", string(buf), err)
 
 	//Output:
 	//test: parseLimiter() -> {false false 1234 12 750ms 5m0s 567}
