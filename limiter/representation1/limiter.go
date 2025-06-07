@@ -14,6 +14,7 @@ const (
 	PeakDurationKey    = "peak-duration"
 	OffPeakDurationKey = "off-peak-duration"
 	LoadSizeKey        = "load-size"
+	ReviewLengthKey    = "review-length"
 )
 
 const (
@@ -41,6 +42,7 @@ type Limiter struct {
 	PeakDuration    time.Duration
 	OffPeakDuration time.Duration
 	LoadSize        int
+	ReviewLength    int // minutes
 }
 
 func Initialize(m map[string]string) *Limiter {
