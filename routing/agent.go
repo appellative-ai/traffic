@@ -1,7 +1,6 @@
 package routing
 
 import (
-	"errors"
 	"fmt"
 	"github.com/behavioral-ai/collective/operations"
 	"github.com/behavioral-ai/collective/repository"
@@ -25,10 +24,10 @@ var (
 )
 
 type agentT struct {
-	events  *list
-	state   *representation1.Routing
-	router  *rest.Router
-	service *operations.Service
+	events   *list
+	state    *representation1.Routing
+	exchange rest.Exchange
+	service  *operations.Service
 
 	review   *messaging.Review
 	ticker   *messaging.Ticker
@@ -55,11 +54,10 @@ func newAgent(state *representation1.Routing, ex rest.Exchange, service *operati
 	a.service = service
 	if ex == nil {
 		ex = httpx.Do
+	} else {
+		a.exchange = ex
 	}
 	a.events = newList()
-
-	a.router = rest.NewRouter()
-	a.router.Modify(defaultRoute, a.state.AppHost, ex)
 
 	a.ticker = messaging.NewTicker(messaging.ChannelEmissary, a.state.Interval)
 	a.emissary = messaging.NewEmissaryChannel()
@@ -89,27 +87,13 @@ func (a *agentT) run() {
 	go emissaryAttend(a)
 }
 
-// Do - implementation for Requester interface
-func (a *agentT) Do() rest.Exchange {
-	if rt, ok := a.router.Lookup(defaultRoute); ok {
-		return rt.Ex
-	}
-	return httpx.Do
-}
-
 // Exchange - implementation for rest.Exchangeable interface
 func (a *agentT) Exchange(r *http.Request) (resp *http.Response, err error) {
-	rt, ok := a.router.Lookup(defaultRoute)
-	if !ok || rt != nil && rt.Uri == "" {
-		status := messaging.NewStatus(messaging.StatusInvalidArgument, errors.New("host configuration is empty")).WithLocation(a.Name())
-		a.service.Message(messaging.NewStatusMessage(status, a.Name()))
-		return serverErrorResponse, status.Err
-	}
 	var status *messaging.Status
 
-	url := uri.BuildURL(rt.Uri, r.URL.Path, r.URL.Query())
+	url := uri.BuildURL(a.state.AppHost, r.URL.Path, r.URL.Query())
 	// TODO : need to check and remove Caching header.
-	resp, status = Do(a.state.Timeout, a.Do(), r.Method, url, httpx.CloneHeaderWithEncoding(r), r.Body)
+	resp, status = Do(a.state.Timeout, a.exchange, r.Method, url, httpx.CloneHeaderWithEncoding(r), r.Body)
 	if status.Err != nil {
 		a.service.Message(messaging.NewStatusMessage(status.WithLocation(a.Name()), a.Name()))
 	}
@@ -141,7 +125,6 @@ func (a *agentT) configure(m *messaging.Message) {
 			return
 		}
 		a.state.Update(cfg)
-		a.router.Modify(defaultRoute, a.state.AppHost, nil)
 	case messaging.ContentTypeReview:
 		r, status := messaging.ReviewContent(m)
 		if !status.OK() {
@@ -174,19 +157,6 @@ func (a *agentT) emissaryShutdown() {
 func (a *agentT) masterShutdown() {
 	a.master.Close()
 }
-
-/*
-func (a *agentT) routerModify(uri string, ex rest.Exchange) {
-	a.router.Modify(defaultRoute, uri, ex)
-}
-
-func (a *agentT) routerLookup() (r *rest.Route) {
-	r, _ = a.router.Lookup(defaultRoute)
-	return
-}
-
-
-*/
 
 // Link - chainable exchange
 /*
