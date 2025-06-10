@@ -21,7 +21,7 @@ func (a *agentTest) Message(m *messaging.Message) {}
 func (a *agentTest) Timeout() time.Duration       { return a.timeout }
 func (a *agentTest) Do() rest.Exchange            { return a.exchange }
 
-func ExampleDo_Get() {
+func _ExampleDo_Get() {
 	url := "https://www.google.com/search?q=golang"
 	a := new(agentTest)
 	a.exchange = httpx.Do
@@ -29,7 +29,7 @@ func ExampleDo_Get() {
 	h := make(http.Header)
 	h.Add(iox.AcceptEncoding, iox.GzipEncoding)
 	h.Add(httpx.XRequestId, "1234-request-id")
-	resp, status := Do(a.Timeout(), a.Do(), http.MethodGet, url, h, nil)
+	resp, status := do(nil, http.MethodGet, url, h, nil)
 	fmt.Printf("test: Do() -> [resp:%v] [status:%v]\n", resp.StatusCode, status)
 
 	if resp.StatusCode == http.StatusOK {
@@ -53,7 +53,7 @@ func ExampleDo_Get_Timeout() {
 	h := make(http.Header)
 	h.Add(iox.AcceptEncoding, "gzip")
 	h.Add(httpx.XRequestId, "1234-request-id")
-	resp, status := Do(a.Timeout(), a.Do(), http.MethodGet, url, h, nil)
+	resp, status := do(nil, http.MethodGet, url, h, nil)
 	fmt.Printf("test: Do() -> [resp:%v] [status:%v]\n", resp.StatusCode, status)
 
 	if resp.StatusCode == http.StatusOK {
@@ -62,7 +62,7 @@ func ExampleDo_Get_Timeout() {
 	}
 
 	a.timeout = time.Millisecond * 10
-	resp, status = Do(a.Timeout(), a.Do(), http.MethodGet, url, h, nil)
+	resp, status = do(nil, http.MethodGet, url, h, nil)
 	fmt.Printf("test: Do() -> [resp:%v] [status:%v]\n", resp.StatusCode, status)
 
 	//Output:

@@ -3,10 +3,8 @@ package cache
 import (
 	"github.com/behavioral-ai/core/httpx"
 	"github.com/behavioral-ai/core/messaging"
-	"github.com/behavioral-ai/core/rest"
 	"io"
 	"net/http"
-	"time"
 )
 
 var (
@@ -21,13 +19,18 @@ type Requester interface {
 
 */
 
-func Do(timeout time.Duration, ex rest.Exchange, method string, url string, h http.Header, r io.ReadCloser) (resp *http.Response, status *messaging.Status) {
-	req, err := http.NewRequest(method, url, r)
+func do(agent *agentT, method string, url string, h http.Header, r io.ReadCloser) (resp *http.Response, status *messaging.Status) {
+	if agent == nil {
+		return serverErrorResponse, messaging.StatusNotFound()
+	}
+	ctx, cancel := httpx.NewContext(nil, agent.state.Timeout)
+	defer cancel()
+	req, err := http.NewRequestWithContext(ctx, method, url, r)
 	if err != nil {
 		return serverErrorResponse, messaging.NewStatus(messaging.StatusInvalidArgument, err)
 	}
 	req.Header = h
-	resp, err = httpx.ExchangeWithTimeout(timeout, ex)(req)
+	resp, err = agent.exchange(req)
 	if resp.Header == nil {
 		resp.Header = make(http.Header)
 	}

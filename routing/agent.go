@@ -87,20 +87,22 @@ func (a *agentT) run() {
 	go emissaryAttend(a)
 }
 
-// Exchange - implementation for rest.Exchangeable interface
-func (a *agentT) Exchange(r *http.Request) (resp *http.Response, err error) {
-	var status *messaging.Status
+// Link  - implementation for rest.Exchangeable interface
+func (a *agentT) Link(next rest.Exchange) rest.Exchange {
+	return func(r *http.Request) (resp *http.Response, err error) {
+		var status *messaging.Status
 
-	url := uri.BuildURL(a.state.AppHost, r.URL.Path, r.URL.Query())
-	// TODO : need to check and remove Caching header.
-	resp, status = Do(a.state.Timeout, a.exchange, r.Method, url, httpx.CloneHeaderWithEncoding(r), r.Body)
-	if status.Err != nil {
-		a.service.Message(messaging.NewStatusMessage(status.WithLocation(a.Name()), a.Name()))
+		url := uri.BuildURL(a.state.AppHost, r.URL.Path, r.URL.Query())
+		// TODO : need to check and remove Caching header.
+		resp, status = do(a, r.Method, url, httpx.CloneHeaderWithEncoding(r), r.Body)
+		if status.Err != nil {
+			a.service.Message(messaging.NewStatusMessage(status.WithLocation(a.Name()), a.Name()))
+		}
+		if resp.StatusCode == http.StatusGatewayTimeout {
+			resp.Header.Add(access2.XTimeout, fmt.Sprintf("%v", a.state.Timeout))
+		}
+		return resp, status.Err
 	}
-	if resp.StatusCode == http.StatusGatewayTimeout {
-		resp.Header.Add(access2.XTimeout, fmt.Sprintf("%v", a.state.Timeout))
-	}
-	return resp, status.Err
 }
 
 func (a *agentT) trace(task, observation, action string) {

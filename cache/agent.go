@@ -16,7 +16,6 @@ import (
 
 const (
 	NamespaceName = "test:resiliency:agent/cache/request/http"
-	Route         = "cache"
 )
 
 var (
@@ -109,7 +108,7 @@ func (a *agentT) Link(next rest.Exchange) rest.Exchange {
 		url = uri.BuildURL(a.state.Host, r.URL.Path, r.URL.Query())
 		h := make(http.Header)
 		h.Add(httpx.XRequestId, r.Header.Get(httpx.XRequestId))
-		resp, status = Do(a.state.Timeout, a.exchange, http.MethodGet, url, h, nil)
+		resp, status = do(a, http.MethodGet, url, h, nil)
 		if resp.StatusCode == http.StatusOK {
 			resp.Header.Add(access2.XCached, "true")
 			return resp, nil
@@ -196,7 +195,7 @@ func (a *agentT) cacheUpdate(url string, r *http.Request, resp *http.Response) e
 	go func() {
 		h2 := httpx.CloneHeader(resp.Header)
 		h2.Add(httpx.XRequestId, r.Header.Get(httpx.XRequestId))
-		_, status = Do(a.state.Timeout, a.exchange, http.MethodPut, url, h2, io.NopCloser(bytes.NewReader(buf)))
+		_, status = do(a, http.MethodPut, url, h2, io.NopCloser(bytes.NewReader(buf)))
 		if status.Err != nil {
 			a.service.Message(messaging.NewStatusMessage(status.WithLocation(a.Name()), a.Name()))
 		}

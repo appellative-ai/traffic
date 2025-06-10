@@ -3,10 +3,8 @@ package routing
 import (
 	"fmt"
 	"github.com/behavioral-ai/collective/operations/operationstest"
-	"github.com/behavioral-ai/core/httpx"
 	"github.com/behavioral-ai/core/messaging"
 	"github.com/behavioral-ai/traffic/routing/representation1"
-	"net/http"
 	"time"
 )
 
@@ -27,6 +25,7 @@ func ExampleNew() {
 
 }
 
+/*
 func _ExampleExchange() {
 	url := "http://localhost:8080/search?q=golang"
 	a := newAgent(representation1.Initialize(nil), nil, operationstest.NewService())
@@ -50,3 +49,6 @@ func _ExampleExchange() {
 	//test: Exchange() -> [resp:200] [err:<nil>]
 
 }
+
+
+*/
