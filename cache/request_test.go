@@ -1,4 +1,4 @@
-package request
+package cache
 
 import (
 	"fmt"
@@ -10,28 +10,26 @@ import (
 	"time"
 )
 
-type agentT struct {
+type agentTest struct {
 	timeout  time.Duration
 	exchange rest.Exchange
 }
 
-func (a *agentT) String() string               { return a.Uri() }
-func (a *agentT) Uri() string                  { return "agent:request" }
-func (a *agentT) Message(m *messaging.Message) {}
-func (a *agentT) Route() string                { return "cache" }
-func (a *agentT) Log() bool                    { return true }
-func (a *agentT) Timeout() time.Duration       { return a.timeout }
-func (a *agentT) Do() rest.Exchange            { return a.exchange }
+func (a *agentTest) String() string               { return a.Uri() }
+func (a *agentTest) Uri() string                  { return "agent:request" }
+func (a *agentTest) Message(m *messaging.Message) {}
+func (a *agentTest) Timeout() time.Duration       { return a.timeout }
+func (a *agentTest) Do() rest.Exchange            { return a.exchange }
 
 func ExampleDo_Get() {
 	url := "https://www.google.com/search?q=golang"
-	a := new(agentT)
+	a := new(agentTest)
 	a.exchange = httpx.Do
 
 	h := make(http.Header)
 	h.Add(iox.AcceptEncoding, iox.GzipEncoding)
 	h.Add(httpx.XRequestId, "1234-request-id")
-	resp, status := Do(a, http.MethodGet, url, h, nil)
+	resp, status := Do(a.Timeout(), a.Do(), http.MethodGet, url, h, nil)
 	fmt.Printf("test: Do() -> [resp:%v] [status:%v]\n", resp.StatusCode, status)
 
 	if resp.StatusCode == http.StatusOK {
@@ -48,14 +46,14 @@ func ExampleDo_Get() {
 func ExampleDo_Get_Timeout() {
 	url := "https://www.google.com/search?q=golang"
 
-	a := new(agentT)
+	a := new(agentTest)
 	a.exchange = httpx.Do
 	a.timeout = time.Second * 10
 
 	h := make(http.Header)
 	h.Add(iox.AcceptEncoding, "gzip")
 	h.Add(httpx.XRequestId, "1234-request-id")
-	resp, status := Do(a, http.MethodGet, url, h, nil)
+	resp, status := Do(a.Timeout(), a.Do(), http.MethodGet, url, h, nil)
 	fmt.Printf("test: Do() -> [resp:%v] [status:%v]\n", resp.StatusCode, status)
 
 	if resp.StatusCode == http.StatusOK {
@@ -64,7 +62,7 @@ func ExampleDo_Get_Timeout() {
 	}
 
 	a.timeout = time.Millisecond * 10
-	resp, status = Do(a, http.MethodGet, url, h, nil)
+	resp, status = Do(a.Timeout(), a.Do(), http.MethodGet, url, h, nil)
 	fmt.Printf("test: Do() -> [resp:%v] [status:%v]\n", resp.StatusCode, status)
 
 	//Output:

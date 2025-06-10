@@ -10,11 +10,9 @@ import (
 	"github.com/behavioral-ai/core/messaging"
 	"github.com/behavioral-ai/core/rest"
 	"github.com/behavioral-ai/core/uri"
-	"github.com/behavioral-ai/traffic/request"
 	"github.com/behavioral-ai/traffic/routing/representation1"
 	"github.com/behavioral-ai/traffic/timeseries"
 	"net/http"
-	"time"
 )
 
 const (
@@ -91,10 +89,7 @@ func (a *agentT) run() {
 	go emissaryAttend(a)
 }
 
-// Log - implementation for Requester interface
-func (a *agentT) Log() bool              { return a.state.Log }
-func (a *agentT) Route() string          { return a.state.LogRouteName }
-func (a *agentT) Timeout() time.Duration { return a.state.Timeout }
+// Do - implementation for Requester interface
 func (a *agentT) Do() rest.Exchange {
 	if rt, ok := a.router.Lookup(defaultRoute); ok {
 		return rt.Ex
@@ -114,7 +109,7 @@ func (a *agentT) Exchange(r *http.Request) (resp *http.Response, err error) {
 
 	url := uri.BuildURL(rt.Uri, r.URL.Path, r.URL.Query())
 	// TODO : need to check and remove Caching header.
-	resp, status = request.Do(a, r.Method, url, httpx.CloneHeaderWithEncoding(r), r.Body)
+	resp, status = Do(a.state.Timeout, a.Do(), r.Method, url, httpx.CloneHeaderWithEncoding(r), r.Body)
 	if status.Err != nil {
 		a.service.Message(messaging.NewStatusMessage(status.WithLocation(a.Name()), a.Name()))
 	}
@@ -159,12 +154,12 @@ func (a *agentT) configure(m *messaging.Message) {
 }
 
 func (a *agentT) enabled() bool {
-	if !a.state.Enabled() {
-		return false
-	}
-	if a.state.Failed() {
-		return false
-	}
+	//if !a.state.Enabled() {
+	//	return false
+	//}
+	//if a.state.Failed() {
+	//	return false
+	//}
 	//if !a.limiter.Allow() {
 	//	return false
 	//}

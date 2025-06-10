@@ -9,11 +9,11 @@ import (
 
 const (
 	//Fragment            = "v1"
-	RateLimitKey        = "rate-limit"
-	RateBurstKey        = "rate-burst"
-	OriginalPathKey     = "original-path"
-	NewPathKey          = "new-path"
-	IntervalKey         = "interval"
+	RateLimitKey    = "rate-limit"
+	RateBurstKey    = "rate-burst"
+	OriginalPathKey = "original-path"
+	NewPathKey      = "new-path"
+
 	StatusCodeThreshold = "status-code-threshold"
 	PercentileThreshold = "percentile-threshold"
 
@@ -67,7 +67,7 @@ func (r *Redirect2) Failed() bool {
 	return r.Latency.Failed() || r.Codes.Failed()
 }
 
-func (r *Redirect) Update(m map[string]string) {
+func (r *Redirect2) Update(m map[string]string) {
 	if m == nil {
 		return
 	}

@@ -9,10 +9,8 @@ var (
 	m = map[string]string{
 		AppHostKey:   "localhost:8080",
 		CacheHostKey: "localhost:8081",
-		LogKey:       "true",
 		TimeoutKey:   "750ms",
 		IntervalKey:  "5m",
-		LogRouteKey:  "app2",
 	}
 
 	r1 = Route{
@@ -52,7 +50,7 @@ func ExampleParseRouting() {
 }
 
 func ExampleRoutingTable() {
-	rt := RoutingTable{Routes: []Route{r1, r2}}
+	rt := RoutingTable{Routes: []*Route{&r1, &r2}}
 
 	fmt.Printf("test: Route() -> %v\n", rt)
 

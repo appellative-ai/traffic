@@ -1,25 +1,25 @@
 package representation1
 
 import (
+	"encoding/json"
 	"github.com/behavioral-ai/core/fmtx"
+	"net/http"
+	"strings"
 	"time"
 )
 
+//Fragment     = "v1"
+
 const (
-	Fragment     = "v1"
-	logRouteName = "app"
-
-	AppHostKey   = "app-host"
-	CacheHostKey = "cache-host"
-	LogKey       = "log"
-	LogRouteKey  = "route-name"
-	TimeoutKey   = "timeout"
-
+	AppHostKey     = "app-host"
+	CacheHostKey   = "cache-host"
+	TimeoutKey     = "timeout"
+	IntervalKey    = "interval"
 	defaultTimeout = time.Millisecond * 2500
 )
 
 type Redirect struct {
-	//Name                string   `json:"name"`
+	Template            bool
 	Path                string   `json:"path"`         // Redirected path
 	StatusCodes         []string `json:"status-codes"` // Status Codes to monitor : "200", "2xx", "5xx"
 	StatusCodeThreshold int      `json:"status-code-threshold"`
@@ -29,6 +29,10 @@ type Redirect struct {
 	Latency             *PercentileMetrics
 }
 
+func (r Redirect) Failed() bool {
+	return r.Latency.Failed() || r.Codes.Failed()
+}
+
 type Route struct {
 	Name     string   `json:"name"`
 	Path     string   `json:"path"` // ??Needs to allow templates, basically an '*' to match ranges
@@ -36,36 +40,54 @@ type Route struct {
 }
 
 type RoutingTable struct {
-	Version     string
-	EffectiveTS string
-	Routes      []Route
+	Version string
+	StartTS string
+	StopTS  string
+	Routes  []*Route
+}
+
+func NewRoutingTable(buf []byte) (*RoutingTable, error) {
+	t := new(RoutingTable)
+	err := json.Unmarshal(buf, &t)
+	if err == nil {
+		for _, r := range t.Routes {
+			if strings.Index(r.Path, "*") != -1 {
+				r.Redirect.Template = true
+			}
+			r.Redirect.Codes = new(StatusCodeMetrics)
+			r.Redirect.Latency = new(PercentileMetrics)
+		}
+	}
+	return t, err
+}
+
+func (t *RoutingTable) Enabled() bool {
+	return true
+}
+
+func (t *RoutingTable) Route(r *http.Request) *Route {
+	if r == nil {
+		return nil
+	}
+	for _, route := range t.Routes {
+		if route.Name == r.URL.Path {
+			return route
+		}
+	}
+	return nil
 }
 
 type Routing struct {
-	EnabledT     bool
-	FailedT      bool
-	Log          bool          `json:"log"`
-	AppHost      string        `json:"app-host"` // User requirement
-	CacheHost    string        `json:"cache-host"`
-	LogRouteName string        `json:"route-name"`
-	Interval     time.Duration `json:"interval"`
-	Timeout      time.Duration `json:"timeout"`
-	//Latency      *PercentileMetrics
-	//Codes        *StatusCodeMetrics
-}
-
-func (r *Routing) Enabled() bool {
-	return false
-}
-
-func (r *Routing) Failed() bool {
-	return true //r.Latency.Failed() || r.Codes.Failed()
+	//EnabledT  bool
+	//FailedT   bool
+	AppHost   string        `json:"app-host"` // User requirement
+	CacheHost string        `json:"cache-host"`
+	Interval  time.Duration `json:"interval"`
+	Timeout   time.Duration `json:"timeout"`
 }
 
 func Initialize(m map[string]string) *Routing {
 	r := new(Routing)
-	r.Log = true
-	r.LogRouteName = logRouteName
 	r.Timeout = defaultTimeout
 	r.Interval = time.Millisecond * 2000
 	parseRouting(r, m)
@@ -94,19 +116,7 @@ func parseRouting(r *Routing, m map[string]string) {
 	if r == nil || m == nil {
 		return
 	}
-	s := m[LogKey]
-	if s != "" {
-		if s == "true" {
-			r.Log = true
-		} else {
-			r.Log = false
-		}
-	}
-	s = m[LogRouteKey]
-	if s != "" {
-		r.LogRouteName = s
-	}
-	s = m[AppHostKey]
+	s := m[AppHostKey]
 	if s != "" {
 		r.AppHost = s
 	}

@@ -10,7 +10,6 @@ import (
 	"github.com/behavioral-ai/core/rest"
 	"github.com/behavioral-ai/core/uri"
 	"github.com/behavioral-ai/traffic/cache/representation1"
-	"github.com/behavioral-ai/traffic/request"
 	"io"
 	"net/http"
 	"time"
@@ -97,9 +96,7 @@ func (a *agentT) run() {
 	go emissaryAttend(a)
 }
 
-// Log - implementation for Requester interface
-func (a *agentT) Log() bool              { return true }
-func (a *agentT) Route() string          { return Route }
+// Timeout - implementation for Requester interface
 func (a *agentT) Timeout() time.Duration { return a.state.Timeout }
 func (a *agentT) Do() rest.Exchange      { return a.exchange }
 
@@ -117,7 +114,7 @@ func (a *agentT) Link(next rest.Exchange) rest.Exchange {
 		url = uri.BuildURL(a.state.Host, r.URL.Path, r.URL.Query())
 		h := make(http.Header)
 		h.Add(httpx.XRequestId, r.Header.Get(httpx.XRequestId))
-		resp, status = request.Do(a, http.MethodGet, url, h, nil)
+		resp, status = Do(a.Timeout(), a.Do(), http.MethodGet, url, h, nil)
 		if resp.StatusCode == http.StatusOK {
 			resp.Header.Add(access2.XCached, "true")
 			return resp, nil
@@ -204,7 +201,7 @@ func (a *agentT) cacheUpdate(url string, r *http.Request, resp *http.Response) e
 	go func() {
 		h2 := httpx.CloneHeader(resp.Header)
 		h2.Add(httpx.XRequestId, r.Header.Get(httpx.XRequestId))
-		_, status = request.Do(a, http.MethodPut, url, h2, io.NopCloser(bytes.NewReader(buf)))
+		_, status = Do(a.Timeout(), a.Do(), http.MethodPut, url, h2, io.NopCloser(bytes.NewReader(buf)))
 		if status.Err != nil {
 			a.service.Message(messaging.NewStatusMessage(status.WithLocation(a.Name()), a.Name()))
 		}
