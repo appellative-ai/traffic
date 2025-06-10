@@ -12,7 +12,6 @@ import (
 	"github.com/behavioral-ai/traffic/cache/representation1"
 	"io"
 	"net/http"
-	"time"
 )
 
 const (
@@ -96,10 +95,6 @@ func (a *agentT) run() {
 	go emissaryAttend(a)
 }
 
-// Timeout - implementation for Requester interface
-func (a *agentT) Timeout() time.Duration { return a.state.Timeout }
-func (a *agentT) Do() rest.Exchange      { return a.exchange }
-
 // Link - chainable exchange
 func (a *agentT) Link(next rest.Exchange) rest.Exchange {
 	return func(r *http.Request) (resp *http.Response, err error) {
@@ -114,7 +109,7 @@ func (a *agentT) Link(next rest.Exchange) rest.Exchange {
 		url = uri.BuildURL(a.state.Host, r.URL.Path, r.URL.Query())
 		h := make(http.Header)
 		h.Add(httpx.XRequestId, r.Header.Get(httpx.XRequestId))
-		resp, status = Do(a.Timeout(), a.Do(), http.MethodGet, url, h, nil)
+		resp, status = Do(a.state.Timeout, a.exchange, http.MethodGet, url, h, nil)
 		if resp.StatusCode == http.StatusOK {
 			resp.Header.Add(access2.XCached, "true")
 			return resp, nil
@@ -201,7 +196,7 @@ func (a *agentT) cacheUpdate(url string, r *http.Request, resp *http.Response) e
 	go func() {
 		h2 := httpx.CloneHeader(resp.Header)
 		h2.Add(httpx.XRequestId, r.Header.Get(httpx.XRequestId))
-		_, status = Do(a.Timeout(), a.Do(), http.MethodPut, url, h2, io.NopCloser(bytes.NewReader(buf)))
+		_, status = Do(a.state.Timeout, a.exchange, http.MethodPut, url, h2, io.NopCloser(bytes.NewReader(buf)))
 		if status.Err != nil {
 			a.service.Message(messaging.NewStatusMessage(status.WithLocation(a.Name()), a.Name()))
 		}
