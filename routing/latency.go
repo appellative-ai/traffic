@@ -1,4 +1,4 @@
-package redirect
+package routing
 
 // New Architecture
 // Client configures a percentile threshold, appropriate for peak vs off-peak traffic.

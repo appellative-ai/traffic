@@ -1,14 +1,8 @@
-package redirect
+package routing
 
 import (
 	"github.com/dustinxie/lockfree"
-	"time"
 )
-
-type event struct {
-	duration   time.Duration `json:"duration"`
-	statusCode int           `json:"status-code"`
-}
 
 type list struct {
 	queue lockfree.Queue

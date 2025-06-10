@@ -12,6 +12,7 @@ import (
 	"github.com/behavioral-ai/core/uri"
 	"github.com/behavioral-ai/traffic/request"
 	"github.com/behavioral-ai/traffic/routing/representation1"
+	"github.com/behavioral-ai/traffic/timeseries"
 	"net/http"
 	"time"
 )
@@ -26,11 +27,15 @@ var (
 )
 
 type agentT struct {
+	events  *list
 	state   *representation1.Routing
 	router  *rest.Router
 	service *operations.Service
 
-	review *messaging.Review
+	review   *messaging.Review
+	ticker   *messaging.Ticker
+	emissary *messaging.Channel
+	master   *messaging.Channel
 }
 
 // init - register an agent constructor
@@ -53,8 +58,14 @@ func newAgent(state *representation1.Routing, ex rest.Exchange, service *operati
 	if ex == nil {
 		ex = httpx.Do
 	}
+	a.events = newList()
+
 	a.router = rest.NewRouter()
 	a.router.Modify(defaultRoute, a.state.AppHost, ex)
+
+	a.ticker = messaging.NewTicker(messaging.ChannelEmissary, a.state.Interval)
+	a.emissary = messaging.NewEmissaryChannel()
+	a.master = messaging.NewMasterChannel()
 	return a
 }
 
@@ -72,6 +83,12 @@ func (a *agentT) Message(m *messaging.Message) {
 	if m.Name == messaging.ConfigEvent {
 		a.configure(m)
 	}
+}
+
+// Run - run the agent
+func (a *agentT) run() {
+	go masterAttend(a, timeseries.Functions)
+	go emissaryAttend(a)
 }
 
 // Log - implementation for Requester interface
@@ -141,6 +158,28 @@ func (a *agentT) configure(m *messaging.Message) {
 	messaging.Reply(m, messaging.StatusOK(), a.Name())
 }
 
+func (a *agentT) enabled() bool {
+	if !a.state.Enabled() {
+		return false
+	}
+	if a.state.Failed() {
+		return false
+	}
+	//if !a.limiter.Allow() {
+	//	return false
+	//}
+	return true
+}
+
+func (a *agentT) emissaryShutdown() {
+	a.emissary.Close()
+	a.ticker.Stop()
+}
+
+func (a *agentT) masterShutdown() {
+	a.master.Close()
+}
+
 /*
 func (a *agentT) routerModify(uri string, ex rest.Exchange) {
 	a.router.Modify(defaultRoute, uri, ex)
@@ -149,6 +188,26 @@ func (a *agentT) routerModify(uri string, ex rest.Exchange) {
 func (a *agentT) routerLookup() (r *rest.Route) {
 	r, _ = a.router.Lookup(defaultRoute)
 	return
+}
+
+
+*/
+
+// Link - chainable exchange
+/*
+func (a *agentT) Link(next rest.Exchange) rest.Exchange {
+	return func(req *http.Request) (resp *http.Response, err error) {
+		if !a.enabled() {
+			return next(req)
+		}
+		var (
+			start  = time.Now().UTC()
+			newReq = req
+		)
+		resp, err = next(newReq)
+		a.events.Enqueue(&routing.event{duration: time.Since(start), statusCode: resp.StatusCode})
+		return
+	}
 }
 
 

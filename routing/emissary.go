@@ -1,4 +1,4 @@
-package redirect
+package routing
 
 import (
 	"github.com/behavioral-ai/core/messaging"
@@ -22,7 +22,7 @@ func emissaryAttend(a *agentT) {
 		}
 		select {
 		case msg := <-a.emissary.C:
-			a.dispatch(a.emissary, msg.Name)
+			//a.dispatch(a.emissary, msg.Name)
 			switch msg.Name {
 			case messaging.PauseEvent:
 				paused = true

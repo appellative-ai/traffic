@@ -17,11 +17,40 @@ const (
 	defaultTimeout = time.Millisecond * 2500
 )
 
+type Redirect struct {
+	Name                string   `json:"name"`
+	Path                string   `json:"path"`         // Redirected path
+	StatusCodes         []string `json:"status-codes"` // Status Codes to monitor : "200", "2xx", "5xx"
+	StatusCodeThreshold int      `json:"status-code-threshold"`
+	PercentileThreshold int      `json:"percentile-threshold"`
+	Codes               *StatusCodeMetrics
+	Latency             *PercentileMetrics
+}
+
+type Route struct {
+	Name     string   `json:"name"`
+	Path     string   `json:"path"` // ??Needs to allow templates, basically an '*' to match ranges
+	Redirect Redirect `json:"redirect"`
+}
+
 type Routing struct {
-	Log          bool
-	AppHost      string // User requirement
-	LogRouteName string
-	Timeout      time.Duration
+	EnabledT     bool
+	FailedT      bool
+	Interval     time.Duration
+	Log          bool          `json:"log"`
+	AppHost      string        `json:"app-host"` // User requirement
+	LogRouteName string        `json:"route-name"`
+	Timeout      time.Duration `json:"timeout"`
+	Latency      *PercentileMetrics
+	Codes        *StatusCodeMetrics
+}
+
+func (r *Routing) Enabled() bool {
+	return false
+}
+
+func (r *Routing) Failed() bool {
+	return r.Latency.Failed() || r.Codes.Failed()
 }
 
 func Initialize(m map[string]string) *Routing {
@@ -29,6 +58,7 @@ func Initialize(m map[string]string) *Routing {
 	r.Log = true
 	r.LogRouteName = logRouteName
 	r.Timeout = defaultTimeout
+	r.Interval = time.Millisecond * 2000
 	parseRouting(r, m)
 	return r
 }

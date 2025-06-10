@@ -1,9 +1,9 @@
-package redirect
+package routing
 
 import (
 	"github.com/behavioral-ai/collective/operations/operationstest"
 	"github.com/behavioral-ai/core/messaging"
-	"github.com/behavioral-ai/traffic/redirect/representation1"
+	"github.com/behavioral-ai/traffic/routing/representation1"
 	"time"
 )
 
@@ -13,7 +13,7 @@ const (
 
 func ExampleEmissary() {
 	ch := make(chan struct{})
-	agent := newAgent(representation1.Initialize(nil), operationstest.NewService())
+	agent := newAgent(representation1.Initialize(nil), nil, operationstest.NewService())
 
 	go func() {
 		go emissaryAttend(agent)
@@ -35,7 +35,7 @@ func ExampleEmissary() {
 
 func ExampleEmissary_Observation() {
 	ch := make(chan struct{})
-	agent := newAgent(representation1.Initialize(nil), operationstest.NewService())
+	agent := newAgent(representation1.Initialize(nil), nil, operationstest.NewService())
 
 	go func() {
 		go emissaryAttend(agent)

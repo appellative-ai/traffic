@@ -1,4 +1,4 @@
-package redirect
+package routing
 
 // Needs for redirect - Status code profile, percentages of traffic by status code
 // New Architecture

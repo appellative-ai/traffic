@@ -5,6 +5,7 @@ import (
 	"github.com/behavioral-ai/collective/operations/operationstest"
 	"github.com/behavioral-ai/core/messaging"
 	"github.com/behavioral-ai/traffic/redirect/representation1"
+	"github.com/behavioral-ai/traffic/routing"
 	"github.com/behavioral-ai/traffic/timeseries"
 	"time"
 )
@@ -25,12 +26,12 @@ func _ExampleAgent_LoadContent() {
 	agent.dispatcher = messaging.NewTraceDispatcher()
 
 	go func() {
-		go masterAttend(agent, timeseries.Functions)
-		go emissaryAttend(agent)
-		time.Sleep(testDuration * 5)
+		go routing.masterAttend(agent, timeseries.Functions)
+		go routing.emissaryAttend(agent)
+		time.Sleep(routing.testDuration * 5)
 
 		agent.Message(messaging.ShutdownMessage)
-		time.Sleep(testDuration * 2)
+		time.Sleep(routing.testDuration * 2)
 		ch <- struct{}{}
 	}()
 	<-ch
@@ -47,9 +48,9 @@ func _ExampleAgent_NotFound() {
 
 	go func() {
 		agent.Message(messaging.StartupMessage)
-		time.Sleep(testDuration * 5)
+		time.Sleep(routing.testDuration * 5)
 		agent.Message(messaging.ShutdownMessage)
-		time.Sleep(testDuration * 2)
+		time.Sleep(routing.testDuration * 2)
 		ch <- struct{}{}
 	}()
 	<-ch
@@ -67,9 +68,9 @@ func _ExampleAgent_Resolver() {
 
 	go func() {
 		agent.Message(messaging.StartupMessage)
-		time.Sleep(testDuration * 5)
+		time.Sleep(routing.testDuration * 5)
 		agent.Message(messaging.ShutdownMessage)
-		time.Sleep(testDuration * 2)
+		time.Sleep(routing.testDuration * 2)
 		ch <- struct{}{}
 	}()
 	<-ch

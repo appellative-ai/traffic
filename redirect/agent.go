@@ -6,7 +6,6 @@ import (
 	"github.com/behavioral-ai/core/messaging"
 	"github.com/behavioral-ai/core/rest"
 	"github.com/behavioral-ai/traffic/redirect/representation1"
-	"github.com/behavioral-ai/traffic/timeseries"
 	"golang.org/x/time/rate"
 	"net/http"
 	"time"
@@ -96,8 +95,8 @@ func (a *agentT) Message(m *messaging.Message) {
 
 // Run - run the agent
 func (a *agentT) run() {
-	go masterAttend(a, timeseries.Functions)
-	go emissaryAttend(a)
+	//go routing.masterAttend(a, timeseries.Functions)
+	//go routing.emissaryAttend(a)
 }
 
 func (a *agentT) enabled() bool {

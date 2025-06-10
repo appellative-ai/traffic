@@ -1,4 +1,4 @@
-package redirect
+package routing
 
 import (
 	"github.com/behavioral-ai/core/messaging"
@@ -7,13 +7,13 @@ import (
 
 // master attention
 func masterAttend(a *agentT, ts *timeseries.Interface) {
-	a.dispatch(a.master, messaging.StartupEvent)
+	//a.dispatch(a.master, messaging.StartupEvent)
 	paused := false
 
 	for {
 		select {
 		case msg := <-a.master.C:
-			a.dispatch(a.master, msg.Name)
+			//a.dispatch(a.master, msg.Name)
 			switch msg.Name {
 			case metricsEvent:
 				if !paused {

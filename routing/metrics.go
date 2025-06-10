@@ -1,4 +1,4 @@
-package redirect
+package routing
 
 import (
 	"github.com/behavioral-ai/core/messaging"
