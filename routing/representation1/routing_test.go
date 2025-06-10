@@ -11,10 +11,11 @@ const (
 
 var (
 	m = map[string]string{
-		AppHostKey:  "www.google.com",
-		LogKey:      "true",
-		TimeoutKey:  "750ms",
-		LogRouteKey: "app2",
+		AppHostKey:   "www.google.com",
+		CacheHostKey: "search.yahoo.com",
+		LogKey:       "true",
+		TimeoutKey:   "750ms",
+		LogRouteKey:  "app2",
 	}
 )
 

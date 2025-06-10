@@ -9,10 +9,11 @@ const (
 	Fragment     = "v1"
 	logRouteName = "app"
 
-	AppHostKey  = "app-host"
-	LogKey      = "log"
-	LogRouteKey = "route-name"
-	TimeoutKey  = "timeout"
+	AppHostKey   = "app-host"
+	CacheHostKey = "cache-host"
+	LogKey       = "log"
+	LogRouteKey  = "route-name"
+	TimeoutKey   = "timeout"
 
 	defaultTimeout = time.Millisecond * 2500
 )
@@ -39,6 +40,7 @@ type Routing struct {
 	Interval     time.Duration
 	Log          bool          `json:"log"`
 	AppHost      string        `json:"app-host"` // User requirement
+	CacheHost    string        `json:"cache-host"`
 	LogRouteName string        `json:"route-name"`
 	Timeout      time.Duration `json:"timeout"`
 	Latency      *PercentileMetrics
@@ -100,6 +102,10 @@ func parseRouting(r *Routing, m map[string]string) {
 	s = m[AppHostKey]
 	if s != "" {
 		r.AppHost = s
+	}
+	s = m[CacheHostKey]
+	if s != "" {
+		r.CacheHost = s
 	}
 	s = m[TimeoutKey]
 	if s != "" {
