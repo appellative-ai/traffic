@@ -20,8 +20,9 @@ const (
 
 type Redirect struct {
 	Template            bool
-	Path                string   `json:"path"`         // Redirected path
-	StatusCodes         []string `json:"status-codes"` // Status Codes to monitor : "200", "2xx", "5xx"
+	Path                string   `json:"path"`          // Redirected path
+	LoadSchedule        string   `json:"load-schedule"` //"load-schedule": "10,20,40,100",
+	StatusCodes         []string `json:"status-codes"`  // Status Codes to monitor : "200", "2xx", "5xx"
 	StatusCodeThreshold int      `json:"status-code-threshold"`
 	Percentile          string   `json:"percentile"`
 	PercentileThreshold int      `json:"percentile-threshold"`
