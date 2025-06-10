@@ -1,21 +1,42 @@
 package representation1
 
 import (
+	"encoding/json"
 	"fmt"
-	"github.com/behavioral-ai/collective/resource"
-)
-
-const (
-	NamespaceName = "test:resiliency:agent/routing/request/http"
 )
 
 var (
 	m = map[string]string{
-		AppHostKey:   "www.google.com",
-		CacheHostKey: "search.yahoo.com",
+		AppHostKey:   "localhost:8080",
+		CacheHostKey: "localhost:8081",
 		LogKey:       "true",
 		TimeoutKey:   "750ms",
+		IntervalKey:  "5m",
 		LogRouteKey:  "app2",
+	}
+
+	r1 = Route{
+		Name: "test-route-one",
+		Path: "/resource/test2",
+		Redirect: Redirect{
+			Path:                "/resource/test/main",
+			StatusCodes:         []string{"5xx"},
+			StatusCodeThreshold: 10,
+			Percentile:          "99/1500ms",
+			PercentileThreshold: 10,
+		},
+	}
+
+	r2 = Route{
+		Name: "test-route-two",
+		Path: "/resource/old",
+		Redirect: Redirect{
+			Path:                "/resource/test/new",
+			StatusCodes:         []string{"5xx", "4xx"},
+			StatusCodeThreshold: 15,
+			Percentile:          "95/2000ms",
+			PercentileThreshold: 15,
+		},
 	}
 )
 
@@ -26,30 +47,19 @@ func ExampleParseRouting() {
 	fmt.Printf("test: parseRouting() -> %v\n", routing)
 
 	//Output:
-	//test: parseRouting() -> {true www.google.com app2 750ms}
+	//test: parseRouting() -> {false false true localhost:8080 localhost:8081 app2 5m0s 750ms}
 
 }
 
-func _ExampleNewRouting() {
-	resource.NewAgent()
+func ExampleRoutingTable() {
+	rt := RoutingTable{Routes: []Route{r1, r2}}
 
-	status := resource.Resolver.AddRepresentation(NamespaceName, Fragment, "author", m)
-	fmt.Printf("test: AddRepresentation() -> [status:%v]\n", status)
+	fmt.Printf("test: Route() -> %v\n", rt)
 
-	ct, status2 := resource.Resolver.Representation(NamespaceName)
-	fmt.Printf("test: Representation() -> [ct:%v] [status:%v]\n", ct, status2)
-
-	if buf, ok := ct.Value.([]byte); ok {
-		fmt.Printf("test: Representation() -> [value:%v] [status:%v]\n", len(buf), status2)
-	}
-
-	//l := NewRouting(NamespaceName)
-	//fmt.Printf("test: NewRouting() -> %v\n", l)
+	buf, err := json.Marshal(rt)
+	fmt.Printf("test: json.Marshal() -> %v [err:%v]\n", string(buf), err)
 
 	//Output:
-	//test: AddRepresentation() -> [status:OK]
-	//test: Representation() -> [ct:fragment: v1 type: application/json value: true] [status:OK]
-	//test: Representation() -> [value:80] [status:OK]
-	//test: NewRouting() -> &{true www.google.com app2 750ms}
+	//test: Route() -> {test-route /resource/test2 {/resource/test/main [5xx] 10 99/1500ms 10 <nil> <nil>}}
 
 }

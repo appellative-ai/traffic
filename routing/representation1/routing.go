@@ -19,10 +19,11 @@ const (
 )
 
 type Redirect struct {
-	Name                string   `json:"name"`
+	//Name                string   `json:"name"`
 	Path                string   `json:"path"`         // Redirected path
 	StatusCodes         []string `json:"status-codes"` // Status Codes to monitor : "200", "2xx", "5xx"
 	StatusCodeThreshold int      `json:"status-code-threshold"`
+	Percentile          string   `json:"percentile"`
 	PercentileThreshold int      `json:"percentile-threshold"`
 	Codes               *StatusCodeMetrics
 	Latency             *PercentileMetrics
@@ -34,17 +35,23 @@ type Route struct {
 	Redirect Redirect `json:"redirect"`
 }
 
+type RoutingTable struct {
+	Version     string
+	EffectiveTS string
+	Routes      []Route
+}
+
 type Routing struct {
 	EnabledT     bool
 	FailedT      bool
-	Interval     time.Duration
 	Log          bool          `json:"log"`
 	AppHost      string        `json:"app-host"` // User requirement
 	CacheHost    string        `json:"cache-host"`
 	LogRouteName string        `json:"route-name"`
+	Interval     time.Duration `json:"interval"`
 	Timeout      time.Duration `json:"timeout"`
-	Latency      *PercentileMetrics
-	Codes        *StatusCodeMetrics
+	//Latency      *PercentileMetrics
+	//Codes        *StatusCodeMetrics
 }
 
 func (r *Routing) Enabled() bool {
@@ -52,7 +59,7 @@ func (r *Routing) Enabled() bool {
 }
 
 func (r *Routing) Failed() bool {
-	return r.Latency.Failed() || r.Codes.Failed()
+	return true //r.Latency.Failed() || r.Codes.Failed()
 }
 
 func Initialize(m map[string]string) *Routing {
@@ -115,5 +122,14 @@ func parseRouting(r *Routing, m map[string]string) {
 			return
 		}
 		r.Timeout = dur
+	}
+	s = m[IntervalKey]
+	if s != "" {
+		dur, err := fmtx.ParseDuration(s)
+		if err != nil {
+			//messaging.Reply(m, messaging.ConfigContentStatusError(agent, TimeoutKey), agent.Name())
+			return
+		}
+		r.Interval = dur
 	}
 }
