@@ -7,22 +7,25 @@ import (
 	"github.com/behavioral-ai/core/httpx"
 	"github.com/behavioral-ai/core/iox"
 	"github.com/behavioral-ai/core/messaging"
+	"github.com/behavioral-ai/core/rest"
 	"github.com/behavioral-ai/traffic/cache"
 	"github.com/behavioral-ai/traffic/cache/representation1"
 	"net/http"
 	"net/http/httptest"
 )
 
-func nextExchange(r *http.Request) (resp *http.Response, err error) {
-	h := make(http.Header)
-	h.Add(iox.AcceptEncoding, iox.GzipEncoding)
-	req, _ := http.NewRequest(http.MethodGet, "https://www.google.com/search?q=golang", nil)
-	req.Header = h
-	resp, err = httpx.Do(req)
-	if err != nil {
-		fmt.Printf("test: httx.Do() -> [err:%v]\n", err)
+func nextExchange(next rest.Exchange) rest.Exchange {
+	return func(r *http.Request) (resp *http.Response, err error) {
+		h := make(http.Header)
+		h.Add(iox.AcceptEncoding, iox.GzipEncoding)
+		req, _ := http.NewRequest(http.MethodGet, "https://www.google.com/search?q=golang", nil)
+		req.Header = h
+		resp, err = httpx.Do(req)
+		if err != nil {
+			fmt.Printf("test: httx.Do() -> [err:%v]\n", err)
+		}
+		return
 	}
-	return
 }
 
 func ExampleExchange() {
@@ -41,7 +44,7 @@ func ExampleExchange() {
 	httpx.AddRequestId(req)
 
 	// create endpoint and server Http
-	e := host.NewEndpoint([]any{repository.Agent(cache.NamespaceName), nextExchange})
+	e := host.NewEndpoint("pattern", []any{repository.Agent(cache.NamespaceName), nextExchange})
 	r := httptest.NewRecorder()
 	e.ServeHTTP(r, req)
 	r.Flush()
