@@ -2,8 +2,8 @@ package routingtest
 
 import (
 	"fmt"
+	"github.com/behavioral-ai/collective/exchange"
 	"github.com/behavioral-ai/collective/operations/operationstest"
-	"github.com/behavioral-ai/collective/repository"
 	"github.com/behavioral-ai/core/host"
 	"github.com/behavioral-ai/core/iox"
 	"github.com/behavioral-ai/core/messaging"
@@ -20,7 +20,7 @@ func ExampleExchange_Override() {
 	cfg[representation1.AppHostKey] = "localhost:8080"
 
 	routing.ConstructorOverride(cfg, Exchange, operationstest.NewService())
-	agent := repository.Agent(routing.NamespaceName)
+	agent := exchange.Agent(routing.NamespaceName)
 
 	// configure exchange and host name
 	//agent.Message(httpx.NewConfigExchangeMessage(Exchange))
@@ -32,7 +32,7 @@ func ExampleExchange_Override() {
 	req.Header = make(http.Header)
 
 	// create endpoint and run
-	e := host.NewEndpoint([]any{agent})
+	e := host.NewEndpoint("/", []any{agent})
 	r := httptest.NewRecorder()
 	e.ServeHTTP(r, req)
 	r.Flush()
@@ -61,10 +61,10 @@ func _ExampleExchange() {
 	cfg := make(map[string]string)
 	cfg[representation1.AppHostKey] = "localhost:8080"
 
-	agent := repository.Agent(routing.NamespaceName)
+	agent := exchange.Agent(routing.NamespaceName)
 	// configure exchange and host name
-	agent.Message(rest.NewExchangeMessage(Exchange))
-	agent.Message(messaging.NewMapMessage(cfg))
+	exchange.Message(rest.NewExchangeMessage(Exchange))
+	exchange.Message(messaging.NewMapMessage(cfg))
 
 	// create request
 	url := "https://localhost:8081/search?q=golang"
@@ -72,7 +72,7 @@ func _ExampleExchange() {
 	req.Header = make(http.Header)
 
 	// create endpoint and run
-	e := host.NewEndpoint([]any{agent})
+	e := host.NewEndpoint("/", []any{agent})
 	r := httptest.NewRecorder()
 	e.ServeHTTP(r, req)
 	r.Flush()

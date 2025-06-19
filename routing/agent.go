@@ -2,8 +2,8 @@ package routing
 
 import (
 	"fmt"
+	"github.com/behavioral-ai/collective/exchange"
 	"github.com/behavioral-ai/collective/operations"
-	"github.com/behavioral-ai/collective/repository"
 	"github.com/behavioral-ai/core/access2"
 	"github.com/behavioral-ai/core/httpx"
 	"github.com/behavioral-ai/core/messaging"
@@ -37,13 +37,13 @@ type agentT struct {
 
 // init - register an agent constructor
 func init() {
-	repository.RegisterConstructor(NamespaceName, func() messaging.Agent {
+	exchange.RegisterConstructor(NamespaceName, func() messaging.Agent {
 		return newAgent(representation1.Initialize(nil), nil, operations.Serve)
 	})
 }
 
 func ConstructorOverride(m map[string]string, ex rest.Exchange, service *operations.Service) {
-	repository.RegisterConstructor(NamespaceName, func() messaging.Agent {
+	exchange.RegisterConstructor(NamespaceName, func() messaging.Agent {
 		return newAgent(representation1.Initialize(m), ex, service)
 	})
 }

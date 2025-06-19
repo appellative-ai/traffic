@@ -2,7 +2,7 @@ package cachetest
 
 import (
 	"fmt"
-	"github.com/behavioral-ai/collective/repository"
+	"github.com/behavioral-ai/collective/exchange"
 	"github.com/behavioral-ai/core/host"
 	"github.com/behavioral-ai/core/httpx"
 	"github.com/behavioral-ai/core/iox"
@@ -35,7 +35,7 @@ func ExampleExchange() {
 	//repository.Message(httpx.NewConfigExchangeMessage(Exchange))
 	cfg := make(map[string]string)
 	cfg[representation1.HostKey] = "localhost:8082"
-	repository.Message(messaging.NewMapMessage(cfg))
+	exchange.Message(messaging.NewMapMessage(cfg))
 
 	// create request
 	url := "https://localhost:8081/search?q=golang"
@@ -44,7 +44,7 @@ func ExampleExchange() {
 	httpx.AddRequestId(req)
 
 	// create endpoint and server Http
-	e := host.NewEndpoint("pattern", []any{repository.Agent(cache.NamespaceName), nextExchange})
+	e := host.NewEndpoint("pattern", []any{exchange.Agent(cache.NamespaceName), nextExchange})
 	r := httptest.NewRecorder()
 	e.ServeHTTP(r, req)
 	r.Flush()
