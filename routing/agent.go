@@ -53,7 +53,7 @@ func newAgent(state *representation1.Routing, ex rest.Exchange, service *operati
 	a.state = state
 	a.service = service
 	if ex == nil {
-		ex = httpx.Do
+		a.exchange = httpx.Do
 	} else {
 		a.exchange = ex
 	}
