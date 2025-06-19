@@ -152,6 +152,13 @@ func (a *agentT) configure(m *messaging.Message) {
 			return
 		}
 		a.state.Update(cfg)
+	case rest.ContentTypeExchange:
+		ex, status := rest.ExchangeContent(m)
+		if !status.OK() {
+			messaging.Reply(m, status, a.Name())
+			return
+		}
+		a.exchange = ex
 	case messaging.ContentTypeReview:
 		r, status := messaging.ReviewContent(m)
 		if !status.OK() {
