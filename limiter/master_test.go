@@ -48,7 +48,7 @@ func ExampleMaster_Observation() {
 		//agent.Message(msg)
 		time.Sleep(testDuration * 2)
 
-		messaging.Shutdown(agent)
+		agent.Message(messaging.ShutdownMessage)
 		time.Sleep(testDuration)
 
 		ch <- struct{}{}

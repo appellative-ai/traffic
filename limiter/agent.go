@@ -154,7 +154,7 @@ func (a *agentT) masterShutdown() {
 }
 
 func (a *agentT) bucket() int {
-	return fmtx.Milliseconds(a.ticker.Duration())
+	return fmtx.Milliseconds(a.ticker.Duration)
 }
 
 func (a *agentT) reviseTicker(cnt int) {
@@ -171,7 +171,7 @@ func (a *agentT) reviseTicker(cnt int) {
 		}
 	}
 	if newDuration != 0 {
-		a.ticker.Start(newDuration)
+		a.ticker.Reset(newDuration)
 	}
 }
 

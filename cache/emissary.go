@@ -10,7 +10,7 @@ func emissaryAttend(a *agentT) {
 
 	for {
 		select {
-		case <-a.ticker.C():
+		case <-a.ticker.T.C:
 			if !paused {
 				a.state.Enabled.Store(a.state.Now())
 			}
