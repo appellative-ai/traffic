@@ -82,7 +82,7 @@ func (a *agentT) Message(m *messaging.Message) {
 		messaging.UpdateMap(a.Name(), func(cfg map[string]string) {
 			a.state.Update(cfg)
 		}, m)
-		//a.configure(m)
+		return
 	}
 }
 
