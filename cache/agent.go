@@ -73,7 +73,11 @@ func (a *agentT) Message(m *messaging.Message) {
 	}
 	if !a.state.Running {
 		if m.Name == messaging.ConfigEvent {
-			a.configure(m)
+			rest.UpdateExchange(a.Name(), &a.exchange, m)
+			messaging.UpdateReview(a.Name(), &a.review, m)
+			messaging.UpdateMap(a.Name(), func(cfg map[string]string) {
+				a.state.Update(cfg)
+			}, m)
 			return
 		}
 		if m.Name == messaging.StartupEvent {
@@ -143,33 +147,6 @@ func (a *agentT) trace(task, observation, action string) {
 	a.service.Trace(a.Name(), task, observation, action)
 }
 
-func (a *agentT) configure(m *messaging.Message) {
-	switch m.ContentType() {
-	case messaging.ContentTypeMap:
-		cfg, status := messaging.MapContent(m)
-		if !status.OK() {
-			messaging.Reply(m, status, a.Name())
-			return
-		}
-		a.state.Update(cfg)
-	case rest.ContentTypeExchange:
-		ex, status := rest.ExchangeContent(m)
-		if !status.OK() {
-			messaging.Reply(m, status, a.Name())
-			return
-		}
-		a.exchange = ex
-	case messaging.ContentTypeReview:
-		r, status := messaging.ReviewContent(m)
-		if !status.OK() {
-			messaging.Reply(m, status, a.Name())
-			return
-		}
-		a.review = r
-	}
-	messaging.Reply(m, messaging.StatusOK(), a.Name())
-}
-
 func (a *agentT) cacheable(r *http.Request) bool {
 	if a.state.Host == "" || r.Method != http.MethodGet || httpx.CacheControlNoCache(r.Header) {
 		return false
@@ -209,3 +186,34 @@ func (a *agentT) cacheUpdate(url string, r *http.Request, resp *http.Response) e
 	}()
 	return nil
 }
+
+/*
+func (a *agentT) configure2(m *messaging.Message) {
+	switch m.ContentType() {
+	case messaging.ContentTypeMap:
+		cfg, status := messaging.MapContent(m)
+		if !status.OK() {
+			messaging.Reply(m, status, a.Name())
+			return
+		}
+		a.state.Update(cfg)
+	case rest.ContentTypeExchange:
+		ex, status := rest.ExchangeContent(m)
+		if !status.OK() {
+			messaging.Reply(m, status, a.Name())
+			return
+		}
+		a.exchange = ex
+	case messaging.ContentTypeReview:
+		r, status := messaging.ReviewContent(m)
+		if !status.OK() {
+			messaging.Reply(m, status, a.Name())
+			return
+		}
+		a.review = r
+	}
+	messaging.Reply(m, messaging.StatusOK(), a.Name())
+}
+
+
+*/
