@@ -30,6 +30,10 @@ github.com/behavioral-ai/collective v0.0.0-20250619211801-0e5c34d0a6e1 h1:cGu24H
 github.com/behavioral-ai/collective v0.0.0-20250619211801-0e5c34d0a6e1/go.mod h1:tMsicCGVvPDPWGPUN3ko5jXLAvgMJ3e2mMqezGA4Poo=
 github.com/behavioral-ai/collective v0.0.0-20250702124302-d7d54850532c h1:3DocleT1ws15HabsKG7l4eDHh+usPSmzxdOvIRGYYtA=
 github.com/behavioral-ai/collective v0.0.0-20250702124302-d7d54850532c/go.mod h1:dS6CBbM9zUKohzSOrtG1LIyrdKpwHUf89KlZgNX4QlY=
+github.com/behavioral-ai/collective v0.0.0-20250705135209-3e62a3121e50 h1:gC7+PLSFsIK3T1Qf4Zz6MhdOoZ6FzFy1HaKc2M6QHmU=
+github.com/behavioral-ai/collective v0.0.0-20250705135209-3e62a3121e50/go.mod h1:UkphaK1pjiiHx/MNVUGvTZnEtXhv+LfAW5RJjVzH8/E=
+github.com/behavioral-ai/collective v0.0.0-20250705142106-af45d8806b5f h1:QYKHxmVPkHYfEpN0ZzaMFzjMVsC6HYskld1tBsEgmHg=
+github.com/behavioral-ai/collective v0.0.0-20250705142106-af45d8806b5f/go.mod h1:Hfe09K9YGZa2aqWgWfReoW9KTNP912+ZceAOAM0Y6Vk=
 github.com/behavioral-ai/core v0.0.0-20250601175536-6a75bab7fa71 h1:tANEX0jpbuP+UTIOwugv617zokLKovjQT12B1Qu1h3I=
 github.com/behavioral-ai/core v0.0.0-20250601175536-6a75bab7fa71/go.mod h1:sqpbaRPtMXUb4j6CbCuwWvQrD6pUKJm5oZEKPDynlPE=
 github.com/behavioral-ai/core v0.0.0-20250603153900-0424bb65be46 h1:Pgw40NzDBtY4poIQtIfrPS6GC1iqI1aKZ789pWRUYvg=
@@ -63,6 +67,8 @@ github.com/behavioral-ai/core v0.0.0-20250703143852-55426c09ffde h1:9/XUgRF6XR77
 github.com/behavioral-ai/core v0.0.0-20250703143852-55426c09ffde/go.mod h1:sqpbaRPtMXUb4j6CbCuwWvQrD6pUKJm5oZEKPDynlPE=
 github.com/behavioral-ai/core v0.0.0-20250704151427-55d1095fc5a5 h1:9azQ0VsU+xgMIlhYlP+qug6fyaCv3yhQQXAOoKs1AKE=
 github.com/behavioral-ai/core v0.0.0-20250704151427-55d1095fc5a5/go.mod h1:sqpbaRPtMXUb4j6CbCuwWvQrD6pUKJm5oZEKPDynlPE=
+github.com/behavioral-ai/core v0.0.0-20250705135539-b42d40e13995 h1:SFxbZMDLQBguM/k3A7Og4/rrYLOX5EBhjiVY41fbi9E=
+github.com/behavioral-ai/core v0.0.0-20250705135539-b42d40e13995/go.mod h1:sqpbaRPtMXUb4j6CbCuwWvQrD6pUKJm5oZEKPDynlPE=
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/dchest/siphash v1.2.2/go.mod h1:q+IRvb2gOSrUnYoPqHiyHXS0FOBBOdl6tONBlVnOnt4=
