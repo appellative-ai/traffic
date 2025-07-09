@@ -17,8 +17,8 @@ import (
 const (
 	NamespaceName     = "test:resiliency:agent/rate-limiting/request/http"
 	NamespaceTaskName = "test:resiliency:task/analyze/traffic"
-	rateLimitName     = "x-rate-limit" // Sync with core/access
-	rateBurstName     = "x-rate-burst" // Sync with core/access
+	rateLimitName     = "rate-limit" // Sync with core/access
+	//rateBurstName     = "x-rate-burst" // Sync with core/access
 )
 
 type agentT struct {
@@ -116,7 +116,7 @@ func (a *agentT) Link(next rest.Exchange) rest.Exchange {
 		if !a.limiter.Allow() {
 			h := make(http.Header)
 			h.Add(rateLimitName, fmt.Sprintf("%v", a.limiter.Limit()))
-			h.Add(rateBurstName, fmt.Sprintf("%v", a.limiter.Burst()))
+			//	h.Add(rateBurstName, fmt.Sprintf("%v", a.limiter.Burst()))
 			if a.state.Enabled {
 				a.events.Enqueue(&event{internal: true, unixMS: start.UnixMilli(), duration: time.Since(start), statusCode: resp.StatusCode})
 			}

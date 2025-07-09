@@ -16,7 +16,7 @@ import (
 const (
 	NamespaceName = "test:resiliency:agent/routing/request/http"
 	defaultRoute  = "test:core:routing/default"
-	timeoutName   = "x-timeout" // Sync with core/access
+	timeoutName   = "timeout" // Sync with core/access
 
 )
 

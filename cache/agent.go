@@ -15,7 +15,7 @@ import (
 
 const (
 	NamespaceName = "test:resiliency:agent/cache/request/http"
-	cachedName    = "x-cached" // Sync with core/access
+	cachedName    = "cached" // Sync with core/access
 
 )
 
