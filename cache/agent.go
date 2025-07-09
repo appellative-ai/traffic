@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"github.com/behavioral-ai/collective/exchange"
 	"github.com/behavioral-ai/collective/operations"
-	"github.com/behavioral-ai/core/access2"
 	"github.com/behavioral-ai/core/httpx"
 	"github.com/behavioral-ai/core/messaging"
 	"github.com/behavioral-ai/core/rest"
@@ -16,6 +15,8 @@ import (
 
 const (
 	NamespaceName = "test:resiliency:agent/cache/request/http"
+	cachedName    = "x-cached" // Sync with core/access
+
 )
 
 var (
@@ -114,10 +115,10 @@ func (a *agentT) Link(next rest.Exchange) rest.Exchange {
 		h.Add(httpx.XRequestId, r.Header.Get(httpx.XRequestId))
 		resp, status = do(a, http.MethodGet, url, h, nil)
 		if resp.StatusCode == http.StatusOK {
-			resp.Header.Add(access2.XCached, "true")
+			resp.Header.Add(cachedName, "true")
 			return resp, nil
 		}
-		resp.Header.Add(access2.XCached, "false")
+		resp.Header.Add(cachedName, "false")
 		if status.Err != nil {
 			a.service.Message(messaging.NewStatusMessage(status.WithLocation(a.Name()), a.Name()))
 		}

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/behavioral-ai/collective/exchange"
 	"github.com/behavioral-ai/collective/operations"
-	"github.com/behavioral-ai/core/access2"
 	"github.com/behavioral-ai/core/httpx"
 	"github.com/behavioral-ai/core/messaging"
 	"github.com/behavioral-ai/core/rest"
@@ -17,6 +16,8 @@ import (
 const (
 	NamespaceName = "test:resiliency:agent/routing/request/http"
 	defaultRoute  = "test:core:routing/default"
+	timeoutName   = "x-timeout" // Sync with core/access
+
 )
 
 var (
@@ -104,7 +105,7 @@ func (a *agentT) Link(next rest.Exchange) rest.Exchange {
 			a.service.Message(messaging.NewStatusMessage(status.WithLocation(a.Name()), a.Name()))
 		}
 		if resp.StatusCode == http.StatusGatewayTimeout {
-			resp.Header.Add(access2.XTimeout, fmt.Sprintf("%v", a.state.Timeout))
+			resp.Header.Add(timeoutName, fmt.Sprintf("%v", a.state.Timeout))
 		}
 		return resp, status.Err
 	}
