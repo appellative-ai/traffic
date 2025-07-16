@@ -28,7 +28,7 @@ type agentT struct {
 	events   *list
 	state    *representation1.Routing
 	exchange rest.Exchange
-	service  *operations.Service
+	notifier *operations.Notification
 
 	review   *messaging.Review
 	ticker   *messaging.Ticker
@@ -39,20 +39,24 @@ type agentT struct {
 // init - register an agent constructor
 func init() {
 	exchange.RegisterConstructor(NamespaceName, func() messaging.Agent {
-		return newAgent(representation1.Initialize(nil), nil, operations.Serve)
+		return newAgent(representation1.Initialize(nil), nil, operations.Notifier)
 	})
 }
 
+/*
 func ConstructorOverride(m map[string]string, ex rest.Exchange, service *operations.Service) {
 	exchange.RegisterConstructor(NamespaceName, func() messaging.Agent {
 		return newAgent(representation1.Initialize(m), ex, service)
 	})
 }
 
-func newAgent(state *representation1.Routing, ex rest.Exchange, service *operations.Service) *agentT {
+
+*/
+
+func newAgent(state *representation1.Routing, ex rest.Exchange, notifier *operations.Notification) *agentT {
 	a := new(agentT)
 	a.state = state
-	a.service = service
+	a.notifier = notifier
 	if ex == nil {
 		a.exchange = httpx.Do
 	} else {
@@ -102,7 +106,7 @@ func (a *agentT) Link(next rest.Exchange) rest.Exchange {
 		// TODO : need to check and remove Caching header.
 		resp, status = do(a, r.Method, url, httpx.CloneHeaderWithEncoding(r), r.Body)
 		if status.Err != nil {
-			a.service.Message(messaging.NewStatusMessage(status.WithLocation(a.Name()), a.Name()))
+			a.notifier.Message(messaging.NewStatusMessage(status.WithLocation(a.Name()), a.Name()))
 		}
 		if resp.StatusCode == http.StatusGatewayTimeout {
 			resp.Header.Add(timeoutName, fmt.Sprintf("%v", a.state.Timeout))
@@ -121,7 +125,7 @@ func (a *agentT) trace(task, observation, action string) {
 	if a.review.Expired() {
 		return
 	}
-	a.service.Trace(a.Name(), task, observation, action)
+	a.notifier.Trace(a.Name(), task, observation, action)
 }
 
 func (a *agentT) enabled() bool {

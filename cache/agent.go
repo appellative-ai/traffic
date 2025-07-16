@@ -27,7 +27,7 @@ var (
 type agentT struct {
 	state    *representation1.Cache
 	exchange rest.Exchange
-	service  *operations.Service
+	notifier *operations.Notification
 
 	review   *messaging.Review
 	ticker   *messaging.Ticker
@@ -37,7 +37,7 @@ type agentT struct {
 // init - register an agent constructor
 func init() {
 	exchange.RegisterConstructor(NamespaceName, func() messaging.Agent {
-		return newAgent(representation1.Initialize(nil), nil, operations.Serve)
+		return newAgent(representation1.Initialize(nil), nil, operations.Notifier)
 	})
 }
 
@@ -51,10 +51,10 @@ func ConstructorOverride(m map[string]string, ex rest.Exchange, service *operati
 
 */
 
-func newAgent(state *representation1.Cache, ex rest.Exchange, service *operations.Service) *agentT {
+func newAgent(state *representation1.Cache, ex rest.Exchange, notifier *operations.Notification) *agentT {
 	a := new(agentT)
 	a.state = state
-	a.service = service
+	a.notifier = notifier
 	if ex == nil {
 		a.exchange = httpx.Do
 	} else {
@@ -124,7 +124,7 @@ func (a *agentT) Link(next rest.Exchange) rest.Exchange {
 		}
 		resp.Header.Add(cachedName, "false")
 		if status.Err != nil {
-			a.service.Message(messaging.NewStatusMessage(status.WithLocation(a.Name()), a.Name()))
+			a.notifier.Message(messaging.NewStatusMessage(status.WithLocation(a.Name()), a.Name()))
 		}
 		// cache miss, call next exchange
 		resp, err = next(r)
@@ -149,7 +149,7 @@ func (a *agentT) trace(task, observation, action string) {
 	if a.review.Expired() {
 		return
 	}
-	a.service.Trace(a.Name(), task, observation, action)
+	a.notifier.Trace(a.Name(), task, observation, action)
 }
 
 func (a *agentT) cacheable(r *http.Request) bool {
@@ -174,7 +174,7 @@ func (a *agentT) cacheUpdate(url string, r *http.Request, resp *http.Response) e
 	buf, err = io.ReadAll(resp.Body)
 	if err != nil {
 		status = messaging.NewStatus(messaging.StatusIOError, err).WithLocation(a.Name())
-		a.service.Message(messaging.NewStatusMessage(status, a.Name()))
+		a.notifier.Message(messaging.NewStatusMessage(status, a.Name()))
 		return err
 	}
 	resp.ContentLength = int64(len(buf))
@@ -186,7 +186,7 @@ func (a *agentT) cacheUpdate(url string, r *http.Request, resp *http.Response) e
 		h2.Add(httpx.XRequestId, r.Header.Get(httpx.XRequestId))
 		_, status = do(a, http.MethodPut, url, h2, io.NopCloser(bytes.NewReader(buf)))
 		if status.Err != nil {
-			a.service.Message(messaging.NewStatusMessage(status.WithLocation(a.Name()), a.Name()))
+			a.notifier.Message(messaging.NewStatusMessage(status.WithLocation(a.Name()), a.Name()))
 		}
 	}()
 	return nil

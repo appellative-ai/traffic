@@ -9,7 +9,7 @@ import (
 )
 
 func ExampleNew() {
-	a := newAgent(representation1.Initialize(nil), nil, operationstest.NewService())
+	a := newAgent(representation1.Initialize(nil), nil, operationstest.NewNotifier())
 
 	fmt.Printf("test: newAgent() -> %v\n", a.Name())
 

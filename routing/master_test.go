@@ -10,7 +10,7 @@ import (
 
 func _ExampleMaster() {
 	ch := make(chan struct{})
-	agent := newAgent(representation1.Initialize(nil), nil, operationstest.NewService())
+	agent := newAgent(representation1.Initialize(nil), nil, operationstest.NewNotifier())
 
 	go func() {
 		go masterAttend(agent, timeseries.Functions)
@@ -38,7 +38,7 @@ func _ExampleMaster_Observation() {
 	//if !status.OK() {
 	//	metrics.Notify(status)
 	//}
-	agent := newAgent(representation1.Initialize(nil), nil, operationstest.NewService())
+	agent := newAgent(representation1.Initialize(nil), nil, operationstest.NewNotifier())
 
 	go func() {
 		go masterAttend(agent, timeseries.Functions)

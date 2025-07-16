@@ -7,7 +7,7 @@ import (
 )
 
 func ExampleNewAgent() {
-	a := newAgent(representation1.Initialize(nil), operationstest.NewService())
+	a := newAgent(representation1.Initialize(nil), operationstest.NewNotifier())
 	fmt.Printf("test: newAgent() -> [limiter:%v] [burst:%v] [%v}\n", a.limiter.Limit(), a.limiter.Burst(), a.Name())
 
 	//agent := agentT{}

@@ -13,7 +13,7 @@ import (
 
 func ExampleNew() {
 	//url := "https://www.google.com/search"
-	a := newAgent(representation1.Initialize(nil), nil, operationstest.NewService())
+	a := newAgent(representation1.Initialize(nil), nil, operationstest.NewNotifier())
 
 	fmt.Printf("test: newAgent() -> %v\n", a.Name())
 	m := make(map[string]string)

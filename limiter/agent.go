@@ -22,10 +22,10 @@ const (
 )
 
 type agentT struct {
-	state   *representation1.Limiter
-	limiter *rate.Limiter
-	events  *list
-	service *operations.Service
+	state    *representation1.Limiter
+	limiter  *rate.Limiter
+	events   *list
+	notifier *operations.Notification
 
 	review     *messaging.Review
 	ticker     *messaging.Ticker
@@ -37,21 +37,25 @@ type agentT struct {
 // init - register an agent constructor
 func init() {
 	exchange.RegisterConstructor(NamespaceName, func() messaging.Agent {
-		return newAgent(representation1.Initialize(nil), operations.Serve)
+		return newAgent(representation1.Initialize(nil), operations.Notifier)
 	})
 }
 
+/*
 func ConstructorOverride(m map[string]string, service *operations.Service) {
 	exchange.RegisterConstructor(NamespaceName, func() messaging.Agent {
 		return newAgent(representation1.Initialize(m), service)
 	})
 }
 
-func newAgent(state *representation1.Limiter, service *operations.Service) *agentT {
+
+*/
+
+func newAgent(state *representation1.Limiter, notifier *operations.Notification) *agentT {
 	a := new(agentT)
 	a.state = state
 	a.state.Enabled = true
-	a.service = service
+	a.notifier = notifier
 
 	a.limiter = rate.NewLimiter(a.state.Limit, a.state.Burst)
 	a.events = newList()
@@ -146,7 +150,7 @@ func (a *agentT) trace(task, observation, action string) {
 	if a.review.Expired() {
 		return
 	}
-	a.service.Trace(a.Name(), task, observation, action)
+	a.notifier.Trace(a.Name(), task, observation, action)
 }
 
 func (a *agentT) emissaryShutdown() {
