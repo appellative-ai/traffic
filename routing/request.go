@@ -1,8 +1,8 @@
 package routing
 
 import (
-	"github.com/behavioral-ai/core/httpx"
-	"github.com/behavioral-ai/core/messaging"
+	"github.com/appellative-ai/core/httpx"
+	"github.com/appellative-ai/core/messaging"
 	"io"
 	"net/http"
 )

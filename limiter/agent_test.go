@@ -2,8 +2,8 @@ package limiter
 
 import (
 	"fmt"
-	"github.com/behavioral-ai/collective/operations/operationstest"
-	"github.com/behavioral-ai/traffic/limiter/representation1"
+	"github.com/appellative-ai/collective/operations/operationstest"
+	"github.com/appellative-ai/traffic/limiter/representation1"
 )
 
 func ExampleNewAgent() {

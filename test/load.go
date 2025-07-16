@@ -2,8 +2,8 @@ package test
 
 import (
 	"fmt"
-	"github.com/behavioral-ai/collective/exchange"
-	_ "github.com/behavioral-ai/traffic/module"
+	"github.com/appellative-ai/collective/exchange"
+	_ "github.com/appellative-ai/traffic/module"
 )
 
 func Load() {

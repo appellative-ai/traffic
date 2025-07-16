@@ -2,12 +2,12 @@ package cache
 
 import (
 	"fmt"
-	"github.com/behavioral-ai/collective/operations/operationstest"
-	"github.com/behavioral-ai/core/httpx"
-	"github.com/behavioral-ai/core/iox"
-	"github.com/behavioral-ai/core/messaging"
-	"github.com/behavioral-ai/core/rest"
-	"github.com/behavioral-ai/traffic/cache/representation1"
+	"github.com/appellative-ai/collective/operations/operationstest"
+	"github.com/appellative-ai/core/httpx"
+	"github.com/appellative-ai/core/iox"
+	"github.com/appellative-ai/core/messaging"
+	"github.com/appellative-ai/core/rest"
+	"github.com/appellative-ai/traffic/cache/representation1"
 	"net/http"
 )
 

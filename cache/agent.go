@@ -2,13 +2,13 @@ package cache
 
 import (
 	"bytes"
-	"github.com/behavioral-ai/collective/exchange"
-	"github.com/behavioral-ai/collective/operations"
-	"github.com/behavioral-ai/core/httpx"
-	"github.com/behavioral-ai/core/messaging"
-	"github.com/behavioral-ai/core/rest"
-	"github.com/behavioral-ai/core/uri"
-	"github.com/behavioral-ai/traffic/cache/representation1"
+	"github.com/appellative-ai/collective/exchange"
+	"github.com/appellative-ai/collective/operations"
+	"github.com/appellative-ai/core/httpx"
+	"github.com/appellative-ai/core/messaging"
+	"github.com/appellative-ai/core/rest"
+	"github.com/appellative-ai/core/uri"
+	"github.com/appellative-ai/traffic/cache/representation1"
 	"io"
 	"net/http"
 )
@@ -41,11 +41,15 @@ func init() {
 	})
 }
 
+/*
 func ConstructorOverride(m map[string]string, ex rest.Exchange, service *operations.Service) {
 	exchange.RegisterConstructor(NamespaceName, func() messaging.Agent {
 		return newAgent(representation1.Initialize(m), ex, service)
 	})
 }
+
+
+*/
 
 func newAgent(state *representation1.Cache, ex rest.Exchange, service *operations.Service) *agentT {
 	a := new(agentT)

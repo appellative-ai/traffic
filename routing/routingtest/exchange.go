@@ -3,8 +3,8 @@ package routingtest
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/behavioral-ai/core/httpx"
-	"github.com/behavioral-ai/core/iox"
+	"github.com/appellative-ai/core/httpx"
+	"github.com/appellative-ai/core/iox"
 	"net/http"
 )
 

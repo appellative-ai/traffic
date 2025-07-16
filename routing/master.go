@@ -1,8 +1,8 @@
 package routing
 
 import (
-	"github.com/behavioral-ai/core/messaging"
-	"github.com/behavioral-ai/traffic/timeseries"
+	"github.com/appellative-ai/core/messaging"
+	"github.com/appellative-ai/traffic/timeseries"
 )
 
 // master attention

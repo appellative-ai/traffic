@@ -1,9 +1,9 @@
 package limiter
 
 import (
-	"github.com/behavioral-ai/collective/operations/operationstest"
-	"github.com/behavioral-ai/core/messaging"
-	"github.com/behavioral-ai/traffic/limiter/representation1"
+	"github.com/appellative-ai/collective/operations/operationstest"
+	"github.com/appellative-ai/core/messaging"
+	"github.com/appellative-ai/traffic/limiter/representation1"
 	"time"
 )
 

@@ -1,7 +1,7 @@
 package cachetest
 
 import (
-	"github.com/behavioral-ai/core/httpx"
+	"github.com/appellative-ai/core/httpx"
 	"net/http"
 )
 

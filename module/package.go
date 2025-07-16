@@ -1,9 +1,9 @@
 package module
 
 import (
-	"github.com/behavioral-ai/traffic/cache"
-	"github.com/behavioral-ai/traffic/limiter"
-	"github.com/behavioral-ai/traffic/routing"
+	"github.com/appellative-ai/traffic/cache"
+	"github.com/appellative-ai/traffic/limiter"
+	"github.com/appellative-ai/traffic/routing"
 )
 
 var (

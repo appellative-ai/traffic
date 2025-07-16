@@ -1,14 +1,14 @@
-module github.com/behavioral-ai/traffic
+module github.com/appellative-ai/traffic
 
 go 1.23.0
 
-//toolchain go1.23.7
+toolchain go1.23.11
 
 require (
-	github.com/behavioral-ai/collective v0.0.0-20250705142106-af45d8806b5f
-	github.com/behavioral-ai/core v0.0.0-20250705135539-b42d40e13995
+	github.com/appellative-ai/collective v0.0.0-20250716123620-7e95d5370b96
+	github.com/appellative-ai/core v0.0.0-20250716122441-ad699ae23a57
 	github.com/dustinxie/lockfree v0.0.0-20210712051436-ed0ed42fd0d6
-	golang.org/x/time v0.11.0
+	golang.org/x/time v0.12.0
 )
 
 require (

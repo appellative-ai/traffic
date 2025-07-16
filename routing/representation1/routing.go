@@ -2,7 +2,7 @@ package representation1
 
 import (
 	"encoding/json"
-	"github.com/behavioral-ai/core/fmtx"
+	"github.com/appellative-ai/core/fmtx"
 	"net/http"
 	"strings"
 	"time"

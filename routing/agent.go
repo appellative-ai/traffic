@@ -2,14 +2,14 @@ package routing
 
 import (
 	"fmt"
-	"github.com/behavioral-ai/collective/exchange"
-	"github.com/behavioral-ai/collective/operations"
-	"github.com/behavioral-ai/core/httpx"
-	"github.com/behavioral-ai/core/messaging"
-	"github.com/behavioral-ai/core/rest"
-	"github.com/behavioral-ai/core/uri"
-	"github.com/behavioral-ai/traffic/routing/representation1"
-	"github.com/behavioral-ai/traffic/timeseries"
+	"github.com/appellative-ai/collective/exchange"
+	"github.com/appellative-ai/collective/operations"
+	"github.com/appellative-ai/core/httpx"
+	"github.com/appellative-ai/core/messaging"
+	"github.com/appellative-ai/core/rest"
+	"github.com/appellative-ai/core/uri"
+	"github.com/appellative-ai/traffic/routing/representation1"
+	"github.com/appellative-ai/traffic/timeseries"
 	"net/http"
 )
 

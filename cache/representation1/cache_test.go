@@ -2,7 +2,7 @@ package representation1
 
 import (
 	"fmt"
-	"github.com/behavioral-ai/collective/resource"
+	"github.com/appellative-ai/collective/resource"
 	"time"
 )
 

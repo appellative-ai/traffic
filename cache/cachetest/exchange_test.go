@@ -2,14 +2,14 @@ package cachetest
 
 import (
 	"fmt"
-	"github.com/behavioral-ai/collective/exchange"
-	"github.com/behavioral-ai/core/host"
-	"github.com/behavioral-ai/core/httpx"
-	"github.com/behavioral-ai/core/iox"
-	"github.com/behavioral-ai/core/messaging"
-	"github.com/behavioral-ai/core/rest"
-	"github.com/behavioral-ai/traffic/cache"
-	"github.com/behavioral-ai/traffic/cache/representation1"
+	"github.com/appellative-ai/collective/exchange"
+	"github.com/appellative-ai/core/host"
+	"github.com/appellative-ai/core/httpx"
+	"github.com/appellative-ai/core/iox"
+	"github.com/appellative-ai/core/messaging"
+	"github.com/appellative-ai/core/rest"
+	"github.com/appellative-ai/traffic/cache"
+	"github.com/appellative-ai/traffic/cache/representation1"
 	"net/http"
 	"net/http/httptest"
 )
@@ -29,8 +29,6 @@ func nextExchange(next rest.Exchange) rest.Exchange {
 }
 
 func ExampleExchange() {
-	//agent := repository.Agent(cache.NamespaceName)
-
 	// configure exchange and host name
 	//repository.Message(httpx.NewConfigExchangeMessage(Exchange))
 	cfg := make(map[string]string)

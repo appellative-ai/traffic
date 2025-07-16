@@ -1,7 +1,7 @@
 package limiter
 
 import (
-	"github.com/behavioral-ai/traffic/timeseries"
+	"github.com/appellative-ai/traffic/timeseries"
 	"time"
 )
 
