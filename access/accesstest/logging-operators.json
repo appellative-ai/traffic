@@ -1,0 +1,35 @@
+[
+  {
+    "Value": "%START_TIME%"
+  },
+  {
+    "Value": "%DURATION%"
+  },
+  {
+    "Value": "%TRAFFIC%"
+  },
+  {
+    "Value": "%ROUTE%"
+  },
+  {
+    "Value": "%METHOD%"
+  },
+  {
+    "Value": "%HOST%"
+  },
+  {
+    "Value": "%PATH%"
+  },
+  {
+    "Value": "%STATUS_CODE%"
+  },
+  {
+    "Value": "%TIMEOUT_DURATION%"
+  },
+  {
+    "Value": "%RATE_LIMIT%"
+  },
+  {
+    "Value": "%REDIRECT%"
+  }
+]
