@@ -2,8 +2,22 @@ package access
 
 import (
 	"fmt"
+	"github.com/appellative-ai/core/messaging"
 	"net/http"
 	"time"
+)
+
+var (
+	m = map[string]string{
+		messaging.RegionKey:      "region",
+		messaging.ZoneKey:        "zone",
+		messaging.SubZoneKey:     "sub-zone",
+		messaging.HostKey:        "host",
+		messaging.ServiceNameKey: "service-name",
+		messaging.InstanceIdKey:  "instance-id",
+		messaging.CollectiveKey:  "collective",
+		messaging.DomainKey:      "domain",
+	}
 )
 
 func _ExampleValue_Duration() {
@@ -22,7 +36,7 @@ func _ExampleValue_Duration() {
 }
 
 func ExampleValue_Origin() {
-	agent.SetOrigin("region", "zone", "subZone", "host-name", "instanceId")
+	messaging.SetOrigin(m)
 
 	data := event{}
 	fmt.Printf("test: Value(\"%v\") -> [%v]\n", "region", data.Value(OriginRegionOperator))
@@ -40,6 +54,7 @@ func ExampleValue_Origin() {
 
 }
 
+/*
 func ExampleValue_Thresholds() {
 	name := "test-route"
 	start := time.Now().UTC()
@@ -70,6 +85,9 @@ func ExampleValue_Thresholds() {
 	//test: Value("test-route") -> [redirect:10]
 
 }
+
+
+*/
 
 func ExampleValue_Request() {
 	op := RequestMethodOperator

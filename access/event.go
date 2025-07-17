@@ -3,6 +3,7 @@ package access
 import (
 	"fmt"
 	"github.com/appellative-ai/core/fmtx"
+	"github.com/appellative-ai/core/messaging"
 	"net/http"
 	"strconv"
 	"strings"
@@ -24,7 +25,7 @@ type event struct {
 	Parsed     *Parsed
 }
 
-func newEvent(traffic string, start time.Time, duration time.Duration, route string, req any, resp any, thresholds Threshold) *event {
+func newEvent(traffic string, start time.Time, duration time.Duration, route string, req any, resp any) *event {
 	e := new(event)
 	e.Traffic = traffic
 	e.Start = start
@@ -32,9 +33,9 @@ func newEvent(traffic string, start time.Time, duration time.Duration, route str
 	e.Route = route
 	e.Req = req
 	e.Resp = resp
-	e.Thresholds = thresholds
 	e.NewReq = BuildRequest(req)
 	e.NewResp = BuildResponse(resp)
+	e.Thresholds = newThreshold(e.NewResp)
 	e.Url, e.Parsed = ParseURL(e.NewReq.Host, e.NewReq.URL)
 	return e
 }
@@ -62,15 +63,15 @@ func (e *event) Value(value string) string {
 
 		// Origin
 	case OriginRegionOperator:
-		return agent.origin.Region
+		return messaging.Origin.Region
 	case OriginZoneOperator:
-		return agent.origin.Zone
+		return messaging.Origin.Zone
 	case OriginSubZoneOperator:
-		return agent.origin.SubZone
+		return messaging.Origin.SubZone
 	case OriginHostOperator:
-		return agent.origin.Host
+		return messaging.Origin.Host
 	case OriginInstanceIdOperator:
-		return agent.origin.InstanceId
+		return messaging.Origin.InstanceId
 
 		// Request
 	case RequestMethodOperator:
@@ -108,20 +109,22 @@ func (e *event) Value(value string) string {
 	case ResponseContentEncodingOperator:
 		return Encoding(e.NewResp)
 	case ResponseCachedOperator:
-		s := e.NewResp.Header.Get(CachedName)
-		if s == "" {
-			s = "false"
-		}
-		return s
+		return e.Thresholds.cached()
+		//s := e.NewResp.Header.Get(CachedName)
+		//if s == "" {
+		//	s = "false"
+		//}
+		//return s
 
 	// Thresholds
 	case TimeoutDurationOperator:
-		return strconv.Itoa(fmtx.Milliseconds(e.Thresholds.TimeoutT())) //strconv.Itoa(l.Timeout)
+		return strconv.Itoa(fmtx.Milliseconds(e.Thresholds.timeout())) //strconv.Itoa(l.Timeout)
 	case RateLimitOperator:
-		return fmt.Sprintf("%v", e.Thresholds.RateLimitT())
+		return fmt.Sprintf("%v", e.Thresholds.rateLimit())
 	case RedirectOperator:
-		return strconv.Itoa(e.Thresholds.RedirectT())
+		return strconv.Itoa(e.Thresholds.redirect())
 	}
+
 	if strings.HasPrefix(value, RequestReferencePrefix) {
 		name := requestOperatorHeaderName(value)
 		return e.NewReq.Header.Get(name)

@@ -3,6 +3,7 @@ package access
 import (
 	"encoding/json"
 	"errors"
+	"github.com/appellative-ai/collective/exchange"
 	"github.com/appellative-ai/core/messaging"
 	"github.com/appellative-ai/core/rest"
 	"log"
@@ -18,62 +19,53 @@ const (
 	EgressTraffic  = "egress"
 	IngressTraffic = "ingress"
 
-	failsafeUri     = "https://invalid-uri.com"
-	RequestIdName   = "x-request-id"
-	RateLimitName   = "rate-limit"
-	TimeoutName     = "timeout"
-	RedirectName    = "redirect"
-	CachedName      = "cached"
-	ContentEncoding = "Content-Encoding"
+	RequestIdName = "x-request-id"
+	ThresholdName = "x-threshold"
+	RateLimitName = "rate-limit"
+	TimeoutName   = "timeout"
+	RedirectName  = "redirect"
+	CachedName    = "cached"
 
-	ThresholdRequest       = "x-threshold-request"
-	ThresholdResponse      = "x-threshold-response"
-	ThresholdCacheName     = "cache"
-	ThresholdRateLimitName = "rate-limit"
-	ThresholdTimeoutName   = "timeout"
-	ThresholdRedirectName  = "redirect"
+	contentEncoding = "Content-Encoding"
+	failsafeUri     = "https://invalid-uri.com"
+
+	/*
+		//ThresholdRequest       = "x-threshold-request"
+		ThresholdCacheName     = "cache"
+		ThresholdRateLimitName = "rate-limit"
+		ThresholdTimeoutName   = "timeout"
+		ThresholdRedirectName  = "redirect"
+
+	*/
+)
+
+var (
+	agent *agentT
 )
 
 type LogAgent interface {
 	messaging.Agent
-	SetOrigin(region, zone, subZone, host, instanceId string)
-	ConfigureOperators(read func() ([]byte, error)) error
-	Log(traffic string, start time.Time, duration time.Duration, route string, req any, resp any, thresholds Threshold)
-}
-
-var (
-	Agent LogAgent
-	agent *agentT
-)
-
-func init() {
-	log.SetFlags(0)
-	Agent = newLogAgent()
+	Log(traffic string, start time.Time, duration time.Duration, route string, req any, resp any)
 }
 
 type agentT struct {
-	name             string
-	origin           originT
-	originSet        bool
-	defaultOperators []Operator
+	name      string
+	operators []Operator
 }
 
-func newLogAgent() LogAgent {
-	agent = newAgent()
-	return agent
+// init - register an agent constructor
+func init() {
+	log.SetFlags(0)
+	exchange.RegisterConstructor(NamespaceName, func() messaging.Agent {
+		agent = newAgent()
+		return agent
+	})
 }
 
 func newAgent() *agentT {
 	a := new(agentT)
 	a.name = NamespaceName
-	a.defaultOperators, _ = createOperators([]string{TrafficOperator, StartTimeOperator,
-		DurationOperator, RouteOperator,
-		RequestMethodOperator, RequestUrlOperator,
-		ResponseStatusCodeOperator, ResponseCachedOperator,
-		ResponseContentEncodingOperator, ResponseBytesReceivedOperator,
-		TimeoutDurationOperator, RateLimitOperator,
-		RedirectOperator,
-	})
+	a.operators = defaultOperators
 	return a
 }
 
@@ -94,20 +86,17 @@ func (a *agentT) Link(next rest.Exchange) rest.Exchange {
 	return func(r *http.Request) (resp *http.Response, err error) {
 		start := time.Now().UTC()
 		resp, err = next(r)
-		a.Log(IngressTraffic, start, time.Since(start), Route, r, resp, newThreshold(resp))
+		Log(a.operators, IngressTraffic, start, time.Since(start), Route, r, resp)
 		return
 	}
 }
 
-// SetOrigin -
-func (a *agentT) SetOrigin(region, zone, subZone, host, instanceId string) {
-	a.origin.Region = region
-	a.origin.Zone = zone
-	a.origin.SubZone = subZone
-	a.origin.Host = host
-	a.origin.InstanceId = instanceId
-	a.originSet = true
+/*
+func (a *agentT) Log(traffic string, start time.Time, duration time.Duration, route string, req any, resp any) {
+	LogWithOperators(a.operators, traffic, start, duration, route, req, resp)
 }
+
+*/
 
 // ConfigureOperators - load operators from file
 func (a *agentT) ConfigureOperators(read func() ([]byte, error)) error {
@@ -126,33 +115,9 @@ func (a *agentT) ConfigureOperators(read func() ([]byte, error)) error {
 	}
 	ops, err = initOperators(ops)
 	if err == nil {
-		a.defaultOperators = ops
+		a.operators = ops
 	}
 	return err
-}
-
-func (a *agentT) Log(traffic string, start time.Time, duration time.Duration, route string, req any, resp any, thresholds Threshold) {
-	LogWithOperators(a.defaultOperators, traffic, start, duration, route, req, resp, thresholds)
-}
-
-func LogWithOperators(operators []Operator, traffic string, start time.Time, duration time.Duration, route string, req any, resp any, thresholds Threshold) {
-	if len(operators) == 0 {
-		log.Printf("%v\n", "{ \"error\" : \"no operators configured\" }")
-		return
-	}
-	e := newEvent(traffic, start, duration, route, req, resp, thresholds)
-	s := writeJson(operators, e)
-	log.Printf("%v\n", s)
-}
-
-func newThreshold(resp *http.Response) Threshold {
-	limit := resp.Header.Get(RateLimitName)
-	resp.Header.Del(RateLimitName)
-	timeout := resp.Header.Get(TimeoutName)
-	resp.Header.Del(TimeoutName)
-	redirect := resp.Header.Get(RedirectName)
-	resp.Header.Del(RedirectName)
-	return Threshold{Timeout: timeout, RateLimit: limit, Redirect: redirect}
 }
 
 /*

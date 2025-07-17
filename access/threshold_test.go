@@ -9,15 +9,15 @@ func ExampleThresholdTimeout() {
 	s := fmt.Sprintf("%v", time.Millisecond*100)
 	t := Threshold{Timeout: s}
 
-	v := t.TimeoutT()
+	v := t.timeout()
 	fmt.Printf("test: Threshold-String() -> [s:%v] [value:%v]\n", s, v)
 
 	t = Threshold{Timeout: time.Second * 3}
-	v = t.TimeoutT()
+	v = t.timeout()
 	fmt.Printf("test: Threshold-Duration() ->  [value:%v]\n", v)
 
 	t = Threshold{Timeout: 100}
-	v = t.TimeoutT()
+	v = t.timeout()
 	fmt.Printf("test: Threshold-Int() ->  [value:%v]\n", v)
 
 	//Output:
@@ -68,5 +68,29 @@ func ExampleThresholdRateLimit() {
 	//test: RateLimit-String() -> [s:77] [value:77]
 	//test: RateLimit-Float64() ->  [value:123]
 	//test: RateLimit-Duration() ->  [value:-1]
+
+}
+
+func ExampleThresholdCached() {
+	s := "true"
+	t := Threshold{Cached: s}
+
+	v := t.cached()
+	fmt.Printf("test: Cached-String() -> [s:%v] [value:%v]\n", s, v)
+
+	s = ""
+	t = Threshold{}
+	v = t.cached()
+	fmt.Printf("test: Cached-String() -> [s:%v] [value:%v]\n", s, v)
+
+	s = "false"
+	t = Threshold{Cached: s}
+	v = t.cached()
+	fmt.Printf("test: Cached-String() -> [s:%v] [value:%v]\n", s, v)
+
+	//Output:
+	//test: Cached-String() -> [s:true] [value:true]
+	//test: Cached-String() -> [s:] [value:false]
+	//test: Cached-String() -> [s:false] [value:false]
 
 }

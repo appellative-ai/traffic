@@ -58,6 +58,17 @@ type Operator struct {
 	Value string
 }
 
+var (
+	defaultOperators, _ = createOperators([]string{TrafficOperator, StartTimeOperator,
+		DurationOperator, RouteOperator,
+		RequestMethodOperator, RequestUrlOperator,
+		ResponseStatusCodeOperator, ResponseCachedOperator,
+		ResponseContentEncodingOperator, ResponseBytesReceivedOperator,
+		TimeoutDurationOperator, RateLimitOperator,
+		RedirectOperator,
+	})
+)
+
 func isDirectOperator(op Operator) bool {
 	return !strings.HasPrefix(op.Value, OperatorPrefix)
 }

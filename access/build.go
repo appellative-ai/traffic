@@ -55,7 +55,6 @@ func BuildResponse(r any) *http.Response {
 		if newResp.Header == nil {
 			newResp.Header = make(http.Header)
 		}
-		newResp.Header.Del(ThresholdResponse)
 		return newResp
 	}
 	if resp, ok := r.(Response); ok {
@@ -74,7 +73,7 @@ func BuildResponse(r any) *http.Response {
 func Encoding(resp *http.Response) string {
 	encoding := ""
 	if resp != nil && resp.Header != nil {
-		encoding = resp.Header.Get(ContentEncoding)
+		encoding = resp.Header.Get(contentEncoding)
 	}
 	// normalize encoding
 	if strings.Contains(strings.ToLower(encoding), "none") {

@@ -2,6 +2,7 @@ package access
 
 import (
 	"github.com/appellative-ai/core/fmtx"
+	"net/http"
 	"strconv"
 	"time"
 )
@@ -10,9 +11,19 @@ type Threshold struct {
 	Timeout   any
 	RateLimit any
 	Redirect  any
+	Cached    any
 }
 
-func (t Threshold) TimeoutT() time.Duration {
+func newThreshold(resp *http.Response) Threshold {
+	limit := resp.Header.Get(RateLimitName)
+	timeout := resp.Header.Get(TimeoutName)
+	redirect := resp.Header.Get(RedirectName)
+	cached := resp.Header.Get(CachedName)
+	resp.Header.Del(ThresholdName)
+	return Threshold{Timeout: timeout, RateLimit: limit, Redirect: redirect, Cached: cached}
+}
+
+func (t Threshold) timeout() time.Duration {
 	var dur time.Duration = -1
 
 	if t.Timeout == nil {
@@ -34,7 +45,7 @@ func (t Threshold) TimeoutT() time.Duration {
 	return dur
 }
 
-func (t Threshold) RateLimitT() float64 {
+func (t Threshold) rateLimit() float64 {
 	var limit float64 = -1
 
 	if t.RateLimit == nil {
@@ -56,11 +67,15 @@ func (t Threshold) RateLimitT() float64 {
 	return limit
 }
 
+/*
 func (t Threshold) rateLimit() float64 {
 	return t.RateLimitT()
 }
 
-func (t Threshold) RedirectT() int {
+
+*/
+
+func (t Threshold) redirect() int {
 	pct := -1
 	if t.Redirect == nil {
 		return pct
@@ -79,6 +94,21 @@ func (t Threshold) RedirectT() int {
 	return pct
 }
 
+/*
 func (t Threshold) redirect() int {
 	return t.RedirectT()
+}
+
+
+*/
+
+func (t Threshold) cached() string {
+	s := "false"
+	if t.Cached == nil {
+		return s
+	}
+	if s1, ok := t.Cached.(string); ok {
+		return s1
+	}
+	return s
 }
