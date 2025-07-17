@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	NamespaceName   = "core:common:agent/log/access/http"
+	NamespaceName   = "test:resiliency:agent/log/access/http"
 	contentEncoding = "Content-Encoding"
 	failsafeUri     = "https://invalid-uri.com"
 )
