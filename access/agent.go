@@ -69,3 +69,8 @@ func (a *agentT) Link(next rest.Exchange) rest.Exchange {
 		return
 	}
 }
+
+func (a *agentT) log(start time.Time, duration time.Duration, req any, resp any) {
+	Log(a.operators, IngressTraffic, start, duration, DefaultRoute, req, resp)
+
+}
