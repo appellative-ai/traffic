@@ -18,7 +18,7 @@ func ExampleSet() {
 	fmt.Printf("test: Set() -> %v\n", h)
 
 	//Output:
-	//test: Set() -> map[X-Thresholds:[timeout=456ms rate-limit=123 redirect=35 cached=false]]
+	//test: Set() -> map[X-Threshold:[timeout=456ms rate-limit=123 redirect=35 cached=false]]
 	//test: Set() -> map[]
 
 }

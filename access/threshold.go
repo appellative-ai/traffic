@@ -4,111 +4,91 @@ import (
 	"github.com/appellative-ai/core/fmtx"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 )
 
-type Threshold struct {
-	Timeout   any
-	RateLimit any
-	Redirect  any
-	Cached    any
+type threshold struct {
+	Timeout   string
+	RateLimit string
+	Redirect  string
+	Cached    string
 }
 
-func newThreshold(resp *http.Response) Threshold {
-	limit := resp.Header.Get(RateLimitName)
-	timeout := resp.Header.Get(TimeoutName)
-	redirect := resp.Header.Get(RedirectName)
-	cached := resp.Header.Get(CachedName)
-	resp.Header.Del(ThresholdName)
-	return Threshold{Timeout: timeout, RateLimit: limit, Redirect: redirect, Cached: cached}
+func newThreshold(v any) (t threshold) {
+	var values []string
+	var h http.Header
+
+	if v == nil {
+		return
+	}
+	if h1, ok1 := v.(http.Header); ok1 {
+		h = h1
+	} else {
+		if resp, ok2 := v.(*http.Response); ok2 {
+			h = resp.Header
+		}
+	}
+	if h == nil {
+		return
+	}
+	values = h.Values(ThresholdName)
+
+	for _, s := range values {
+		tokens := strings.Split(s, "=")
+		if len(tokens) < 2 {
+			continue
+		}
+		switch tokens[0] {
+		case TimeoutName:
+			t.Timeout = tokens[1]
+		case RateLimitName:
+			t.RateLimit = tokens[1]
+		case RedirectName:
+			t.Redirect = tokens[1]
+		case CachedName:
+			t.Cached = tokens[1]
+		}
+	}
+	h.Del(ThresholdName)
+	return
 }
 
-func (t Threshold) timeout() time.Duration {
+func (t threshold) timeout() time.Duration {
 	var dur time.Duration = -1
 
-	if t.Timeout == nil {
-		return -1
+	if t.Timeout == "" {
+		return dur
 	}
-	if s, ok := t.Timeout.(string); ok {
-		if s == "" {
-			return dur
-		}
-		i, err := fmtx.ParseDuration(s)
-		if err == nil {
-			dur = i
-		}
-	} else {
-		if d, ok1 := t.Timeout.(time.Duration); ok1 {
-			dur = d
-		}
+	i, err := fmtx.ParseDuration(t.Timeout)
+	if err == nil {
+		dur = i
 	}
 	return dur
 }
 
-func (t Threshold) rateLimit() float64 {
+func (t threshold) rateLimit() float64 {
 	var limit float64 = -1
 
-	if t.RateLimit == nil {
+	if t.RateLimit == "" {
 		return limit
 	}
-	if s, ok := t.RateLimit.(string); ok {
-		if s == "" {
-			return limit
-		}
-		i, _ := strconv.Atoi(s)
-		return float64(i)
-	}
-	if l, ok1 := t.RateLimit.(float64); ok1 {
-		return l
-	}
-	if l, ok1 := t.RateLimit.(int); ok1 {
-		return float64(l)
-	}
-	return limit
+	i, _ := strconv.Atoi(t.RateLimit)
+	return float64(i)
 }
 
-/*
-func (t Threshold) rateLimit() float64 {
-	return t.RateLimitT()
-}
-
-
-*/
-
-func (t Threshold) redirect() int {
+func (t threshold) redirect() int {
 	pct := -1
-	if t.Redirect == nil {
+	if t.Redirect == "" {
 		return pct
 	}
-	if s, ok := t.Redirect.(string); ok {
-		if s == "" {
-			return pct
-		}
-		i, _ := strconv.Atoi(s)
-		pct = i
-	} else {
-		if d, ok1 := t.Redirect.(int); ok1 {
-			pct = d
-		}
-	}
-	return pct
+	i, _ := strconv.Atoi(t.Redirect)
+	return i
 }
 
-/*
-func (t Threshold) redirect() int {
-	return t.RedirectT()
-}
-
-
-*/
-
-func (t Threshold) cached() string {
-	s := "false"
-	if t.Cached == nil {
-		return s
+func (t threshold) cached() string {
+	if t.Cached == "" {
+		return "false"
 	}
-	if s1, ok := t.Cached.(string); ok {
-		return s1
-	}
-	return s
+	return t.Cached
 }

@@ -1,8 +1,6 @@
 package access
 
 import (
-	"encoding/json"
-	"errors"
 	"github.com/appellative-ai/collective/exchange"
 	"github.com/appellative-ai/core/messaging"
 	"github.com/appellative-ai/core/rest"
@@ -14,39 +12,14 @@ import (
 //XRateBurst      = "x-rate-burst"
 
 const (
-	NamespaceName  = "core:common:agent/log/access/http"
-	Route          = "host"
-	EgressTraffic  = "egress"
-	IngressTraffic = "ingress"
-
-	RequestIdName = "x-request-id"
-	ThresholdName = "x-threshold"
-	RateLimitName = "rate-limit"
-	TimeoutName   = "timeout"
-	RedirectName  = "redirect"
-	CachedName    = "cached"
-
+	NamespaceName   = "core:common:agent/log/access/http"
 	contentEncoding = "Content-Encoding"
 	failsafeUri     = "https://invalid-uri.com"
-
-	/*
-		//ThresholdRequest       = "x-threshold-request"
-		ThresholdCacheName     = "cache"
-		ThresholdRateLimitName = "rate-limit"
-		ThresholdTimeoutName   = "timeout"
-		ThresholdRedirectName  = "redirect"
-
-	*/
 )
 
 var (
 	agent *agentT
 )
-
-type LogAgent interface {
-	messaging.Agent
-	Log(traffic string, start time.Time, duration time.Duration, route string, req any, resp any)
-}
 
 type agentT struct {
 	name      string
@@ -55,6 +28,7 @@ type agentT struct {
 
 // init - register an agent constructor
 func init() {
+	// initialize Golang logging
 	log.SetFlags(0)
 	exchange.RegisterConstructor(NamespaceName, func() messaging.Agent {
 		agent = newAgent()
@@ -74,11 +48,18 @@ func (a *agentT) Message(m *messaging.Message) {
 	if m == nil {
 		return
 	}
-	if m.Name == messaging.StartupEvent {
-		//t.run()
+	if m.Name == messaging.ConfigEvent {
+		ops, status := OperatorsContent(m)
+		if !status.OK() {
+			messaging.Reply(m, status, a.name)
+			return
+		}
+		if len(ops) > 0 {
+			a.operators = ops
+		}
+		messaging.Reply(m, messaging.StatusOK(), a.name)
 		return
 	}
-
 }
 
 // Link - chainable exchange
@@ -86,18 +67,12 @@ func (a *agentT) Link(next rest.Exchange) rest.Exchange {
 	return func(r *http.Request) (resp *http.Response, err error) {
 		start := time.Now().UTC()
 		resp, err = next(r)
-		Log(a.operators, IngressTraffic, start, time.Since(start), Route, r, resp)
+		Log(a.operators, IngressTraffic, start, time.Since(start), DefaultRoute, r, resp)
 		return
 	}
 }
 
 /*
-func (a *agentT) Log(traffic string, start time.Time, duration time.Duration, route string, req any, resp any) {
-	LogWithOperators(a.operators, traffic, start, duration, route, req, resp)
-}
-
-*/
-
 // ConfigureOperators - load operators from file
 func (a *agentT) ConfigureOperators(read func() ([]byte, error)) error {
 	if read == nil {
@@ -118,25 +93,6 @@ func (a *agentT) ConfigureOperators(read func() ([]byte, error)) error {
 		a.operators = ops
 	}
 	return err
-}
-
-/*
-func (t *agentT) run() {
-	go func() {
-		for {
-			select {
-			case msg := <-t.ch.C:
-				fmt.Printf("test: agent.Message() -> %v", msg)
-				switch msg.Name {
-				case messaging.ShutdownEvent:
-					t.ch.Close()
-					return
-				default:
-				}
-			default:
-			}
-		}
-	}()
 }
 
 

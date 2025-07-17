@@ -6,18 +6,18 @@ import (
 	"strings"
 )
 
-type Parsed struct {
-	Valid    bool
-	Host     string
-	Domain   string
-	Version  string
-	Resource string
-	Path     string
-	Query    string
-	Err      error
+type parsed struct {
+	valid    bool
+	host     string
+	domain   string
+	version  string
+	resource string
+	path     string
+	query    string
+	err      error
 }
 
-func (p *Parsed) PathQuery() *url.URL {
+func (p *parsed) pathQuery() *url.URL {
 	rawURL := p.Path
 	if p.Query != "" {
 		rawURL = p.Path + "?" + p.Query
@@ -26,11 +26,11 @@ func (p *Parsed) PathQuery() *url.URL {
 	return u
 }
 
-// ParseURL - create the URL, host, path, and query, un-escaping path and query
-func ParseURL(hostOverride string, u *url.URL) (uri string, parsed *Parsed) {
+// parseURL - create the URL, host, path, and query, un-escaping path and query
+func parseURL(hostOverride string, u *url.URL) (uri string, p *parsed) {
 	if u == nil {
 		uri = "url-is-nil"
-		return uri, &Parsed{Valid: false, Err: errors.New("invalid argument: URL is nil")}
+		return uri, &parsed{Valid: false, Err: errors.New("invalid argument: URL is nil")}
 	}
 	// Set scheme
 	scheme := u.Scheme
@@ -60,7 +60,7 @@ func ParseURL(hostOverride string, u *url.URL) (uri string, parsed *Parsed) {
 	} else {
 		uri = scheme + "://" + host + urlPath + query
 	}
-	return uri, &Parsed{
+	return uri, &parsed{
 		Valid:    true,
 		Host:     host,
 		Domain:   "",

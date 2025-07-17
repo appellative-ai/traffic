@@ -73,7 +73,7 @@ func isDirectOperator(op Operator) bool {
 	return !strings.HasPrefix(op.Value, OperatorPrefix)
 }
 
-func IsRequestOperator(op Operator) bool {
+func isRequestOperator(op Operator) bool {
 	if !strings.HasPrefix(op.Value, RequestReferencePrefix) {
 		return false
 	}
@@ -83,21 +83,37 @@ func IsRequestOperator(op Operator) bool {
 	return op.Value[len(op.Value)-2:] == ")%"
 }
 
-func RequestOperatorHeaderName(op Operator) string {
-	if op.Name != "" {
-		return op.Name
+func requestOperatorHeaderName(v any) (value string) {
+	if v == nil {
+		return
 	}
-	return requestOperatorHeaderName(op.Value)
+	if op, ok := v.(Operator); ok {
+		if op.Name != "" {
+			return op.Name
+		}
+		value = op.Value
+	} else {
+		if v2, ok1 := v.(string); ok1 {
+			value = v2
+		}
+	}
+	if value != "" {
+		if len(value) < (len(RequestReferencePrefix) + 2) {
+			return ""
+		}
+		return value[len(RequestReferencePrefix) : len(value)-2]
+	}
+	return
 }
 
-func requestOperatorHeaderName(value string) string {
+func requestOperatorHeaderName23(value string) string {
 	if len(value) < (len(RequestReferencePrefix) + 2) {
 		return ""
 	}
 	return value[len(RequestReferencePrefix) : len(value)-2]
 }
 
-func IsStringValue(op Operator) bool {
+func isStringValue(op Operator) bool {
 	switch op.Value {
 	case DurationOperator, TimeoutDurationOperator,
 		RateLimitOperator, RedirectOperator,

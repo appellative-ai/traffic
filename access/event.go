@@ -18,11 +18,11 @@ type event struct {
 	Route      string
 	Req        any
 	Resp       any
-	Thresholds Threshold
+	Thresholds threshold
 	NewReq     *http.Request
 	NewResp    *http.Response
 	Url        string
-	Parsed     *Parsed
+	Parsed     *parsed
 }
 
 func newEvent(traffic string, start time.Time, duration time.Duration, route string, req any, resp any) *event {
@@ -33,22 +33,22 @@ func newEvent(traffic string, start time.Time, duration time.Duration, route str
 	e.Route = route
 	e.Req = req
 	e.Resp = resp
-	e.NewReq = BuildRequest(req)
-	e.NewResp = BuildResponse(resp)
+	e.NewReq = buildRequest(req)
+	e.NewResp = buildResponse(resp)
 	e.Thresholds = newThreshold(e.NewResp)
-	e.Url, e.Parsed = ParseURL(e.NewReq.Host, e.NewReq.URL)
+	e.Url, e.Parsed = parseURL(e.NewReq.Host, e.NewReq.URL)
 	return e
 }
 
-func (e *event) AddRequest(r *http.Request) {
-	e.NewReq = BuildRequest(r)
+func (e *event) addRequest(r *http.Request) {
+	e.NewReq = buildRequest(r)
 }
 
-func (e *event) AddResponse(r *http.Response) {
-	e.NewResp = BuildResponse(r)
+func (e *event) addResponse(r *http.Response) {
+	e.NewResp = buildResponse(r)
 }
 
-func (e *event) Value(value string) string {
+func (e *event) value(value string) string {
 	switch value {
 	case TrafficOperator:
 		return e.Traffic
@@ -107,14 +107,9 @@ func (e *event) Value(value string) string {
 			return strconv.Itoa(e.NewResp.StatusCode)
 		}
 	case ResponseContentEncodingOperator:
-		return Encoding(e.NewResp)
+		return encoding(e.NewResp)
 	case ResponseCachedOperator:
 		return e.Thresholds.cached()
-		//s := e.NewResp.Header.Get(CachedName)
-		//if s == "" {
-		//	s = "false"
-		//}
-		//return s
 
 	// Thresholds
 	case TimeoutDurationOperator:

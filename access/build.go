@@ -5,29 +5,7 @@ import (
 	"strings"
 )
 
-// Request - request interface for non HTTP traffic
-type Request interface {
-	Url() string
-	Header() http.Header
-	Method() string
-	Protocol() string
-}
-
-// Response - response interface for non HTTP traffic
-type Response interface {
-	StatusCode() int
-	Header() http.Header
-}
-
-// RequestImpl - non HTTP request attributes
-type RequestImpl struct {
-	Url      string
-	Header   http.Header
-	Method   string
-	Protocol string
-}
-
-func BuildRequest(r any) *http.Request {
+func buildRequest(r any) *http.Request {
 	if r == nil {
 		newReq, _ := http.NewRequest("", failsafeUri, nil)
 		return newReq
@@ -45,7 +23,7 @@ func BuildRequest(r any) *http.Request {
 	return newReq
 }
 
-func BuildResponse(r any) *http.Response {
+func buildResponse(r any) *http.Response {
 	if r == nil {
 		newResp := &http.Response{StatusCode: http.StatusOK}
 		newResp.Header = make(http.Header)
@@ -70,14 +48,14 @@ func BuildResponse(r any) *http.Response {
 	return newResp
 }
 
-func Encoding(resp *http.Response) string {
-	encoding := ""
+func encoding(resp *http.Response) string {
+	enc := ""
 	if resp != nil && resp.Header != nil {
-		encoding = resp.Header.Get(contentEncoding)
+		enc = resp.Header.Get(contentEncoding)
 	}
 	// normalize encoding
-	if strings.Contains(strings.ToLower(encoding), "none") {
-		encoding = ""
+	if strings.Contains(strings.ToLower(enc), "none") {
+		enc = ""
 	}
-	return encoding
+	return enc
 }

@@ -17,7 +17,7 @@ func writeJson(items []Operator, data *event) string {
 	}
 	sb := strings.Builder{}
 	for _, op := range items {
-		writeMarkup(&sb, op.Name, data.Value(op.Value), IsStringValue(op))
+		writeMarkup(&sb, op.Name, data.value(op.Value), isStringValue(op))
 	}
 	sb.WriteString("}")
 	return sb.String()
@@ -49,7 +49,7 @@ func writeText(items []Operator, data *event) string {
 		if i > 0 {
 			sb.WriteString(",")
 		}
-		sb.WriteString(data.Value(op.Value))
+		sb.WriteString(data.value(op.Value))
 	}
 
 	return sb.String()

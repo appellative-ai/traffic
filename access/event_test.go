@@ -26,8 +26,8 @@ func _ExampleValue_Duration() {
 	time.Sleep(time.Second * 2)
 	data := &event{}
 	data.Duration = time.Since(start)
-	fmt.Printf("test: Value(\"Duration\") -> [%v]\n", data.Value(DurationOperator))
-	fmt.Printf("test: Value(\"DurationString\") -> [%v]\n", data.Value(DurationStringOperator))
+	fmt.Printf("test: Value(\"Duration\") -> [%v]\n", data.value(DurationOperator))
+	fmt.Printf("test: Value(\"DurationString\") -> [%v]\n", data.value(DurationStringOperator))
 
 	//Output:
 	//test: Value("Duration") -> [2011]
@@ -39,11 +39,11 @@ func ExampleValue_Origin() {
 	messaging.SetOrigin(m)
 
 	data := event{}
-	fmt.Printf("test: Value(\"%v\") -> [%v]\n", "region", data.Value(OriginRegionOperator))
-	fmt.Printf("test: Value(\"%v\") -> [%v]\n", "zone", data.Value(OriginZoneOperator))
-	fmt.Printf("test: Value(\"%v\") -> [%v]\n", "sub-zone", data.Value(OriginSubZoneOperator))
-	fmt.Printf("test: Value(\"%v\") -> [%v]\n", "service", data.Value(OriginHostOperator))
-	fmt.Printf("test: Value(\"%v\") -> [%v]\n", "instance-id", data.Value(OriginInstanceIdOperator))
+	fmt.Printf("test: Value(\"%v\") -> [%v]\n", "region", data.value(OriginRegionOperator))
+	fmt.Printf("test: Value(\"%v\") -> [%v]\n", "zone", data.value(OriginZoneOperator))
+	fmt.Printf("test: Value(\"%v\") -> [%v]\n", "sub-zone", data.value(OriginSubZoneOperator))
+	fmt.Printf("test: Value(\"%v\") -> [%v]\n", "service", data.value(OriginHostOperator))
+	fmt.Printf("test: Value(\"%v\") -> [%v]\n", "instance-id", data.value(OriginInstanceIdOperator))
 
 	//Output:
 	//test: Value("region") -> [region]
@@ -99,10 +99,10 @@ func ExampleValue_Request() {
 	req.Header.Add(RequestIdHeaderName, "123-456-789")
 	req.Header.Add(FromRouteHeaderName, "calling-route")
 	data = &event{}
-	data.AddRequest(req)
-	fmt.Printf("test: Value(\"method\") -> [%v]\n", data.Value(op))
+	data.addRequest(req)
+	fmt.Printf("test: Value(\"method\") -> [%v]\n", data.value(op))
 
-	fmt.Printf("test: Value(\"headers\") -> [request-id:%v] [from-route:%v]\n", data.Value(RequestIdOperator), data.Value(RequestFromRouteOperator))
+	fmt.Printf("test: Value(\"headers\") -> [request-id:%v] [from-route:%v]\n", data.value(RequestIdOperator), data.value(RequestFromRouteOperator))
 
 	//Output:
 	//test: Value("method") -> [POST]
@@ -113,12 +113,12 @@ func ExampleValue_Response() {
 	op := ResponseStatusCodeOperator
 
 	data := &event{}
-	fmt.Printf("test: Value(\"code\") -> [%v]\n", data.Value(op))
+	fmt.Printf("test: Value(\"code\") -> [%v]\n", data.value(op))
 
 	resp := &http.Response{StatusCode: 200}
 	data = &event{}
-	data.AddResponse(resp)
-	fmt.Printf("test: Value(\"code\") -> [%v]\n", data.Value(op))
+	data.addResponse(resp)
+	fmt.Printf("test: Value(\"code\") -> [%v]\n", data.value(op))
 
 	//Output:
 	//test: Value("code") -> [0]
@@ -129,8 +129,8 @@ func ExampleValue_Request_Header() {
 	req, _ := http.NewRequest("", "www.google.com", nil)
 	req.Header.Add("customer", "Ted's Bait & Tackle")
 	data := event{}
-	data.AddRequest(req)
-	fmt.Printf("test: Value(\"customer\") -> [%v]\n", data.Value("%REQ(customer)%"))
+	data.addRequest(req)
+	fmt.Printf("test: Value(\"customer\") -> [%v]\n", data.value("%REQ(customer)%"))
 
 	//Output:
 	//test: Value("customer") -> [Ted's Bait & Tackle]

@@ -2,9 +2,36 @@ package access
 
 import (
 	"fmt"
+	"net/http"
 	"time"
 )
 
+func ExampleNewThreshold() {
+	h := make(http.Header)
+
+	t := newThreshold(nil)
+	fmt.Printf("test: newThreshold() -> %v\n", t)
+
+	t = newThreshold(h)
+	fmt.Printf("test: newThreshold() -> %v\n", t)
+
+	SetTimeout(h, time.Millisecond*456)
+	SetRateLimit(h, float64(123))
+	SetRedirect(h, 35)
+	SetCached(h, false)
+
+	t = newThreshold(h)
+	fmt.Printf("test: newThreshold() -> %v\n", t)
+	//RemoveThresholds(h)
+
+	//Output:
+	//test: newThreshold() -> {   }
+	//test: newThreshold() -> {   }
+	//test: newThreshold() -> {456ms 123 35 false}
+
+}
+
+/*
 func ExampleThresholdTimeout() {
 	s := fmt.Sprintf("%v", time.Millisecond*100)
 	t := Threshold{Timeout: s}
@@ -94,3 +121,6 @@ func ExampleThresholdCached() {
 	//test: Cached-String() -> [s:false] [value:false]
 
 }
+
+
+*/

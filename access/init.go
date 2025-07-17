@@ -95,8 +95,8 @@ func createOperator(op Operator) (Operator, error) {
 		}
 		return newOp, nil
 	}
-	if IsRequestOperator(op) {
-		return Operator{Name: RequestOperatorHeaderName(op), Value: op.Value}, nil
+	if isRequestOperator(op) {
+		return Operator{Name: requestOperatorHeaderName(op), Value: op.Value}, nil
 	}
 	return Operator{}, errors.New(fmt.Sprintf("invalid operator: value not found or invalid %v", op.Value))
 }
