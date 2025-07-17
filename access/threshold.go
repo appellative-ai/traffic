@@ -9,10 +9,10 @@ import (
 )
 
 type threshold struct {
-	Timeout   string
-	RateLimit string
-	Redirect  string
-	Cached    string
+	to    string
+	limit string
+	red   string
+	cache string
 }
 
 func newThreshold(v any) (t threshold) {
@@ -41,13 +41,13 @@ func newThreshold(v any) (t threshold) {
 		}
 		switch tokens[0] {
 		case TimeoutName:
-			t.Timeout = tokens[1]
+			t.to = tokens[1]
 		case RateLimitName:
-			t.RateLimit = tokens[1]
+			t.limit = tokens[1]
 		case RedirectName:
-			t.Redirect = tokens[1]
+			t.red = tokens[1]
 		case CachedName:
-			t.Cached = tokens[1]
+			t.cache = tokens[1]
 		}
 	}
 	h.Del(ThresholdName)
@@ -57,10 +57,10 @@ func newThreshold(v any) (t threshold) {
 func (t threshold) timeout() time.Duration {
 	var dur time.Duration = -1
 
-	if t.Timeout == "" {
+	if t.to == "" {
 		return dur
 	}
-	i, err := fmtx.ParseDuration(t.Timeout)
+	i, err := fmtx.ParseDuration(t.to)
 	if err == nil {
 		dur = i
 	}
@@ -70,25 +70,25 @@ func (t threshold) timeout() time.Duration {
 func (t threshold) rateLimit() float64 {
 	var limit float64 = -1
 
-	if t.RateLimit == "" {
+	if t.limit == "" {
 		return limit
 	}
-	i, _ := strconv.Atoi(t.RateLimit)
+	i, _ := strconv.Atoi(t.limit)
 	return float64(i)
 }
 
 func (t threshold) redirect() int {
 	pct := -1
-	if t.Redirect == "" {
+	if t.red == "" {
 		return pct
 	}
-	i, _ := strconv.Atoi(t.Redirect)
+	i, _ := strconv.Atoi(t.red)
 	return i
 }
 
 func (t threshold) cached() string {
-	if t.Cached == "" {
+	if t.cache == "" {
 		return "false"
 	}
-	return t.Cached
+	return t.cache
 }

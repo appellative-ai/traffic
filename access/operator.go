@@ -52,12 +52,6 @@ const (
 
 )
 
-// Operator - configuration of logging entries
-type Operator struct {
-	Name  string
-	Value string
-}
-
 var (
 	defaultOperators, _ = createOperators([]string{TrafficOperator, StartTimeOperator,
 		DurationOperator, RouteOperator,

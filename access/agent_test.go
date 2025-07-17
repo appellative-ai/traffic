@@ -34,10 +34,6 @@ func ExampleLogWithOperators() {
 	SetRateLimit(resp.Header, 50)
 	SetRedirect(resp.Header, 15)
 
-	//resp.Header.Add(CachedName, "true")
-	//resp.Header.Add(TimeoutName,"456ms")
-	//resp.Header.Add(RateLimitName)
-	//t := Threshold{Timeout: time.Millisecond * 456, RateLimit: 100, Redirect: 8}
 	Log(nil, EgressTraffic, start, time.Millisecond*1500, "test-route", req, resp)
 
 	//Output:

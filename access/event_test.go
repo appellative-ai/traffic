@@ -25,7 +25,7 @@ func _ExampleValue_Duration() {
 
 	time.Sleep(time.Second * 2)
 	data := &event{}
-	data.Duration = time.Since(start)
+	data.duration = time.Since(start)
 	fmt.Printf("test: Value(\"Duration\") -> [%v]\n", data.value(DurationOperator))
 	fmt.Printf("test: Value(\"DurationString\") -> [%v]\n", data.value(DurationStringOperator))
 
@@ -48,9 +48,9 @@ func ExampleValue_Origin() {
 	//Output:
 	//test: Value("region") -> [region]
 	//test: Value("zone") -> [zone]
-	//test: Value("sub-zone") -> [subZone]
-	//test: Value("service") -> [host-name]
-	//test: Value("instance-id") -> [instanceId]
+	//test: Value("sub-zone") -> [sub-zone]
+	//test: Value("service") -> [host]
+	//test: Value("instance-id") -> [instance-id]
 
 }
 

@@ -22,6 +22,12 @@ const (
 	CachedName    = "cached"
 )
 
+// Operator - configuration of logging entries
+type Operator struct {
+	Name  string
+	Value string
+}
+
 // Request - request interface for non HTTP traffic
 type Request interface {
 	Url() string

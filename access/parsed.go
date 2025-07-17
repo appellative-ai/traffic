@@ -18,9 +18,9 @@ type parsed struct {
 }
 
 func (p *parsed) pathQuery() *url.URL {
-	rawURL := p.Path
-	if p.Query != "" {
-		rawURL = p.Path + "?" + p.Query
+	rawURL := p.path
+	if p.query != "" {
+		rawURL = p.path + "?" + p.query
 	}
 	u, _ := url.Parse(rawURL)
 	return u
@@ -30,7 +30,7 @@ func (p *parsed) pathQuery() *url.URL {
 func parseURL(hostOverride string, u *url.URL) (uri string, p *parsed) {
 	if u == nil {
 		uri = "url-is-nil"
-		return uri, &parsed{Valid: false, Err: errors.New("invalid argument: URL is nil")}
+		return uri, &parsed{valid: false, err: errors.New("invalid argument: URL is nil")}
 	}
 	// Set scheme
 	scheme := u.Scheme
@@ -61,13 +61,13 @@ func parseURL(hostOverride string, u *url.URL) (uri string, p *parsed) {
 		uri = scheme + "://" + host + urlPath + query
 	}
 	return uri, &parsed{
-		Valid:    true,
-		Host:     host,
-		Domain:   "",
-		Version:  "",
-		Resource: "",
-		Path:     path,
-		Query:    query,
-		Err:      nil,
+		valid:    true,
+		host:     host,
+		domain:   "",
+		version:  "",
+		resource: "",
+		path:     path,
+		query:    query,
+		err:      nil,
 	}
 }

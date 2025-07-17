@@ -9,8 +9,6 @@ import (
 	"time"
 )
 
-//XRateBurst      = "x-rate-burst"
-
 const (
 	NamespaceName   = "core:common:agent/log/access/http"
 	contentEncoding = "Content-Encoding"
@@ -71,29 +69,3 @@ func (a *agentT) Link(next rest.Exchange) rest.Exchange {
 		return
 	}
 }
-
-/*
-// ConfigureOperators - load operators from file
-func (a *agentT) ConfigureOperators(read func() ([]byte, error)) error {
-	if read == nil {
-		return errors.New("invalid argument: ReadConfig function is nil")
-	}
-	buf, err0 := read()
-	if err0 != nil {
-		return err0
-	}
-	var ops []Operator
-
-	err := json.Unmarshal(buf, &ops)
-	if err != nil {
-		return err
-	}
-	ops, err = initOperators(ops)
-	if err == nil {
-		a.operators = ops
-	}
-	return err
-}
-
-
-*/
