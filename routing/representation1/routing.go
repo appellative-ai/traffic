@@ -81,6 +81,7 @@ func (t *RoutingTable) Route(r *http.Request) *Route {
 type Routing struct {
 	//EnabledT  bool
 	//FailedT   bool
+	Running   bool
 	AppHost   string        `json:"app-host"` // User requirement
 	CacheHost string        `json:"cache-host"`
 	Interval  time.Duration `json:"interval"`

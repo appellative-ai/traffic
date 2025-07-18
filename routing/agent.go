@@ -81,14 +81,40 @@ func (a *agentT) Message(m *messaging.Message) {
 	if m == nil {
 		return
 	}
-	if m.Name == messaging.ConfigEvent {
+	switch m.Name {
+	case messaging.ConfigEvent:
+		if a.state.Running {
+			return
+		}
 		rest.UpdateExchange(a.Name(), &a.exchange, m)
 		messaging.UpdateReview(a.Name(), &a.review, m)
 		messaging.UpdateMap(a.Name(), func(cfg map[string]string) {
 			a.state.Update(cfg)
 		}, m)
 		return
+	case messaging.StartupEvent:
+		if a.state.Running {
+			return
+		}
+		a.state.Running = true
+		a.run()
+		return
+	case messaging.ShutdownEvent:
+		if !a.state.Running {
+			return
+		}
+		a.state.Running = false
 	}
+	switch m.Channel() {
+	case messaging.ChannelMaster:
+		a.master.C <- m
+	case messaging.ChannelEmissary:
+		a.emissary.C <- m
+	default:
+		a.master.C <- m
+		a.emissary.C <- m
+	}
+
 }
 
 // Run - run the agent

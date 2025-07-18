@@ -41,16 +41,6 @@ func init() {
 	})
 }
 
-/*
-func ConstructorOverride(m map[string]string, ex rest.Exchange, service *operations.Service) {
-	exchange.RegisterConstructor(NamespaceName, func() messaging.Agent {
-		return newAgent(representation1.Initialize(m), ex, service)
-	})
-}
-
-
-*/
-
 func newAgent(state *representation1.Cache, ex rest.Exchange, notifier *operations.Notification) *agentT {
 	a := new(agentT)
 	a.state = state
@@ -76,26 +66,33 @@ func (a *agentT) Message(m *messaging.Message) {
 	if m == nil {
 		return
 	}
-	if !a.state.Running {
-		if m.Name == messaging.ConfigEvent {
-			rest.UpdateExchange(a.Name(), &a.exchange, m)
-			messaging.UpdateReview(a.Name(), &a.review, m)
-			messaging.UpdateMap(a.Name(), func(cfg map[string]string) {
-				a.state.Update(cfg)
-			}, m)
+	switch m.Name {
+	case messaging.ConfigEvent:
+		if a.state.Running {
 			return
 		}
-		if m.Name == messaging.StartupEvent {
-			a.run()
-			a.state.Running = true
-			return
-		}
+		rest.UpdateExchange(a.Name(), &a.exchange, m)
+		messaging.UpdateReview(a.Name(), &a.review, m)
+		messaging.UpdateMap(a.Name(), func(cfg map[string]string) {
+			a.state.Update(cfg)
+		}, m)
 		return
-	}
-	if m.Name == messaging.ShutdownEvent {
+	case messaging.StartupEvent:
+		if a.state.Running {
+			return
+		}
+		a.run()
+		a.state.Running = true
+		return
+	case messaging.ShutdownEvent:
+		if !a.state.Running {
+			return
+		}
 		a.state.Running = false
 	}
-	a.emissary.C <- m
+	if m.Channel() != messaging.ChannelMaster {
+		a.emissary.C <- m
+	}
 }
 
 // Run - run the agent

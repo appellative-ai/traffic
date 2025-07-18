@@ -46,7 +46,8 @@ func (a *agentT) Message(m *messaging.Message) {
 	if m == nil {
 		return
 	}
-	if m.Name == messaging.ConfigEvent {
+	switch m.Name {
+	case messaging.ConfigEvent:
 		ops, status := OperatorsContent(m)
 		if !status.OK() {
 			messaging.Reply(m, status, a.name)

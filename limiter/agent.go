@@ -78,32 +78,38 @@ func (a *agentT) Message(m *messaging.Message) {
 	if m == nil {
 		return
 	}
-	if !a.state.Running {
-		if m.Name == messaging.ConfigEvent {
-			messaging.UpdateReview(a.Name(), &a.review, m)
-			messaging.UpdateDispatcher(a.Name(), &a.dispatcher, m)
-			messaging.UpdateMap(a.Name(), func(cfg map[string]string) {
-				a.state.Update(cfg)
-			}, m)
+	switch m.Name {
+	case messaging.ConfigEvent:
+		if a.state.Running {
 			return
 		}
-		if m.Name == messaging.StartupEvent {
-			a.run()
-			a.state.Running = true
-			return
-		}
+		messaging.UpdateReview(a.Name(), &a.review, m)
+		messaging.UpdateDispatcher(a.Name(), &a.dispatcher, m)
+		messaging.UpdateMap(a.Name(), func(cfg map[string]string) {
+			a.state.Update(cfg)
+		}, m)
 		return
-	}
-	if m.Name == messaging.ShutdownEvent {
+	case messaging.StartupEvent:
+		if a.state.Running {
+			return
+		}
+		a.state.Running = true
+		a.run()
+		return
+	case messaging.ShutdownEvent:
+		if !a.state.Running {
+			return
+		}
 		a.state.Running = false
 	}
 	switch m.Channel() {
 	case messaging.ChannelMaster:
 		a.master.C <- m
-	case messaging.ChannelControl:
-		a.master.C <- m
+	case messaging.ChannelEmissary:
+		a.emissary.C <- m
 	default:
-		fmt.Printf("limiter - invalid channel %v\n", m)
+		a.master.C <- m
+		a.emissary.C <- m
 	}
 }
 
