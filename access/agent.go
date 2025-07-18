@@ -54,7 +54,11 @@ func (a *agentT) Message(m *messaging.Message) {
 			return
 		}
 		if len(ops) > 0 {
-			a.operators = ops
+			var err error
+			a.operators, err = initOperators(ops)
+			if err != nil {
+				messaging.Reply(m, messaging.NewStatus(messaging.StatusInvalidArgument, err), a.name)
+			}
 		}
 		messaging.Reply(m, messaging.StatusOK(), a.name)
 		return
