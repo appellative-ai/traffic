@@ -2,8 +2,12 @@ github.com/appellative-ai/collective v0.0.0-20250716192820-806bbc60d6dc h1:3BJ6r
 github.com/appellative-ai/collective v0.0.0-20250716192820-806bbc60d6dc/go.mod h1:WLgXEq90cU+gcj/k2D+qa8ZuXL0McOtduEOC82WiPW0=
 github.com/appellative-ai/collective v0.0.0-20250718103010-04756c5ec6e5 h1:SiUWJ5Gl5uXCD9kKnd/gcA6brz8RGufgz5W9KoQqA+c=
 github.com/appellative-ai/collective v0.0.0-20250718103010-04756c5ec6e5/go.mod h1:WLgXEq90cU+gcj/k2D+qa8ZuXL0McOtduEOC82WiPW0=
+github.com/appellative-ai/collective v0.0.0-20250718220634-d73cc4a14675 h1:kurYfRV/0GEDNEEoBndbwmYyPr1yoHNlKV0qrhdKQYc=
+github.com/appellative-ai/collective v0.0.0-20250718220634-d73cc4a14675/go.mod h1:V1oPZ5jpNfU0C3N93h56GMOi3XhX9L3LtmYvN3MOTfQ=
 github.com/appellative-ai/core v0.0.0-20250716191654-e43fbfd4d1fc h1:rpknpCFb1pFxpNlxrIB2fcBgmx9TTSUzM9JhE6N7ens=
 github.com/appellative-ai/core v0.0.0-20250716191654-e43fbfd4d1fc/go.mod h1:a8kfuZMJHcdtdksSK+aYw2Mp6lT+i25oQEB+UCqwyhs=
+github.com/appellative-ai/core v0.0.0-20250718214136-5f1b6f89c8bc h1:EnU+940jwQOWWhg6r0a9rxIfObl9zogSugXnhy5sYcU=
+github.com/appellative-ai/core v0.0.0-20250718214136-5f1b6f89c8bc/go.mod h1:a8kfuZMJHcdtdksSK+aYw2Mp6lT+i25oQEB+UCqwyhs=
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/dchest/siphash v1.2.2/go.mod h1:q+IRvb2gOSrUnYoPqHiyHXS0FOBBOdl6tONBlVnOnt4=
