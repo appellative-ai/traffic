@@ -55,6 +55,15 @@ func Log(operators []Operator, traffic string, start time.Time, duration time.Du
 	log.Printf("%v\n", s)
 }
 
+func LogEgress(start time.Time, duration time.Duration, route string, req any, resp any, timeout time.Duration) {
+	var r *http.Response
+	if duration > 0 {
+		r = buildResponse(resp)
+		SetTimeout(r.Header, timeout)
+	}
+	Log(nil, EgressTraffic, start, duration, route, req, r)
+}
+
 func SetTimeout(h http.Header, v time.Duration) {
 	if h == nil {
 		return

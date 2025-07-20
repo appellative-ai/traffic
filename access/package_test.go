@@ -38,6 +38,6 @@ func ExampleLog() {
 	Log(nil, EgressTraffic, start, time.Millisecond*1500, "test-route", req, resp)
 
 	//Output:
-	//{"traffic":"egress","start-time":"2025-07-17T12:27:10.000Z","duration-ms":1500,"route":"test-route","method":"PUT","url":"https://www.google.com/search?q=golang","status-code":418,"cached":null,"encoding":"gzip","bytes-received":12345,"timeout-ms":-1,"rate-limit":-1,"redirect":-1}
+	//{"traffic":"egress","start-time":"2025-07-17T12:27:10.000Z","duration-ms":1500,"route":"test-route","method":"PUT","url":"https://www.google.com/search?q=golang","status-code":418,"cached":true,"encoding":"gzip","bytes-received":12345,"timeout-ms":456,"rate-limit":50,"redirect":15}
 
 }
