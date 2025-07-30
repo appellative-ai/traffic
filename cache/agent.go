@@ -3,10 +3,11 @@ package cache
 import (
 	"bytes"
 	"github.com/appellative-ai/collective/exchange"
-	"github.com/appellative-ai/collective/operations"
+	"github.com/appellative-ai/collective/notification"
 	"github.com/appellative-ai/core/httpx"
 	"github.com/appellative-ai/core/messaging"
 	"github.com/appellative-ai/core/rest"
+	"github.com/appellative-ai/core/std"
 	"github.com/appellative-ai/core/uri"
 	"github.com/appellative-ai/traffic/cache/representation1"
 	"io"
@@ -27,7 +28,7 @@ var (
 type agentT struct {
 	state    *representation1.Cache
 	exchange rest.Exchange
-	notifier *operations.Notification
+	notifier *notification.Interface
 
 	review   *messaging.Review
 	ticker   *messaging.Ticker
@@ -37,11 +38,11 @@ type agentT struct {
 // init - register an agent constructor
 func init() {
 	exchange.RegisterConstructor(NamespaceName, func() messaging.Agent {
-		return newAgent(representation1.Initialize(nil), nil, operations.Notifier)
+		return newAgent(representation1.Initialize(nil), nil, notification.Notifier)
 	})
 }
 
-func newAgent(state *representation1.Cache, ex rest.Exchange, notifier *operations.Notification) *agentT {
+func newAgent(state *representation1.Cache, ex rest.Exchange, notifier *notification.Interface) *agentT {
 	a := new(agentT)
 	a.state = state
 	a.notifier = notifier
@@ -71,7 +72,7 @@ func (a *agentT) Message(m *messaging.Message) {
 		if a.state.Running {
 			return
 		}
-		rest.UpdateExchange(a.Name(), &a.exchange, m)
+		//rest.UpdateExchange(a.Name(), &a.exchange, m)
 		messaging.UpdateReview(a.Name(), &a.review, m)
 		messaging.UpdateMap(a.Name(), func(cfg map[string]string) {
 			a.state.Update(cfg)
@@ -108,7 +109,7 @@ func (a *agentT) Link(next rest.Exchange) rest.Exchange {
 		}
 		var (
 			url    string
-			status *messaging.Status
+			status *std.Status
 		)
 		// cache lookup
 		url = uri.BuildURL(a.state.Host, r.URL.Path, r.URL.Query())
@@ -121,7 +122,7 @@ func (a *agentT) Link(next rest.Exchange) rest.Exchange {
 		}
 		resp.Header.Add(cachedName, "false")
 		if status.Err != nil {
-			a.notifier.Message(messaging.NewStatusMessage(status.WithLocation(a.Name()), a.Name()))
+			a.notifier.Message(messaging.NewStatusMessage(status, a.Name())) //.WithLocation(a.Name()), a.Name()))
 		}
 		// cache miss, call next exchange
 		resp, err = next(r)
@@ -165,12 +166,12 @@ func (a *agentT) cacheUpdate(url string, r *http.Request, resp *http.Response) e
 	var (
 		buf    []byte
 		err    error
-		status *messaging.Status
+		status *std.Status
 	)
 	// TODO: Need to reset the body in the response after reading it.
 	buf, err = io.ReadAll(resp.Body)
 	if err != nil {
-		status = messaging.NewStatus(messaging.StatusIOError, err).WithLocation(a.Name())
+		status = std.NewStatus(std.StatusIOError, a.Name(), err)
 		a.notifier.Message(messaging.NewStatusMessage(status, a.Name()))
 		return err
 	}
@@ -183,7 +184,7 @@ func (a *agentT) cacheUpdate(url string, r *http.Request, resp *http.Response) e
 		h2.Add(httpx.XRequestId, r.Header.Get(httpx.XRequestId))
 		_, status = do(a, http.MethodPut, url, h2, io.NopCloser(bytes.NewReader(buf)))
 		if status.Err != nil {
-			a.notifier.Message(messaging.NewStatusMessage(status.WithLocation(a.Name()), a.Name()))
+			a.notifier.Message(messaging.NewStatusMessage(status, a.Name())) //.WithLocation(a.Name()), a.Name()))
 		}
 	}()
 	return nil

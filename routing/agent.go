@@ -3,10 +3,11 @@ package routing
 import (
 	"fmt"
 	"github.com/appellative-ai/collective/exchange"
-	"github.com/appellative-ai/collective/operations"
+	"github.com/appellative-ai/collective/notification"
 	"github.com/appellative-ai/core/httpx"
 	"github.com/appellative-ai/core/messaging"
 	"github.com/appellative-ai/core/rest"
+	"github.com/appellative-ai/core/std"
 	"github.com/appellative-ai/core/uri"
 	"github.com/appellative-ai/traffic/routing/representation1"
 	"github.com/appellative-ai/traffic/timeseries"
@@ -28,7 +29,7 @@ type agentT struct {
 	events   *list
 	state    *representation1.Routing
 	exchange rest.Exchange
-	notifier *operations.Notification
+	notifier *notification.Interface
 
 	review   *messaging.Review
 	ticker   *messaging.Ticker
@@ -39,21 +40,11 @@ type agentT struct {
 // init - register an agent constructor
 func init() {
 	exchange.RegisterConstructor(NamespaceName, func() messaging.Agent {
-		return newAgent(representation1.Initialize(nil), nil, operations.Notifier)
+		return newAgent(representation1.Initialize(nil), nil, notification.Notifier)
 	})
 }
 
-/*
-func ConstructorOverride(m map[string]string, ex rest.Exchange, service *operations.Service) {
-	exchange.RegisterConstructor(NamespaceName, func() messaging.Agent {
-		return newAgent(representation1.Initialize(m), ex, service)
-	})
-}
-
-
-*/
-
-func newAgent(state *representation1.Routing, ex rest.Exchange, notifier *operations.Notification) *agentT {
+func newAgent(state *representation1.Routing, ex rest.Exchange, notifier *notification.Interface) *agentT {
 	a := new(agentT)
 	a.state = state
 	a.notifier = notifier
@@ -86,7 +77,7 @@ func (a *agentT) Message(m *messaging.Message) {
 		if a.state.Running {
 			return
 		}
-		rest.UpdateExchange(a.Name(), &a.exchange, m)
+		//rest.UpdateExchange(a.Name(), &a.exchange, m)
 		messaging.UpdateReview(a.Name(), &a.review, m)
 		messaging.UpdateMap(a.Name(), func(cfg map[string]string) {
 			a.state.Update(cfg)
@@ -126,13 +117,13 @@ func (a *agentT) run() {
 // Link  - implementation for rest.Exchangeable interface
 func (a *agentT) Link(next rest.Exchange) rest.Exchange {
 	return func(r *http.Request) (resp *http.Response, err error) {
-		var status *messaging.Status
+		var status *std.Status
 
 		url := uri.BuildURL(a.state.AppHost, r.URL.Path, r.URL.Query())
 		// TODO : need to check and remove Caching header.
 		resp, status = do(a, r.Method, url, httpx.CloneHeaderWithEncoding(r), r.Body)
 		if status.Err != nil {
-			a.notifier.Message(messaging.NewStatusMessage(status.WithLocation(a.Name()), a.Name()))
+			a.notifier.Message(messaging.NewStatusMessage(status, a.Name())) //.WithLocation(a.Name()), a.Name()))
 		}
 		if resp.StatusCode == http.StatusGatewayTimeout {
 			resp.Header.Add(timeoutName, fmt.Sprintf("%v", a.state.Timeout))

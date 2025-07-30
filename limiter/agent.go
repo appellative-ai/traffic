@@ -3,7 +3,7 @@ package limiter
 import (
 	"fmt"
 	"github.com/appellative-ai/collective/exchange"
-	"github.com/appellative-ai/collective/operations"
+	"github.com/appellative-ai/collective/notification"
 	"github.com/appellative-ai/core/fmtx"
 	"github.com/appellative-ai/core/messaging"
 	"github.com/appellative-ai/core/rest"
@@ -25,7 +25,7 @@ type agentT struct {
 	state    *representation1.Limiter
 	limiter  *rate.Limiter
 	events   *list
-	notifier *operations.Notification
+	notifier *notification.Interface
 
 	review     *messaging.Review
 	ticker     *messaging.Ticker
@@ -37,7 +37,7 @@ type agentT struct {
 // init - register an agent constructor
 func init() {
 	exchange.RegisterConstructor(NamespaceName, func() messaging.Agent {
-		return newAgent(representation1.Initialize(nil), operations.Notifier)
+		return newAgent(representation1.Initialize(nil), notification.Notifier)
 	})
 }
 
@@ -51,7 +51,7 @@ func ConstructorOverride(m map[string]string, service *operations.Service) {
 
 */
 
-func newAgent(state *representation1.Limiter, notifier *operations.Notification) *agentT {
+func newAgent(state *representation1.Limiter, notifier *notification.Interface) *agentT {
 	a := new(agentT)
 	a.state = state
 	a.state.Enabled = true
