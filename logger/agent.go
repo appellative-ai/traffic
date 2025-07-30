@@ -42,7 +42,6 @@ func init() {
 func newAgent() *agentT {
 	a := new(agentT)
 	a.name = NamespaceName
-	//a.operators = defaultOperators
 	return a
 }
 

@@ -2,6 +2,7 @@ package routing
 
 import (
 	"github.com/appellative-ai/core/messaging"
+	"github.com/appellative-ai/core/std"
 	"net/http"
 	"time"
 )
@@ -65,10 +66,10 @@ func newMetricsMessage(metrics metrics) *messaging.Message {
 	return messaging.NewMessage(messaging.ChannelMaster, metricsEvent).SetContent(contentTypeMetrics, metrics)
 }
 
-func metricsContent(m *messaging.Message) (metrics, *messaging.Status) {
+func metricsContent(m *messaging.Message) (metrics, *std.Status) {
 	if !messaging.ValidContent(m, metricsEvent, contentTypeMetrics) {
-		return metrics{}, messaging.NewStatus(messaging.StatusInvalidContent, "")
+		return metrics{}, std.NewStatus(std.StatusInvalidContent, "", nil)
 	}
-	return messaging.New[metrics](m.Content)
+	return std.New[metrics](m.Content)
 
 }

@@ -1,7 +1,7 @@
 package routing
 
 import (
-	"github.com/appellative-ai/collective/operations/operationstest"
+	"github.com/appellative-ai/collective/notification/notificationtest"
 	"github.com/appellative-ai/core/messaging"
 	"github.com/appellative-ai/traffic/routing/representation1"
 	"github.com/appellative-ai/traffic/timeseries"
@@ -10,7 +10,7 @@ import (
 
 func _ExampleMaster() {
 	ch := make(chan struct{})
-	agent := newAgent(representation1.Initialize(nil), nil, operationstest.NewNotifier())
+	agent := newAgent(representation1.Initialize(nil), nil, notificationtest.NewNotifier())
 
 	go func() {
 		go masterAttend(agent, timeseries.Functions)
@@ -38,7 +38,7 @@ func _ExampleMaster_Observation() {
 	//if !status.OK() {
 	//	metrics.Notify(status)
 	//}
-	agent := newAgent(representation1.Initialize(nil), nil, operationstest.NewNotifier())
+	agent := newAgent(representation1.Initialize(nil), nil, notificationtest.NewNotifier())
 
 	go func() {
 		go masterAttend(agent, timeseries.Functions)

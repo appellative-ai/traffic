@@ -2,12 +2,12 @@ package limiter
 
 import (
 	"fmt"
-	"github.com/appellative-ai/collective/operations/operationstest"
+	"github.com/appellative-ai/collective/notification/notificationtest"
 	"github.com/appellative-ai/traffic/limiter/representation1"
 )
 
 func ExampleNewAgent() {
-	a := newAgent(representation1.Initialize(nil), operationstest.NewNotifier())
+	a := newAgent(representation1.Initialize(nil), notificationtest.NewNotifier())
 	fmt.Printf("test: newAgent() -> [limiter:%v] [burst:%v] [%v}\n", a.limiter.Limit(), a.limiter.Burst(), a.Name())
 
 	//agent := agentT{}

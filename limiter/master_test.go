@@ -1,7 +1,7 @@
 package limiter
 
 import (
-	"github.com/appellative-ai/collective/operations/operationstest"
+	"github.com/appellative-ai/collective/notification/notificationtest"
 	"github.com/appellative-ai/core/messaging"
 	"github.com/appellative-ai/traffic/limiter/representation1"
 	"time"
@@ -13,7 +13,7 @@ const (
 
 func ExampleMaster() {
 	ch := make(chan struct{})
-	agent := newAgent(representation1.Initialize(nil), operationstest.NewNotifier())
+	agent := newAgent(representation1.Initialize(nil), notificationtest.NewNotifier())
 
 	go func() {
 		go masterAttend(agent, nil)
@@ -41,7 +41,7 @@ func ExampleMaster_Observation() {
 	//if !status.OK() {
 	//	metrics.Notify(status)
 	//}
-	agent := newAgent(representation1.Initialize(nil), operationstest.NewNotifier())
+	agent := newAgent(representation1.Initialize(nil), notificationtest.NewNotifier())
 
 	go func() {
 		go masterAttend(agent, nil)
