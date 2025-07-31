@@ -41,16 +41,6 @@ func init() {
 	})
 }
 
-/*
-func ConstructorOverride(m map[string]string, service *operations.Service) {
-	exchange.RegisterConstructor(NamespaceName, func() messaging.Agent {
-		return newAgent(representation1.Initialize(m), service)
-	})
-}
-
-
-*/
-
 func newAgent(state *representation1.Limiter, notifier *notification.Interface) *agentT {
 	a := new(agentT)
 	a.state = state

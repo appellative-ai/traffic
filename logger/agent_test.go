@@ -19,7 +19,7 @@ func ExampleLogConfigure() {
 	resp := &http.Response{StatusCode: http.StatusTeapot, ContentLength: 12345}
 	resp.Header = make(http.Header)
 	resp.Header.Add(contentEncoding, "gzip")
-	a.LogEgress(nil, start, time.Millisecond*1500, "test-route", req, resp, 0)
+	a.LogEgress(start, time.Millisecond*1500, "test-route", req, resp, 0)
 
 	//a := newAgent()
 	ops, _ := logx.CreateOperators([]string{logx.TrafficOperator, logx.StartTimeOperator,
@@ -27,7 +27,7 @@ func ExampleLogConfigure() {
 		logx.RequestMethodOperator, logx.RequestUrlOperator,
 	})
 	a.Message(messaging.NewConfigMessage(ops))
-	a.LogEgress(nil, start, time.Millisecond*1500, "test-route", req, resp, 0)
+	a.LogEgress(start, time.Millisecond*1500, "test-route", req, resp, 0)
 
 	//Output:
 	//fail

@@ -18,7 +18,7 @@ const (
 // Agent - agent
 type Agent interface {
 	messaging.Agent
-	LogEgress(operators []logx.Operator, start time.Time, duration time.Duration, route string, req any, resp any, timeout time.Duration)
+	LogEgress(start time.Time, duration time.Duration, route string, req any, resp any, timeout time.Duration)
 	LogStatus(status *std.Status)
 }
 
@@ -76,7 +76,7 @@ func (a *agentT) Link(next rest.Exchange) rest.Exchange {
 	}
 }
 
-func (a *agentT) LogEgress(operators []logx.Operator, start time.Time, duration time.Duration, route string, req any, resp any, timeout time.Duration) {
+func (a *agentT) LogEgress(start time.Time, duration time.Duration, route string, req any, resp any, timeout time.Duration) {
 	logx.LogEgress(a.operators, start, duration, route, req, resp, timeout)
 }
 
