@@ -3,7 +3,6 @@ package routing
 import (
 	"github.com/appellative-ai/collective/notification/notificationtest"
 	"github.com/appellative-ai/core/messaging"
-	"github.com/appellative-ai/traffic/routing/representation1"
 	"time"
 )
 
@@ -13,8 +12,8 @@ const (
 
 func ExampleEmissary() {
 	ch := make(chan struct{})
-	agent := newAgent(representation1.Initialize(nil), nil, notificationtest.NewNotifier())
-
+	agent := newAgent()
+	agent.notifier = notificationtest.NewNotifier()
 	go func() {
 		go emissaryAttend(agent)
 
@@ -35,7 +34,8 @@ func ExampleEmissary() {
 
 func ExampleEmissary_Observation() {
 	ch := make(chan struct{})
-	agent := newAgent(representation1.Initialize(nil), nil, notificationtest.NewNotifier())
+	agent := newAgent()
+	agent.notifier = notificationtest.NewNotifier()
 
 	go func() {
 		go emissaryAttend(agent)

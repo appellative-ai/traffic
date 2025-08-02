@@ -34,13 +34,13 @@ type agentT struct {
 // init - register an agent constructor
 func init() {
 	exchange.RegisterConstructor(NamespaceName, func() messaging.Agent {
-		agent = newAgent()
-		return agent
+		return newAgent()
 	})
 }
 
 func newAgent() *agentT {
 	a := new(agentT)
+	agent = a
 	a.name = NamespaceName
 	return a
 }

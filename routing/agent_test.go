@@ -2,14 +2,13 @@ package routing
 
 import (
 	"fmt"
-	"github.com/appellative-ai/collective/notification/notificationtest"
 	"github.com/appellative-ai/core/messaging"
 	"github.com/appellative-ai/traffic/routing/representation1"
 	"time"
 )
 
 func ExampleNew() {
-	a := newAgent(representation1.Initialize(nil), nil, notificationtest.NewNotifier())
+	a := newAgent()
 
 	fmt.Printf("test: newAgent() -> %v\n", a.Name())
 

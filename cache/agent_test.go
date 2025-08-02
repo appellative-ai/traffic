@@ -2,7 +2,6 @@ package cache
 
 import (
 	"fmt"
-	"github.com/appellative-ai/collective/notification/notificationtest"
 	"github.com/appellative-ai/core/httpx"
 	"github.com/appellative-ai/core/iox"
 	"github.com/appellative-ai/core/messaging"
@@ -13,7 +12,7 @@ import (
 
 func ExampleNew() {
 	//url := "https://www.google.com/search"
-	a := newAgent(representation1.Initialize(nil), nil, notificationtest.NewNotifier())
+	a := newAgent()
 
 	fmt.Printf("test: newAgent() -> %v\n", a.Name())
 	m := make(map[string]string)

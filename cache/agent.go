@@ -38,19 +38,16 @@ type agentT struct {
 // init - register an agent constructor
 func init() {
 	exchange.RegisterConstructor(NamespaceName, func() messaging.Agent {
-		return newAgent(representation1.Initialize(nil), nil, notification.Notifier)
+		return newAgent()
 	})
 }
 
-func newAgent(state *representation1.Cache, ex rest.Exchange, notifier *notification.Interface) *agentT {
+func newAgent() *agentT {
 	a := new(agentT)
-	a.state = state
-	a.notifier = notifier
-	if ex == nil {
-		a.exchange = httpx.Do
-	} else {
-		a.exchange = ex
-	}
+	a.state = representation1.Initialize(nil)
+	a.notifier = notification.Notifier
+	a.exchange = httpx.Do
+
 	a.ticker = messaging.NewTicker(messaging.ChannelEmissary, a.state.Interval)
 	a.emissary = messaging.NewEmissaryChannel()
 	return a
@@ -72,8 +69,7 @@ func (a *agentT) Message(m *messaging.Message) {
 		if a.state.Running {
 			return
 		}
-		//rest.UpdateExchange(a.Name(), &a.exchange, m)
-		messaging.UpdateReview(a.Name(), &a.review, m)
+		messaging.UpdateContent[*messaging.Review](m, &a.review)
 		messaging.UpdateMap(a.Name(), func(cfg map[string]string) {
 			a.state.Update(cfg)
 		}, m)

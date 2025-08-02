@@ -18,6 +18,10 @@ github.com/appellative-ai/core v0.0.0-20250730180148-c2b098beab47 h1:lQ4otuv/PJM
 github.com/appellative-ai/core v0.0.0-20250730180148-c2b098beab47/go.mod h1:a8kfuZMJHcdtdksSK+aYw2Mp6lT+i25oQEB+UCqwyhs=
 github.com/appellative-ai/core v0.0.0-20250730182135-88eedaa2879b h1:tZRxwrfIXk8Tvl/ZA1fr76qk0W6h1+IMhfbdyaDfmv8=
 github.com/appellative-ai/core v0.0.0-20250730182135-88eedaa2879b/go.mod h1:a8kfuZMJHcdtdksSK+aYw2Mp6lT+i25oQEB+UCqwyhs=
+github.com/appellative-ai/core v0.0.0-20250801122513-cde9b4375acf h1:t1C7PLgwVPmiMMMWCJxcLbQhSCevWLa+5TnljjRO814=
+github.com/appellative-ai/core v0.0.0-20250801122513-cde9b4375acf/go.mod h1:a8kfuZMJHcdtdksSK+aYw2Mp6lT+i25oQEB+UCqwyhs=
+github.com/appellative-ai/core v0.0.0-20250802190705-60a5cea3c61a h1:SaR9/V/bJ6lO6O2nyR+GKTb3lMJsieICSkmF9EDLcbY=
+github.com/appellative-ai/core v0.0.0-20250802190705-60a5cea3c61a/go.mod h1:a8kfuZMJHcdtdksSK+aYw2Mp6lT+i25oQEB+UCqwyhs=
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/dchest/siphash v1.2.2/go.mod h1:q+IRvb2gOSrUnYoPqHiyHXS0FOBBOdl6tONBlVnOnt4=
