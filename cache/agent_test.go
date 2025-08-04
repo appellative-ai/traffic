@@ -6,6 +6,7 @@ import (
 	"github.com/appellative-ai/core/iox"
 	"github.com/appellative-ai/core/messaging"
 	"github.com/appellative-ai/core/rest"
+	"github.com/appellative-ai/traffic/cache/cachetest"
 	"github.com/appellative-ai/traffic/cache/representation1"
 	"net/http"
 )
@@ -24,6 +25,21 @@ func ExampleNew() {
 	//test: newAgent() -> test:resiliency:agent/cache/request/http
 	//test: Message() -> google.com
 
+}
+
+func ExampleConfig() {
+	a := newAgent()
+	fmt.Printf("test: newAgent() -> %v\n", a.Name())
+
+	m := messaging.NewConfigMessage(rest.Exchange(cachetest.Exchange))
+	a.Message(m)
+	fn := rest.Exchange(cachetest.Exchange)
+	fmt.Printf("test: Message() -> %v %v\n", a.exchange, fn)
+
+	//Output:
+	//test: newAgent() -> test:resiliency:agent/cache/request/http
+	//test: Message() -> 0x7d4a00 0x7d4a00
+	
 }
 
 func routingExchange(next rest.Exchange) rest.Exchange {

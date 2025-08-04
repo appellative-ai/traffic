@@ -27,7 +27,7 @@ var (
 
 type agentT struct {
 	state    *representation1.Cache
-	exchange rest.Exchange
+	exchange rest.Exchange //func(r *http.Request) (*http.Response,error)
 	notifier *notification.Interface
 
 	review   *messaging.Review
@@ -69,6 +69,7 @@ func (a *agentT) Message(m *messaging.Message) {
 		if a.state.Running {
 			return
 		}
+		messaging.UpdateContent[rest.Exchange](m, &a.exchange)
 		messaging.UpdateContent[*messaging.Review](m, &a.review)
 		messaging.UpdateMap(a.Name(), func(cfg map[string]string) {
 			a.state.Update(cfg)

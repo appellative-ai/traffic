@@ -3,7 +3,10 @@ package routing
 import (
 	"fmt"
 	"github.com/appellative-ai/core/messaging"
+	"github.com/appellative-ai/core/rest"
+	"github.com/appellative-ai/traffic/cache/cachetest"
 	"github.com/appellative-ai/traffic/routing/representation1"
+	"github.com/appellative-ai/traffic/routing/routingtest"
 	"time"
 )
 
@@ -22,6 +25,21 @@ func ExampleNew() {
 	//Output:
 	//test: newAgent() -> test:resiliency:agent/routing/request/http
 
+}
+
+func ExampleConfig() {
+	a := newAgent()
+	fmt.Printf("test: newAgent() -> %v\n", a.Name())
+
+	m := messaging.NewConfigMessage(rest.Exchange(routingtest.Exchange))
+	a.Message(m)
+	fn := rest.Exchange(cachetest.Exchange)
+	fmt.Printf("test: Message() -> %v %v\n", a.exchange, fn)
+
+	//Output:
+	//test: newAgent() -> test:resiliency:agent/routing/request/http
+	//test: Message() -> 0xfd6da0 0xfd6b40
+	
 }
 
 /*

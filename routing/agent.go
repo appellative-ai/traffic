@@ -74,6 +74,7 @@ func (a *agentT) Message(m *messaging.Message) {
 		if a.state.Running {
 			return
 		}
+		messaging.UpdateContent[rest.Exchange](m, &a.exchange)
 		messaging.UpdateContent[*messaging.Review](m, &a.review)
 		messaging.UpdateMap(a.Name(), func(cfg map[string]string) {
 			a.state.Update(cfg)
