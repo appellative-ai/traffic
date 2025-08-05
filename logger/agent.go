@@ -22,10 +22,6 @@ type Agent interface {
 	LogStatus(status *std.Status)
 }
 
-var (
-	agent *agentT
-)
-
 type agentT struct {
 	operators []logx.Operator
 }
@@ -38,9 +34,7 @@ func init() {
 }
 
 func newAgent() *agentT {
-	a := new(agentT)
-	agent = a
-	return a
+	return new(agentT)
 }
 
 func (a *agentT) Name() string { return AgentName }

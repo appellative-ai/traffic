@@ -17,7 +17,6 @@ import (
 const (
 	AgentName  = "common:resiliency:agent/cache/request/http"
 	cachedName = "cached" // Sync with core/access
-
 )
 
 var (
