@@ -16,7 +16,7 @@ func ExampleNewAgent() {
 	//fmt.Printf("test: New() -> [%v] [name:%v] [path:%v] [kind:%v]\n", t, t.Name(), t.PkgPath(), t.Kind())
 
 	//Output:
-	//test: newAgent() -> [limiter:50] [burst:10] [test:resiliency:agent/rate-limiting/request/http}
+	//test: newAgent() -> [limiter:50] [burst:10] [common:resiliency:agent/rate-limiting/request/http}
 
 }
 

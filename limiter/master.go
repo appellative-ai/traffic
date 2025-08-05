@@ -30,7 +30,7 @@ func masterAttend(a *agentT, ts *timeseries.Interface) {
 						if s.gradiant > 1.0 {
 						}
 						history = append(history, s)
-						a.trace(NamespaceTaskName, s.observation(), s.action())
+						a.trace(TaskName, s.observation(), s.action())
 					}
 				}
 			case messaging.PauseEvent:

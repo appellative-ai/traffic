@@ -23,7 +23,7 @@ func ExampleNew() {
 	//fmt.Printf("test: Message() -> [%v] [uri:%v] [ok:%v]\n", rt.Name, rt.Uri, ok)
 
 	//Output:
-	//test: newAgent() -> test:resiliency:agent/routing/request/http
+	//test: newAgent() -> common:resiliency:agent/routing/request/http
 
 }
 
@@ -37,9 +37,9 @@ func ExampleConfig() {
 	fmt.Printf("test: Message() -> %v %v\n", a.exchange, fn)
 
 	//Output:
-	//test: newAgent() -> test:resiliency:agent/routing/request/http
+	//test: newAgent() -> common:resiliency:agent/routing/request/http
 	//test: Message() -> 0xfd6da0 0xfd6b40
-	
+
 }
 
 /*

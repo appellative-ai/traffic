@@ -9,9 +9,9 @@ import (
 )
 
 var (
-	LimiterNamespaceName       = limiter.NamespaceName
-	CacheNamespaceName         = cache.NamespaceName
-	RoutingNamespaceName       = routing.NamespaceName
-	LoggerNamespaceName        = logger.NamespaceName
-	AuthorizationNamespaceName = authorization.NamespaceName
+	LimiterAgentName         = limiter.AgentName
+	CacheAgentName           = cache.AgentName
+	RoutingAgentName         = routing.AgentName
+	LoggerAgentName          = logger.AgentName
+	AuthorizationHandlerName = authorization.HandlerName
 )

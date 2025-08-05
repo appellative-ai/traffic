@@ -7,12 +7,12 @@ import (
 )
 
 const (
-	NamespaceName = "test:resiliency:handler/authorization/http"
-	AuthzName     = "Authorization"
+	HandlerName = "common:resiliency:handler/authorization/http"
+	AuthzName   = "Authorization"
 )
 
 func init() {
-	exchange.RegisterExchangeHandler(NamespaceName, Authorization)
+	exchange.RegisterExchangeHandler(HandlerName, Authorization)
 }
 
 func Authorization(next rest.Exchange) rest.Exchange {

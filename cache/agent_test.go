@@ -22,7 +22,7 @@ func ExampleNew() {
 	fmt.Printf("test: Message() -> %v\n", a.state.Host)
 
 	//Output:
-	//test: newAgent() -> test:resiliency:agent/cache/request/http
+	//test: newAgent() -> common:resiliency:agent/cache/request/http
 	//test: Message() -> google.com
 
 }
@@ -39,7 +39,7 @@ func ExampleConfig() {
 	//Output:
 	//test: newAgent() -> test:resiliency:agent/cache/request/http
 	//test: Message() -> 0x7d4a00 0x7d4a00
-	
+
 }
 
 func routingExchange(next rest.Exchange) rest.Exchange {

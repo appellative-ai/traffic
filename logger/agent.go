@@ -11,8 +11,8 @@ import (
 )
 
 const (
-	NamespaceName = "test:resiliency:agent/log/access/http"
-	defaultRoute  = "host"
+	AgentName    = "common:resiliency:agent/log/request"
+	defaultRoute = "host"
 )
 
 // Agent - agent
@@ -27,13 +27,12 @@ var (
 )
 
 type agentT struct {
-	name      string
 	operators []logx.Operator
 }
 
 // init - register an agent constructor
 func init() {
-	exchange.RegisterConstructor(NamespaceName, func() messaging.Agent {
+	exchange.RegisterConstructor(AgentName, func() messaging.Agent {
 		return newAgent()
 	})
 }
@@ -41,11 +40,10 @@ func init() {
 func newAgent() *agentT {
 	a := new(agentT)
 	agent = a
-	a.name = NamespaceName
 	return a
 }
 
-func (a *agentT) Name() string { return a.name }
+func (a *agentT) Name() string { return AgentName }
 func (a *agentT) Message(m *messaging.Message) {
 	if m == nil {
 		return
@@ -57,11 +55,11 @@ func (a *agentT) Message(m *messaging.Message) {
 				var err error
 				a.operators, err = logx.InitOperators(ops)
 				if err != nil {
-					messaging.Reply(m, std.NewStatus(std.StatusInvalidArgument, "", err), a.name)
+					messaging.Reply(m, std.NewStatus(std.StatusInvalidArgument, "", err), a.Name())
 				}
 			}
 		}
-		messaging.Reply(m, std.StatusOK, a.name)
+		messaging.Reply(m, std.StatusOK, a.Name())
 		return
 	}
 }
