@@ -19,7 +19,7 @@ const (
 type Agent interface {
 	messaging.Agent
 	LogEgress(start time.Time, duration time.Duration, route string, req any, resp any, timeout time.Duration)
-	LogStatus(status *std.Status)
+	LogStatus(status any)
 }
 
 type agentT struct {
@@ -72,6 +72,6 @@ func (a *agentT) LogEgress(start time.Time, duration time.Duration, route string
 	logx.LogEgress(a.operators, start, duration, route, req, resp, timeout)
 }
 
-func (a *agentT) LogStatus(status *std.Status) {
-	logx.LogStatus(status)
+func (a *agentT) LogStatus(status any) {
+	logx.LogStatus(nil)
 }
