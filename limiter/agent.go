@@ -25,7 +25,7 @@ const (
 type agentT struct {
 	running  bool
 	enabled  atomic.Bool
-	state    *representation1.Limiter
+	state    atomic.Pointer[representation1.Limiter]
 	limiter  *rate.Limiter
 	events   *list
 	notifier *notification.Interface
@@ -46,15 +46,17 @@ func init() {
 
 func newAgent() *agentT {
 	a := new(agentT)
-	a.state = representation1.Initialize(nil)
 	a.enabled.Store(true)
-	a.notifier = notification.Notifier
-	a.review.Store(messaging.NewReview(a.state.ReviewLength))
 
-	a.limiter = rate.NewLimiter(a.state.Limit, a.state.Burst)
+	state := representation1.Initialize(nil)
+	a.state.Store(state)
+	a.notifier = notification.Notifier
+	a.review.Store(messaging.NewReview(0))
+
+	a.limiter = rate.NewLimiter(state.Limit, state.Burst)
 	a.events = newList()
 
-	a.ticker = messaging.NewTicker(messaging.ChannelEmissary, a.state.PeakDuration)
+	a.ticker = messaging.NewTicker(messaging.ChannelEmissary, state.PeakDuration)
 	a.master = messaging.NewMasterChannel()
 	a.emissary = messaging.NewEmissaryChannel()
 
@@ -171,14 +173,14 @@ func (a *agentT) bucket() int {
 func (a *agentT) reviseTicker(cnt int) {
 	var newDuration time.Duration
 
-	if cnt == a.state.LoadSize {
+	if cnt == a.state.Load().LoadSize {
 		return
 	}
-	if cnt > 2*a.state.LoadSize {
-		newDuration = a.state.PeakDuration
+	if cnt > 2*a.state.Load().LoadSize {
+		newDuration = a.state.Load().PeakDuration
 	} else {
-		if cnt < a.state.LoadSize/2 {
-			newDuration = a.state.OffPeakDuration
+		if cnt < a.state.Load().LoadSize/2 {
+			newDuration = a.state.Load().OffPeakDuration
 		}
 	}
 	if newDuration != 0 {
