@@ -2,6 +2,7 @@ package cache
 
 import (
 	"fmt"
+	"github.com/appellative-ai/collective/notification/notificationtest"
 	"github.com/appellative-ai/core/httpx"
 	"github.com/appellative-ai/core/iox"
 	"github.com/appellative-ai/core/messaging"
@@ -13,7 +14,7 @@ import (
 
 func ExampleNew() {
 	//url := "https://www.google.com/search"
-	a := newAgent()
+	a := newAgent(notificationtest.NewNotifier())
 
 	fmt.Printf("test: newAgent() -> %v\n", a.Name())
 	m := make(map[string]string)
@@ -28,7 +29,7 @@ func ExampleNew() {
 }
 
 func ExampleConfig() {
-	a := newAgent()
+	a := newAgent(notificationtest.NewNotifier())
 	fmt.Printf("test: newAgent() -> %v\n", a.Name())
 
 	m := messaging.NewConfigMessage(rest.Exchange(cachetest.Exchange))
@@ -37,7 +38,7 @@ func ExampleConfig() {
 	fmt.Printf("test: Message() -> %v %v\n", a.exchange, fn)
 
 	//Output:
-	//test: newAgent() -> test:resiliency:agent/cache/request/http
+	//test: newAgent() -> common:resiliency:agent/cache/request/http
 	//test: Message() -> 0x7d4a00 0x7d4a00
 
 }

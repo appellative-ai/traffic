@@ -12,6 +12,10 @@ github.com/appellative-ai/collective v0.0.0-20250804131734-88eca7e58d61 h1:5nrIc
 github.com/appellative-ai/collective v0.0.0-20250804131734-88eca7e58d61/go.mod h1:/VmPyjbuIGzACGNtrZcVu24S/U7add8O0A5hzldx9qE=
 github.com/appellative-ai/collective v0.0.0-20250805181530-df5fc4e10323 h1:fkK5DDctlCkzB6YquA9fLRYIPvaTbOBjhL7IGmieNsI=
 github.com/appellative-ai/collective v0.0.0-20250805181530-df5fc4e10323/go.mod h1:/VmPyjbuIGzACGNtrZcVu24S/U7add8O0A5hzldx9qE=
+github.com/appellative-ai/collective v0.0.0-20250809153716-4ea7ea145f4a h1:5WirUrLRdc/NrPnXwX7qO6iWjyU+9lwVBEnRySgBmbU=
+github.com/appellative-ai/collective v0.0.0-20250809153716-4ea7ea145f4a/go.mod h1:tkyRU33dlurdyJxqvdJSCQTeWuNA3gjyfQCJY1sgd6Y=
+github.com/appellative-ai/collective v0.0.0-20250811150630-6ac97687c0dc h1:6XU7n1UU0OT0Q//f4wJWYC/f9LVggYri9iLOQxi7+i8=
+github.com/appellative-ai/collective v0.0.0-20250811150630-6ac97687c0dc/go.mod h1:tkyRU33dlurdyJxqvdJSCQTeWuNA3gjyfQCJY1sgd6Y=
 github.com/appellative-ai/core v0.0.0-20250716191654-e43fbfd4d1fc h1:rpknpCFb1pFxpNlxrIB2fcBgmx9TTSUzM9JhE6N7ens=
 github.com/appellative-ai/core v0.0.0-20250716191654-e43fbfd4d1fc/go.mod h1:a8kfuZMJHcdtdksSK+aYw2Mp6lT+i25oQEB+UCqwyhs=
 github.com/appellative-ai/core v0.0.0-20250718214136-5f1b6f89c8bc h1:EnU+940jwQOWWhg6r0a9rxIfObl9zogSugXnhy5sYcU=
@@ -26,6 +30,9 @@ github.com/appellative-ai/core v0.0.0-20250801122513-cde9b4375acf h1:t1C7PLgwVPm
 github.com/appellative-ai/core v0.0.0-20250801122513-cde9b4375acf/go.mod h1:a8kfuZMJHcdtdksSK+aYw2Mp6lT+i25oQEB+UCqwyhs=
 github.com/appellative-ai/core v0.0.0-20250802190705-60a5cea3c61a h1:SaR9/V/bJ6lO6O2nyR+GKTb3lMJsieICSkmF9EDLcbY=
 github.com/appellative-ai/core v0.0.0-20250802190705-60a5cea3c61a/go.mod h1:a8kfuZMJHcdtdksSK+aYw2Mp6lT+i25oQEB+UCqwyhs=
+github.com/appellative-ai/core v0.0.0-20250807112339-6f7f35d978be/go.mod h1:a8kfuZMJHcdtdksSK+aYw2Mp6lT+i25oQEB+UCqwyhs=
+github.com/appellative-ai/core v0.0.0-20250809145219-73de14c3a209 h1:1L298Js5Dxz8qYNi/EJe22+c4kQzmUCqYBYo66s6Mb8=
+github.com/appellative-ai/core v0.0.0-20250809145219-73de14c3a209/go.mod h1:a8kfuZMJHcdtdksSK+aYw2Mp6lT+i25oQEB+UCqwyhs=
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/dchest/siphash v1.2.2/go.mod h1:q+IRvb2gOSrUnYoPqHiyHXS0FOBBOdl6tONBlVnOnt4=

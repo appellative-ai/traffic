@@ -12,8 +12,8 @@ const (
 
 func ExampleEmissary() {
 	ch := make(chan struct{})
-	agent := newAgent()
-	agent.notifier = notificationtest.NewNotifier()
+	agent := newAgent(notificationtest.NewNotifier())
+
 	go func() {
 		go emissaryAttend(agent)
 
@@ -34,8 +34,7 @@ func ExampleEmissary() {
 
 func ExampleEmissary_Observation() {
 	ch := make(chan struct{})
-	agent := newAgent()
-	agent.notifier = notificationtest.NewNotifier()
+	agent := newAgent(notificationtest.NewNotifier())
 
 	go func() {
 		go emissaryAttend(agent)

@@ -40,17 +40,17 @@ type agentT struct {
 // init - register an agent constructor
 func init() {
 	exchange.RegisterConstructor(AgentName, func() messaging.Agent {
-		return newAgent()
+		return newAgent(notification.Notifier)
 	})
 }
 
-func newAgent() *agentT {
+func newAgent(notifier *notification.Interface) *agentT {
 	a := new(agentT)
 	a.enabled.Store(true)
 
 	state := representation1.Initialize(nil)
 	a.state.Store(state)
-	a.notifier = notification.Notifier
+	a.notifier = notifier
 	a.review.Store(messaging.NewReview(0))
 
 	a.limiter = rate.NewLimiter(state.Limit, state.Burst)
@@ -84,7 +84,7 @@ func (a *agentT) Message(m *messaging.Message) {
 		}
 		messaging.UpdateContent[messaging.Dispatcher](m, &a.dispatcher)
 		messaging.UpdateMap(a.Name(), func(cfg map[string]string) {
-			a.state.Update(cfg)
+			//a.state.Update(cfg)
 		}, m)
 		return
 	case messaging.StartupEvent:

@@ -40,14 +40,14 @@ type agentT struct {
 // init - register an agent constructor
 func init() {
 	exchange.RegisterConstructor(AgentName, func() messaging.Agent {
-		return newAgent()
+		return newAgent(notification.Notifier)
 	})
 }
 
-func newAgent() *agentT {
+func newAgent(notifier *notification.Interface) *agentT {
 	a := new(agentT)
 	a.state = representation1.Initialize(nil)
-	a.notifier = notification.Notifier
+	a.notifier = notifier
 	a.exchange = httpx.Do
 
 	a.events = newList()

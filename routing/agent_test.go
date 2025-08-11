@@ -2,6 +2,7 @@ package routing
 
 import (
 	"fmt"
+	"github.com/appellative-ai/collective/notification/notificationtest"
 	"github.com/appellative-ai/core/messaging"
 	"github.com/appellative-ai/core/rest"
 	"github.com/appellative-ai/traffic/cache/cachetest"
@@ -11,7 +12,7 @@ import (
 )
 
 func ExampleNew() {
-	a := newAgent()
+	a := newAgent(notificationtest.NewNotifier())
 
 	fmt.Printf("test: newAgent() -> %v\n", a.Name())
 
@@ -28,7 +29,7 @@ func ExampleNew() {
 }
 
 func ExampleConfig() {
-	a := newAgent()
+	a := newAgent(notificationtest.NewNotifier())
 	fmt.Printf("test: newAgent() -> %v\n", a.Name())
 
 	m := messaging.NewConfigMessage(rest.Exchange(routingtest.Exchange))
