@@ -14,7 +14,7 @@ const (
 	PeakDurationKey    = "peak-duration"
 	OffPeakDurationKey = "off-peak-duration"
 	LoadSizeKey        = "load-size"
-	ReviewLengthKey    = "review-length"
+	ReviewDurationKey  = "review-duration"
 )
 
 const (
@@ -40,7 +40,7 @@ type Limiter struct {
 	PeakDuration    time.Duration
 	OffPeakDuration time.Duration
 	LoadSize        int
-	ReviewLength    int // minutes
+	ReviewDuration  time.Duration
 }
 
 func Initialize(m map[string]string) *Limiter {
@@ -98,6 +98,13 @@ func parseLimiter(l *Limiter, m map[string]string) {
 	if s != "" {
 		if i, err := strconv.Atoi(s); err == nil {
 			l.LoadSize = i
+		}
+	}
+
+	s = m[ReviewDurationKey]
+	if s != "" {
+		if dur, err := fmtx.ParseDuration(s); err == nil {
+			l.ReviewDuration = dur
 		}
 	}
 }

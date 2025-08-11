@@ -4,6 +4,9 @@ import (
 	"fmt"
 )
 
+// Configure dispatcher from testing
+//messaging.UpdateContent[messaging.Dispatcher](m, &a.dispatcher)
+
 func ExampleNewAgent() {
 	a := newAgent(nil)
 	fmt.Printf("test: newAgent() -> [limiter:%v] [burst:%v] [%v}\n", a.limiter.Limit(), a.limiter.Burst(), a.Name())
@@ -18,6 +21,13 @@ func ExampleNewAgent() {
 	//Output:
 	//test: newAgent() -> [limiter:50] [burst:10] [common:resiliency:agent/rate-limiting/request/http}
 
+}
+
+func ExampleConfig_Map() {
+	fmt.Printf("test: Message() -> \n")
+
+	//Output:
+	//fail
 }
 
 /*

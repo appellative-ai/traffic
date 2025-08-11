@@ -79,13 +79,18 @@ func (a *agentT) Message(m *messaging.Message) {
 		if a.running {
 			return
 		}
-		if review, ok := messaging.ConfigContent[*messaging.Review](m); ok {
-			a.review.Store(review)
+		if t, ok := messaging.ConfigContent[map[string]string](m); ok {
+			a.state.Load().Update(t)
+			// Update review
+			dur := a.state.Load().ReviewDuration
+			if dur > 0 {
+				review := a.review.Load()
+				if !review.Started() {
+					a.review.Start(dur)
+					//a.review.Store(review)
+				}
+			}
 		}
-		messaging.UpdateContent[messaging.Dispatcher](m, &a.dispatcher)
-		messaging.UpdateMap(a.Name(), func(cfg map[string]string) {
-			//a.state.Update(cfg)
-		}, m)
 		return
 	case messaging.StartupEvent:
 		if a.running {
@@ -148,9 +153,6 @@ func (a *agentT) dispatch(channel any, event string) {
 }
 
 func (a *agentT) trace(task, observation, action string) {
-	if !a.review.Load().Started() {
-		a.review.Load().Start()
-	}
 	if a.review.Load().Expired() {
 		return
 	}
