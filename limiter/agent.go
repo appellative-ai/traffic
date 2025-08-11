@@ -11,6 +11,7 @@ import (
 	"github.com/appellative-ai/traffic/timeseries"
 	"golang.org/x/time/rate"
 	"net/http"
+	"sync/atomic"
 	"time"
 )
 
@@ -22,12 +23,14 @@ const (
 )
 
 type agentT struct {
+	running  bool
+	enabled  atomic.Bool
 	state    *representation1.Limiter
 	limiter  *rate.Limiter
 	events   *list
 	notifier *notification.Interface
 
-	review     *messaging.Review
+	review     atomic.Pointer[messaging.Review]
 	ticker     *messaging.Ticker
 	master     *messaging.Channel
 	emissary   *messaging.Channel
@@ -44,8 +47,9 @@ func init() {
 func newAgent() *agentT {
 	a := new(agentT)
 	a.state = representation1.Initialize(nil)
-	a.state.Enabled = true
+	a.enabled.Store(true)
 	a.notifier = notification.Notifier
+	a.review.Store(messaging.NewReview(a.state.ReviewLength))
 
 	a.limiter = rate.NewLimiter(a.state.Limit, a.state.Burst)
 	a.events = newList()
@@ -70,27 +74,34 @@ func (a *agentT) Message(m *messaging.Message) {
 	}
 	switch m.Name {
 	case messaging.ConfigEvent:
-		if a.state.Running {
+		if a.running {
 			return
 		}
-		messaging.UpdateContent[*messaging.Review](m, &a.review)
+		if review, ok := messaging.ConfigContent[*messaging.Review](m); ok {
+			a.review.Store(review)
+		}
 		messaging.UpdateContent[messaging.Dispatcher](m, &a.dispatcher)
 		messaging.UpdateMap(a.Name(), func(cfg map[string]string) {
 			a.state.Update(cfg)
 		}, m)
 		return
 	case messaging.StartupEvent:
-		if a.state.Running {
+		if a.running {
 			return
 		}
-		a.state.Running = true
+		a.running = true
 		a.run()
 		return
 	case messaging.ShutdownEvent:
-		if !a.state.Running {
+		if !a.running {
 			return
 		}
-		a.state.Running = false
+		a.running = false
+	case messaging.PauseEvent:
+		// TODO : remove enqueued events
+		a.enabled.Store(false)
+	case messaging.ResumeEvent:
+		a.enabled.Store(true)
 	}
 	switch m.Channel() {
 	case messaging.ChannelMaster:
@@ -112,20 +123,18 @@ func (a *agentT) run() {
 // Link - chainable exchange
 func (a *agentT) Link(next rest.Exchange) rest.Exchange {
 	return func(req *http.Request) (resp *http.Response, err error) {
+		if !a.enabled.Load() {
+			return next(req)
+		}
 		start := time.Now().UTC()
 		if !a.limiter.Allow() {
 			h := make(http.Header)
 			h.Add(rateLimitName, fmt.Sprintf("%v", a.limiter.Limit()))
-			//	h.Add(rateBurstName, fmt.Sprintf("%v", a.limiter.Burst()))
-			if a.state.Enabled {
-				a.events.Enqueue(&event{internal: true, unixMS: start.UnixMilli(), duration: time.Since(start), statusCode: resp.StatusCode})
-			}
+			a.events.Enqueue(&event{internal: true, unixMS: start.UnixMilli(), duration: time.Since(start), statusCode: resp.StatusCode})
 			return &http.Response{StatusCode: http.StatusTooManyRequests, Header: h}, nil
 		}
 		resp, err = next(req)
-		if a.state.Enabled {
-			a.events.Enqueue(&event{unixMS: start.UnixMilli(), duration: time.Since(start), statusCode: resp.StatusCode})
-		}
+		a.events.Enqueue(&event{unixMS: start.UnixMilli(), duration: time.Since(start), statusCode: resp.StatusCode})
 		return
 	}
 }
@@ -137,13 +146,10 @@ func (a *agentT) dispatch(channel any, event string) {
 }
 
 func (a *agentT) trace(task, observation, action string) {
-	if a.review == nil {
-		return
+	if !a.review.Load().Started() {
+		a.review.Load().Start()
 	}
-	if !a.review.Started() {
-		a.review.Start()
-	}
-	if a.review.Expired() {
+	if a.review.Load().Expired() {
 		return
 	}
 	a.notifier.Trace(a.Name(), task, observation, action)
@@ -179,31 +185,3 @@ func (a *agentT) reviseTicker(cnt int) {
 		a.ticker.Reset(newDuration)
 	}
 }
-
-/*
-func (a *agentT) configure(m *messaging.Message) {
-	switch m.ContentType() {
-	case messaging.ContentTypeMap:
-		cfg, status := messaging.MapContent(m)
-		if !status.OK() {
-			messaging.Reply(m, status, a.Name())
-			return
-		}
-		a.state.Update(cfg)
-	case messaging.ContentTypeReview:
-		r, status := messaging.ReviewContent(m)
-		if !status.OK() {
-			messaging.Reply(m, status, a.Name())
-			return
-		}
-		a.review = r
-	case messaging.ContentTypeDispatcher:
-		if dispatcher, ok := messaging.DispatcherContent(m); ok {
-			a.dispatcher = dispatcher
-		}
-	}
-	messaging.Reply(m, messaging.StatusOK(), a.Name())
-}
-
-
-*/

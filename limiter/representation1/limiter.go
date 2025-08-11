@@ -35,8 +35,6 @@ const (
 //	Limit and burst are the starting values for rate-limiting. These get changed based on regression
 //	analysis of the events.
 type Limiter struct {
-	Running         bool
-	Enabled         bool
 	Limit           rate.Limit
 	Burst           int
 	PeakDuration    time.Duration
