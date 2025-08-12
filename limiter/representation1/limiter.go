@@ -13,7 +13,6 @@ const (
 	RateBurstKey       = "rate-burst"
 	PeakDurationKey    = "peak-duration"
 	OffPeakDurationKey = "off-peak-duration"
-	WindowSizeKey      = "window-size"
 	ReviewDurationKey  = "review-duration"
 )
 
@@ -22,7 +21,6 @@ const (
 	burst           = 10
 	offPeakDuration = time.Minute * 5
 	peakDuration    = time.Minute * 2
-	windowSize      = 200
 )
 
 // Limiter - values used by the agent for rate limiting.
@@ -35,9 +33,9 @@ const (
 //	Limit and burst are the starting values for rate-limiting. These get changed based on regression
 //	analysis of the events.
 type Limiter struct {
-	Limit           rate.Limit    `json:"limit"`
-	Burst           int           `json:"burst"`
-	WindowSize      int           `json:"window-size"` // Number of events to track before analysis
+	Limit rate.Limit `json:"limit"`
+	Burst int        `json:"burst"`
+	//WindowSize      int           `json:"window-size"` // Number of events to track before analysis
 	PeakDuration    time.Duration `json:"peak-duration"`
 	OffPeakDuration time.Duration `json:"off-peak-duration"`
 	ReviewDuration  time.Duration `json:"review-duration"`
@@ -49,7 +47,6 @@ func Initialize(m map[string]string) *Limiter {
 		Burst:           burst,
 		PeakDuration:    peakDuration,
 		OffPeakDuration: offPeakDuration,
-		WindowSize:      windowSize,
 	}
 	parseLimiter(l, m)
 	return l
@@ -95,15 +92,6 @@ func parseLimiter(l *Limiter, m map[string]string) (changed bool) {
 		if dur, err := fmtx.ParseDuration(s); err == nil && dur > 0 {
 			if l.OffPeakDuration != dur {
 				l.OffPeakDuration = dur
-				changed = true
-			}
-		}
-	}
-	s = m[WindowSizeKey]
-	if s != "" {
-		if i, err := strconv.Atoi(s); err == nil && i > 0 {
-			if l.WindowSize != i {
-				l.WindowSize = i
 				changed = true
 			}
 		}

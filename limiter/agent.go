@@ -20,6 +20,7 @@ const (
 	TaskName      = "common:resiliency:task/analyze/traffic"
 	rateLimitName = "rate-limit" // Sync with core/access
 	//rateBurstName     = "x-rate-burst" // Sync with core/access
+	defaultWindowSize = 200
 )
 
 type agentT struct {
@@ -161,13 +162,13 @@ func (a *agentT) bucket() int {
 func (a *agentT) reviseTicker(cnt int) {
 	var newDuration time.Duration
 
-	if cnt == a.state.Load().WindowSize {
+	if cnt == defaultWindowSize {
 		return
 	}
-	if cnt > 2*a.state.Load().WindowSize {
+	if cnt > 2*defaultWindowSize {
 		newDuration = a.state.Load().PeakDuration
 	} else {
-		if cnt < a.state.Load().WindowSize/2 {
+		if cnt < defaultWindowSize/2 {
 			newDuration = a.state.Load().OffPeakDuration
 		}
 	}

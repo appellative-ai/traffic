@@ -8,7 +8,6 @@ var (
 	m = map[string]string{
 		RateLimitKey:       "1234",
 		RateBurstKey:       "12",
-		WindowSizeKey:      "567",
 		PeakDurationKey:    "750ms",
 		OffPeakDurationKey: "5m",
 		ReviewDurationKey:  "5m",
@@ -24,7 +23,6 @@ func ExampleParseLimiter_Int() {
 	m1 := map[string]string{
 		RateLimitKey:       "",
 		RateBurstKey:       "",
-		WindowSizeKey:      "",
 		PeakDurationKey:    "",
 		OffPeakDurationKey: "",
 		ReviewDurationKey:  "",
@@ -60,34 +58,16 @@ func ExampleParseLimiter_Int() {
 	changed = parseLimiter(&limiter, m1)
 	fmt.Printf("test: parseLimiter(RateBurst) -> %v [changed:%v]\n", limiter, changed)
 
-	// Window size
-	m1 = map[string]string{
-		WindowSizeKey: "123",
-	}
-	changed = parseLimiter(&limiter, m1)
-	fmt.Printf("test: parseLimiter(WindowSize) -> %v [changed:%v]\n", limiter, changed)
-	changed = parseLimiter(&limiter, m1)
-	fmt.Printf("test: parseLimiter(WindowSize) -> %v [changed:%v]\n", limiter, changed)
-
-	m1 = map[string]string{
-		WindowSizeKey: "0",
-	}
-	changed = parseLimiter(&limiter, m1)
-	fmt.Printf("test: parseLimiter(WindowSize) -> %v [changed:%v]\n", limiter, changed)
-
 	//Output:
-	//test: parseLimiter() -> {1234 12 567 750ms 5m0s 5m0s} [changed:true]
-	//test: parseLimiter() -> {1234 12 567 750ms 5m0s 5m0s} [changed:false]
-	//test: parseLimiter(RateLimit) -> {123 12 567 750ms 5m0s 5m0s} [changed:true]
-	//test: parseLimiter(RateLimit) -> {123 12 567 750ms 5m0s 5m0s} [changed:false]
-	//test: parseLimiter(RateLimit) -> {123 12 567 750ms 5m0s 5m0s} [changed:false]
-	//test: parseLimiter(RateBurst) -> {123 123 567 750ms 5m0s 5m0s} [changed:true]
-	//test: parseLimiter(RateBurst) -> {123 123 567 750ms 5m0s 5m0s} [changed:false]
-	//test: parseLimiter(RateBurst) -> {123 123 567 750ms 5m0s 5m0s} [changed:false]
-	//test: parseLimiter(WindowSize) -> {123 123 123 750ms 5m0s 5m0s} [changed:true]
-	//test: parseLimiter(WindowSize) -> {123 123 123 750ms 5m0s 5m0s} [changed:false]
-	//test: parseLimiter(WindowSize) -> {123 123 123 750ms 5m0s 5m0s} [changed:false]
-
+	//test: parseLimiter() -> {1234 12 750ms 5m0s 5m0s} [changed:true]
+	//test: parseLimiter() -> {1234 12 750ms 5m0s 5m0s} [changed:false]
+	//test: parseLimiter(RateLimit) -> {123 12 750ms 5m0s 5m0s} [changed:true]
+	//test: parseLimiter(RateLimit) -> {123 12 750ms 5m0s 5m0s} [changed:false]
+	//test: parseLimiter(RateLimit) -> {123 12 750ms 5m0s 5m0s} [changed:false]
+	//test: parseLimiter(RateBurst) -> {123 123 750ms 5m0s 5m0s} [changed:true]
+	//test: parseLimiter(RateBurst) -> {123 123 750ms 5m0s 5m0s} [changed:false]
+	//test: parseLimiter(RateBurst) -> {123 123 750ms 5m0s 5m0s} [changed:false]
+	
 }
 
 func ExampleParseLimiter_Duration() {
@@ -149,7 +129,7 @@ func ExampleParseLimiter_Duration() {
 	//test: parseLimiter(ReviewDuration) -> {1234 12 567 100ms 2m0s 100ms} [changed:true]
 	//test: parseLimiter(ReviewDuration) -> {1234 12 567 100ms 2m0s 100ms} [changed:false]
 	//test: parseLimiter(ReviewDuration) -> {1234 12 567 100ms 2m0s 100ms} [changed:false]
-	
+
 }
 
 /*
