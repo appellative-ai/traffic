@@ -5,6 +5,7 @@ import (
 	"github.com/appellative-ai/core/std"
 	"io"
 	"net/http"
+	"time"
 )
 
 func do(a *agentT, method string, url string, h http.Header, r io.ReadCloser) (resp *http.Response, status *std.Status) {
@@ -13,6 +14,7 @@ func do(a *agentT, method string, url string, h http.Header, r io.ReadCloser) (r
 	}
 	ctx, cancel := httpx.NewContext(nil, a.state.Load().Timeout)
 	defer cancel()
+	start := time.Now().UTC()
 	req, err := http.NewRequestWithContext(ctx, method, url, r)
 	if err != nil {
 		return serverErrorResponse, std.NewStatus(std.StatusInvalidArgument, "", err)
@@ -21,6 +23,9 @@ func do(a *agentT, method string, url string, h http.Header, r io.ReadCloser) (r
 	resp, err = a.exchange(req)
 	if resp.Header == nil {
 		resp.Header = make(http.Header)
+	}
+	if a.logAgent != nil {
+		a.logAgent.LogEgress(start, time.Since(start), cacheRouteName, req, resp, a.state.Load().Timeout)
 	}
 	if err != nil {
 		status = std.NewStatus(resp.StatusCode, "", err)

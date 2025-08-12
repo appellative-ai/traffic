@@ -23,7 +23,7 @@ const (
 	SaturdayKey    = "sat"
 	rangeSeparator = "-"
 
-	defaultTimeout = time.Millisecond * 5000
+	defaultTimeout = time.Millisecond * 3000
 )
 
 type Cache struct {

@@ -10,6 +10,7 @@ import (
 	"github.com/appellative-ai/core/std"
 	"github.com/appellative-ai/core/uri"
 	"github.com/appellative-ai/traffic/cache/representation1"
+	"github.com/appellative-ai/traffic/logger"
 	"io"
 	"net/http"
 	"sync/atomic"
@@ -20,6 +21,7 @@ const (
 	AgentName       = "common:resiliency:agent/cache/request/http"
 	cachedName      = "cached"
 	defaultInterval = time.Minute * 30 // Sync with core/access
+	cacheRouteName  = "cache"
 )
 
 var (
@@ -32,6 +34,7 @@ type agentT struct {
 	enabled  atomic.Bool
 	state    atomic.Pointer[representation1.Cache]
 	exchange rest.Exchange
+	logAgent logger.Agent
 	notifier *notification.Interface
 
 	ticker   *messaging.Ticker
@@ -50,6 +53,9 @@ func newAgent(notifier *notification.Interface) *agentT {
 	a.running.Store(false)
 	a.enabled.Store(true)
 	a.state.Store(representation1.Initialize(nil))
+	if l, ok := exchange.AgentT[logger.Agent](logger.AgentName); ok {
+		a.logAgent = l
+	}
 	a.notifier = notifier
 	a.exchange = httpx.Do
 
