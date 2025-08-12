@@ -14,11 +14,11 @@ func newList() *list {
 	return b
 }
 
-func (l *list) Enqueue(event *event) {
+func (l *list) enqueue(event *event) {
 	l.queue.Enque(event)
 }
 
-func (l *list) Dequeue() *event {
+func (l *list) dequeue() *event {
 	item := l.queue.Deque()
 	if item == nil {
 		return nil
@@ -27,4 +27,9 @@ func (l *list) Dequeue() *event {
 		return v
 	}
 	return nil
+}
+
+func (l *list) empty() {
+	for item := l.queue.Deque(); item != nil; {
+	}
 }

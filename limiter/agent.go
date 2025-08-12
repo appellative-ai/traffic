@@ -16,11 +16,11 @@ import (
 )
 
 const (
-	AgentName     = "common:resiliency:agent/rate-limiting/request/http"
-	TaskName      = "common:resiliency:task/analyze/traffic"
-	rateLimitName = "rate-limit" // Sync with core/access
-	//rateBurstName     = "x-rate-burst" // Sync with core/access
+	AgentName         = "common:resiliency:agent/rate-limiting/request/http"
+	TaskName          = "common:resiliency:task/analyze/traffic"
+	rateLimitName     = "rate-limit" // Sync with core/access
 	defaultWindowSize = 200
+	defaultBurst      = 10
 )
 
 type agentT struct {
@@ -54,7 +54,7 @@ func newAgent(notifier *notification.Interface) *agentT {
 	a.notifier = notifier
 	a.review.Store(messaging.NewReview())
 
-	a.limiter = rate.NewLimiter(state.Limit, state.Burst)
+	a.limiter = rate.NewLimiter(state.Limit, defaultBurst)
 	a.events = newList()
 
 	a.ticker = messaging.NewTicker(messaging.ChannelEmissary, state.PeakDuration)
@@ -92,8 +92,8 @@ func (a *agentT) Message(m *messaging.Message) {
 		}
 		a.running.Store(false)
 	case messaging.PauseEvent:
-		// TODO : remove enqueued events
 		a.enabled.Store(false)
+		a.events.empty()
 	case messaging.ResumeEvent:
 		a.enabled.Store(true)
 	}
@@ -124,11 +124,11 @@ func (a *agentT) Link(next rest.Exchange) rest.Exchange {
 		if !a.limiter.Allow() {
 			h := make(http.Header)
 			h.Add(rateLimitName, fmt.Sprintf("%v", a.limiter.Limit()))
-			a.events.Enqueue(&event{internal: true, unixMS: start.UnixMilli(), duration: time.Since(start), statusCode: resp.StatusCode})
+			a.events.enqueue(&event{internal: true, unixMS: start.UnixMilli(), duration: time.Since(start), statusCode: resp.StatusCode})
 			return &http.Response{StatusCode: http.StatusTooManyRequests, Header: h}, nil
 		}
 		resp, err = next(req)
-		a.events.Enqueue(&event{unixMS: start.UnixMilli(), duration: time.Since(start), statusCode: resp.StatusCode})
+		a.events.enqueue(&event{unixMS: start.UnixMilli(), duration: time.Since(start), statusCode: resp.StatusCode})
 		return
 	}
 }

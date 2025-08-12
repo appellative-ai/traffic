@@ -21,23 +21,16 @@ func _ExampleConfig_Dispatcher() {
 
 func ExampleConfig_Limiter() {
 	a := newAgent(nil)
-	fmt.Printf("test: newAgent() -> [burst:%v] [limit:%v] [limiter-burst:%v]\n", a.state.Load().Burst, a.state.Load().Limit, a.limiter.Burst())
+	fmt.Printf("test: newAgent() -> [limit:%v] [limiter-burst:%v]\n", a.state.Load().Limit, a.limiter.Limit())
 
 	m := map[string]string{
-		representation1.RateBurstKey: "25",
-	}
-	a.Message(messaging.NewConfigMessage(m))
-	fmt.Printf("test: Message() -> [burst:%v] [limiter-burst:%v]\n", a.state.Load().Burst, a.limiter.Burst())
-
-	m = map[string]string{
 		representation1.RateLimitKey: "125",
 	}
 	a.Message(messaging.NewConfigMessage(m))
 	fmt.Printf("test: Message() -> [limit:%v] [limiter-limit:%v]\n", a.state.Load().Limit, a.limiter.Limit())
 
 	//Output:
-	//test: newAgent() -> [burst:10] [limit:50] [limiter-burst:10]
-	//test: Message() -> [burst:25] [limiter-burst:25]
+	//test: newAgent() -> [limit:50] [limiter-burst:50]
 	//test: Message() -> [limit:125] [limiter-limit:125]
 
 }

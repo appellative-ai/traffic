@@ -10,7 +10,6 @@ import (
 const (
 	Fragment           = "v1"
 	RateLimitKey       = "rate-limit"
-	RateBurstKey       = "rate-burst"
 	PeakDurationKey    = "peak-duration"
 	OffPeakDurationKey = "off-peak-duration"
 	ReviewDurationKey  = "review-duration"
@@ -18,7 +17,6 @@ const (
 
 const (
 	limit           = rate.Limit(50)
-	burst           = 10
 	offPeakDuration = time.Minute * 5
 	peakDuration    = time.Minute * 2
 )
@@ -33,9 +31,7 @@ const (
 //	Limit and burst are the starting values for rate-limiting. These get changed based on regression
 //	analysis of the events.
 type Limiter struct {
-	Limit rate.Limit `json:"limit"`
-	Burst int        `json:"burst"`
-	//WindowSize      int           `json:"window-size"` // Number of events to track before analysis
+	Limit           rate.Limit    `json:"limit"`
 	PeakDuration    time.Duration `json:"peak-duration"`
 	OffPeakDuration time.Duration `json:"off-peak-duration"`
 	ReviewDuration  time.Duration `json:"review-duration"`
@@ -44,7 +40,6 @@ type Limiter struct {
 func Initialize(m map[string]string) *Limiter {
 	l := &Limiter{
 		Limit:           limit,
-		Burst:           burst,
 		PeakDuration:    peakDuration,
 		OffPeakDuration: offPeakDuration,
 	}
@@ -65,15 +60,6 @@ func parseLimiter(l *Limiter, m map[string]string) (changed bool) {
 		if i, err := strconv.Atoi(s); err == nil && i > 0 {
 			if l.Limit != rate.Limit(i) {
 				l.Limit = rate.Limit(i)
-				changed = true
-			}
-		}
-	}
-	s = m[RateBurstKey]
-	if s != "" {
-		if i, err := strconv.Atoi(s); err == nil && i > 0 {
-			if l.Burst != i {
-				l.Burst = i
 				changed = true
 			}
 		}

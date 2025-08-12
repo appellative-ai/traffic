@@ -12,17 +12,14 @@ func (a *agentT) config(m *messaging.Message) {
 	if t, ok := messaging.ConfigContent[map[string]string](m); ok {
 		state := a.state.Load()
 		limit := state.Limit
-		burst := state.Burst
 		reviewDuration := state.ReviewDuration
 		// Changed?
 		if !state.Update(t) {
 			return
 		}
+		// TODO : reset burst based on new limit??
 		if limit != state.Limit {
 			a.limiter.SetLimit(state.Limit)
-		}
-		if burst != state.Burst {
-			a.limiter.SetBurst(state.Burst)
 		}
 		dur := a.state.Load().ReviewDuration
 		if reviewDuration != dur && dur > 0 {

@@ -15,7 +15,7 @@ func emissaryAttend(a *agentT) {
 			a.dispatch(a.emissary, a.ticker.Name)
 			if !paused {
 				m := newMetrics()
-				for e := a.events.Dequeue(); e != nil; {
+				for e := a.events.dequeue(); e != nil; {
 					m.update(e)
 				}
 				a.Message(newMetricsMessage(*m))
