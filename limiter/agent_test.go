@@ -23,13 +23,6 @@ func ExampleNewAgent() {
 
 }
 
-func ExampleConfig_Map() {
-	fmt.Printf("test: Message() -> \n")
-
-	//Output:
-	//fail
-}
-
 /*
 func ExampleAgent_LoadContent() {
 	ch := make(chan struct{})

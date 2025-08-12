@@ -6,11 +6,13 @@ import (
 
 // emissary attention
 func emissaryAttend(a *agentT) {
+	a.dispatch(a.emissary, messaging.StartupEvent)
 	paused := false
 
 	for {
 		select {
 		case <-a.ticker.T.C:
+			a.dispatch(a.emissary, a.ticker.Name)
 			if !paused {
 				m := newMetrics()
 				for e := a.events.Dequeue(); e != nil; {
@@ -23,6 +25,7 @@ func emissaryAttend(a *agentT) {
 		}
 		select {
 		case m := <-a.emissary.C:
+			a.dispatch(a.emissary, m.Name)
 			switch m.Name {
 			case messaging.PauseEvent:
 				paused = true
