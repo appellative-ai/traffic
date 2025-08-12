@@ -120,7 +120,7 @@ func (a *agentT) Link(next rest.Exchange) rest.Exchange {
 		// TODO : need to check and remove Caching header.
 		resp, status = do(a, r.Method, url, httpx.CloneHeaderWithEncoding(r), r.Body)
 		if status.Err != nil {
-			a.notifier.Message(messaging.NewStatusMessage(status, a.Name())) //.WithLocation(a.Name()), a.Name()))
+			a.notifier.Status(messaging.NewStatusMessage(status, a.Name())) //.WithLocation(a.Name()), a.Name()))
 		}
 		if resp.StatusCode == http.StatusGatewayTimeout {
 			resp.Header.Add(timeoutName, fmt.Sprintf("%v", a.state.Timeout))
