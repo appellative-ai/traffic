@@ -3,7 +3,6 @@ package routingtest
 import (
 	"fmt"
 	"github.com/appellative-ai/collective/exchange"
-	"github.com/appellative-ai/collective/operations/operationstest"
 	"github.com/appellative-ai/core/host"
 	"github.com/appellative-ai/core/iox"
 	"github.com/appellative-ai/core/messaging"
@@ -19,12 +18,12 @@ func ExampleExchange_Override() {
 	cfg := make(map[string]string)
 	cfg[representation1.AppHostKey] = "localhost:8080"
 
-	routing.ConstructorOverride(cfg, Exchange, operationstest.NewService())
-	agent := exchange.Agent(routing.NamespaceName)
+	//routing.ConstructorOverride(cfg, Exchange, operationstest.NewService())
+	a := exchange.Agent(routing.AgentName)
 
 	// configure exchange and host name
-	//agent.Message(httpx.NewConfigExchangeMessage(Exchange))
-	//agent.Message(messaging.NewConfigMapMessage(cfg))
+	a.Message(messaging.NewConfigMessage(rest.Exchange(Exchange)))
+	a.Message(messaging.NewConfigMessage(cfg))
 
 	// create request
 	url := "https://localhost:8081/search?q=golang"
@@ -32,7 +31,7 @@ func ExampleExchange_Override() {
 	req.Header = make(http.Header)
 
 	// create endpoint and run
-	e := host.NewEndpoint("/", []any{agent})
+	e := host.NewEndpoint("/", []any{a})
 	r := httptest.NewRecorder()
 	e.ServeHTTP(r, req)
 	r.Flush()
@@ -61,10 +60,10 @@ func _ExampleExchange() {
 	cfg := make(map[string]string)
 	cfg[representation1.AppHostKey] = "localhost:8080"
 
-	agent := exchange.Agent(routing.NamespaceName)
+	agent := exchange.Agent(routing.AgentName)
 	// configure exchange and host name
-	exchange.Message(rest.NewExchangeMessage(Exchange))
-	exchange.Message(messaging.NewMapMessage(cfg))
+	exchange.Message(messaging.NewConfigMessage(rest.Exchange(Exchange)))
+	exchange.Message(messaging.NewConfigMessage(cfg))
 
 	// create request
 	url := "https://localhost:8081/search?q=golang"

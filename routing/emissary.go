@@ -13,9 +13,9 @@ func emissaryAttend(a *agentT) {
 		case <-a.ticker.T.C:
 			if !paused {
 				m := newMetrics()
-				for e := a.events.Dequeue(); e != nil; {
-					m.update(e)
-				}
+				//for e := a.events.Dequeue(); e != nil; {
+				//	m.update(e)
+				//}
 				a.Message(newMetricsMessage(*m))
 			}
 		default:

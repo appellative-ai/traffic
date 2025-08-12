@@ -17,8 +17,8 @@ func masterAttend(a *agentT, ts *timeseries.Interface) {
 			switch msg.Name {
 			case metricsEvent:
 				if !paused {
-					if m, status := metricsContent(msg); status.OK() {
-						updateRedirect(a, ts, m)
+					if _, status := metricsContent(msg); status.OK() {
+						//updateRedirect(a, ts, m)
 						//history = append(history, s)
 					}
 				}
@@ -34,10 +34,4 @@ func masterAttend(a *agentT, ts *timeseries.Interface) {
 		default:
 		}
 	}
-}
-
-func updateRedirect(a *agentT, ts *timeseries.Interface, m metrics) {
-	ts.Percentile(m.x, m.weights, false, float64(10)) //agent.state.Latency.Score))
-	// TODO : calculate timeToLive, intervals.
-	//return s
 }

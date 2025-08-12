@@ -34,7 +34,6 @@ type agentT struct {
 	exchange rest.Exchange
 	notifier *notification.Interface
 	review   atomic.Pointer[messaging.Review]
-	events   *list
 
 	ticker   *messaging.Ticker
 	emissary *messaging.Channel
@@ -54,8 +53,6 @@ func newAgent(notifier *notification.Interface) *agentT {
 	a.notifier = notifier
 	a.exchange = httpx.Do
 	a.review.Store(messaging.NewReview())
-
-	a.events = newList()
 
 	a.ticker = messaging.NewTicker(messaging.ChannelEmissary, defaultInterval)
 	a.emissary = messaging.NewEmissaryChannel()
