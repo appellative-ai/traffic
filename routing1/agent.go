@@ -12,15 +12,13 @@ import (
 	"github.com/appellative-ai/traffic/routing/representation1"
 	"github.com/appellative-ai/traffic/timeseries"
 	"net/http"
-	"sync/atomic"
-	"time"
 )
 
 const (
-	AgentName       = "common:resiliency:agent/routing/request/http"
-	defaultRoute    = "common:core:routing/default"
-	timeoutName     = "timeout" // Sync with core/access
-	defaultInterval = time.Millisecond * 2000
+	AgentName    = "common:resiliency:agent/routing/request/http"
+	defaultRoute = "common:core:routing/default"
+	timeoutName  = "timeout" // Sync with core/access
+
 )
 
 var (
@@ -28,14 +26,12 @@ var (
 )
 
 type agentT struct {
-	running atomic.Bool
-
-	state    atomic.Pointer[representation1.Routing]
+	events   *list
+	state    *representation1.Routing
 	exchange rest.Exchange
 	notifier *notification.Interface
-	review   atomic.Pointer[messaging.Review]
-	events   *list
 
+	review   *messaging.Review
 	ticker   *messaging.Ticker
 	emissary *messaging.Channel
 	master   *messaging.Channel
@@ -50,14 +46,13 @@ func init() {
 
 func newAgent(notifier *notification.Interface) *agentT {
 	a := new(agentT)
-	a.state.Store(representation1.Initialize(nil))
+	a.state = representation1.Initialize(nil)
 	a.notifier = notifier
 	a.exchange = httpx.Do
-	a.review.Store(messaging.NewReview())
 
 	a.events = newList()
 
-	a.ticker = messaging.NewTicker(messaging.ChannelEmissary, defaultInterval)
+	a.ticker = messaging.NewTicker(messaging.ChannelEmissary, a.state.Interval)
 	a.emissary = messaging.NewEmissaryChannel()
 	a.master = messaging.NewMasterChannel()
 	return a
@@ -76,20 +71,27 @@ func (a *agentT) Message(m *messaging.Message) {
 	}
 	switch m.Name {
 	case messaging.ConfigEvent:
-		a.config(m)
-		return
-	case messaging.StartupEvent:
-		if a.running.Load() {
+		if a.state.Running {
 			return
 		}
-		a.running.Store(true)
+		messaging.UpdateContent[rest.Exchange](m, &a.exchange)
+		messaging.UpdateContent[*messaging.Review](m, &a.review)
+		messaging.UpdateMap(a.Name(), func(cfg map[string]string) {
+			a.state.Update(cfg)
+		}, m)
+		return
+	case messaging.StartupEvent:
+		if a.state.Running {
+			return
+		}
+		a.state.Running = true
 		a.run()
 		return
 	case messaging.ShutdownEvent:
-		if !a.running.Load() {
+		if !a.state.Running {
 			return
 		}
-		a.running.Store(false)
+		a.state.Running = false
 	}
 	switch m.Channel() {
 	case messaging.ChannelMaster:
@@ -114,24 +116,43 @@ func (a *agentT) Link(next rest.Exchange) rest.Exchange {
 	return func(r *http.Request) (resp *http.Response, err error) {
 		var status *std.Status
 
-		url := uri.BuildURL(a.state.Load().AppHost, r.URL.Path, r.URL.Query())
+		url := uri.BuildURL(a.state.AppHost, r.URL.Path, r.URL.Query())
 		// TODO : need to check and remove Caching header.
 		resp, status = do(a, r.Method, url, httpx.CloneHeaderWithEncoding(r), r.Body)
 		if status.Err != nil {
-			a.notifier.Status(messaging.NewStatusMessage(status, a.Name()))
+			a.notifier.Status(messaging.NewStatusMessage(status, a.Name())) //.WithLocation(a.Name()), a.Name()))
 		}
 		if resp.StatusCode == http.StatusGatewayTimeout {
-			resp.Header.Add(timeoutName, fmt.Sprintf("%v", a.state.Load().Timeout))
+			resp.Header.Add(timeoutName, fmt.Sprintf("%v", a.state.Timeout))
 		}
 		return resp, status.Err
 	}
 }
 
 func (a *agentT) trace(task, observation, action string) {
-	if a.review.Load().Expired() {
+	if a.review == nil {
+		return
+	}
+	if !a.review.Started() {
+		a.review.Start()
+	}
+	if a.review.Expired() {
 		return
 	}
 	a.notifier.Trace(a.Name(), task, observation, action)
+}
+
+func (a *agentT) enabled() bool {
+	//if !a.state.Enabled() {
+	//	return false
+	//}
+	//if a.state.Failed() {
+	//	return false
+	//}
+	//if !a.limiter.Allow() {
+	//	return false
+	//}
+	return true
 }
 
 func (a *agentT) emissaryShutdown() {

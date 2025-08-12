@@ -11,12 +11,11 @@ import (
 //Fragment     = "v1"
 
 const (
-	AppHostKey         = "app-host"
-	CacheHostKey       = "cache-host"
-	TimeoutDurationKey = "timeout-duration"
-	ReviewDurationKey  = "review-duration"
-	IntervalKey        = "interval"
-	defaultTimeout     = time.Millisecond * 2500
+	AppHostKey     = "app-host"
+	CacheHostKey   = "cache-host"
+	TimeoutKey     = "timeout"
+	IntervalKey    = "interval"
+	defaultTimeout = time.Millisecond * 2500
 )
 
 type Redirect struct {
@@ -80,67 +79,69 @@ func (t *RoutingTable) Route(r *http.Request) *Route {
 }
 
 type Routing struct {
-	AppHost        string        `json:"app-host"`   // User requirement, not modifiable when running
-	CacheHost      string        `json:"cache-host"` // User requirement, not modifiable when running
-	Timeout        time.Duration `json:"timeout"`
-	ReviewDuration time.Duration `json:"review-duration"`
+	//EnabledT  bool
+	//FailedT   bool
+	Running   bool
+	AppHost   string        `json:"app-host"` // User requirement
+	CacheHost string        `json:"cache-host"`
+	Interval  time.Duration `json:"interval"`
+	Timeout   time.Duration `json:"timeout"`
 }
 
 func Initialize(m map[string]string) *Routing {
 	r := new(Routing)
 	r.Timeout = defaultTimeout
+	r.Interval = time.Millisecond * 2000
 	parseRouting(r, m)
 	return r
 }
 
 /*
-func newRouting(m map[string]string) *Routing {
-	c := Initialize(m)
-	return c
+func NewRouting(name string) *Routing {
+	//m, _ := resource.Resolve[map[string]string](name, Fragment, resource.Resolver)
+	return newRouting(nil)
 }
 
 
 */
 
-func (r *Routing) Update(m map[string]string) bool {
-	return parseRouting(r, m)
+func newRouting(m map[string]string) *Routing {
+	c := Initialize(m)
+	return c
 }
 
-func parseRouting(r *Routing, m map[string]string) (changed bool) {
+func (r *Routing) Update(m map[string]string) {
+	parseRouting(r, m)
+}
+
+func parseRouting(r *Routing, m map[string]string) {
 	if r == nil || m == nil {
 		return
 	}
 	s := m[AppHostKey]
 	if s != "" {
-		if r.AppHost != s {
-			r.AppHost = s
-			changed = true
-		}
+		r.AppHost = s
 	}
 	s = m[CacheHostKey]
 	if s != "" {
-		if r.CacheHost != s {
-			r.CacheHost = s
-			changed = true
-		}
+		r.CacheHost = s
 	}
-	s = m[TimeoutDurationKey]
+	s = m[TimeoutKey]
 	if s != "" {
-		if dur, err := fmtx.ParseDuration(s); err == nil && dur > 0 {
-			if dur != r.Timeout {
-				r.Timeout = dur
-				changed = true
-			}
+		dur, err := fmtx.ParseDuration(s)
+		if err != nil {
+			//messaging.Reply(m, messaging.ConfigContentStatusError(agent, TimeoutKey), agent.Name())
+			return
 		}
+		r.Timeout = dur
 	}
-	s = m[ReviewDurationKey]
+	s = m[IntervalKey]
 	if s != "" {
-		if dur, err := fmtx.ParseDuration(s); err == nil && dur > 0 {
-			if r.ReviewDuration != dur {
-				r.ReviewDuration = dur
-				changed = true
-			}
+		dur, err := fmtx.ParseDuration(s)
+		if err != nil {
+			//messaging.Reply(m, messaging.ConfigContentStatusError(agent, TimeoutKey), agent.Name())
+			return
 		}
+		r.Interval = dur
 	}
-	return
 }

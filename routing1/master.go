@@ -36,7 +36,7 @@ func masterAttend(a *agentT, ts *timeseries.Interface) {
 	}
 }
 
-func updateRedirect(a *agentT, ts *timeseries.Interface, m metrics) {
+func updateRedirect(agent *agentT, ts *timeseries.Interface, m metrics) {
 	ts.Percentile(m.x, m.weights, false, float64(10)) //agent.state.Latency.Score))
 	// TODO : calculate timeToLive, intervals.
 	//return s

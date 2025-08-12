@@ -15,7 +15,7 @@ func do(a *agentT, method string, url string, h http.Header, r io.ReadCloser) (r
 	if a == nil {
 		return serverErrorResponse, std.StatusNotFound
 	}
-	ctx, cancel := httpx.NewContext(nil, a.state.Load().Timeout)
+	ctx, cancel := httpx.NewContext(nil, a.state.Timeout)
 	defer cancel()
 	req, err := http.NewRequestWithContext(ctx, method, url, r)
 	if err != nil {
@@ -30,7 +30,7 @@ func do(a *agentT, method string, url string, h http.Header, r io.ReadCloser) (r
 		status = std.NewStatus(resp.StatusCode, "", err)
 		return
 	}
-	if a.state.Load().Timeout > 0 {
+	if a.state.Timeout > 0 {
 		err = httpx.TransformBody(resp)
 	}
 	if err != nil {

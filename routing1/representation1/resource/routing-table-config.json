@@ -1,0 +1,29 @@
+{
+  "Version":"",
+  "EffectiveTS":"",
+  "Routes":[
+    {
+      "name":"test-route-one",
+      "path":"/resource/test2",
+      "redirect":{
+        "path":"/resource/test/main",
+        "status-codes":["5xx"],
+        "status-code-threshold":10,
+        "percentile":"99/1500ms",
+        "percentile-threshold":10
+      }
+    },
+    {
+      "name":"test-route-two",
+      "path":"/resource/old",
+      "redirect":{
+        "path":"/resource/test/new",
+        "status-codes":["5xx","4xx"],
+        "status-code-threshold":15,
+        "percentile":"95/2000ms",
+        "percentile-threshold":15
+        }
+    }
+  ]
+}
+
