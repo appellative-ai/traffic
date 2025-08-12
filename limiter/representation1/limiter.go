@@ -13,7 +13,7 @@ const (
 	RateBurstKey       = "rate-burst"
 	PeakDurationKey    = "peak-duration"
 	OffPeakDurationKey = "off-peak-duration"
-	LoadSizeKey        = "load-size"
+	WindowSizeKey      = "window-size"
 	ReviewDurationKey  = "review-duration"
 )
 
@@ -22,7 +22,7 @@ const (
 	burst           = 10
 	offPeakDuration = time.Minute * 5
 	peakDuration    = time.Minute * 2
-	loadSize        = 200
+	windowSize      = 200
 )
 
 // Limiter - values used by the agent for rate limiting.
@@ -35,12 +35,12 @@ const (
 //	Limit and burst are the starting values for rate-limiting. These get changed based on regression
 //	analysis of the events.
 type Limiter struct {
-	Limit           rate.Limit
-	Burst           int
-	PeakDuration    time.Duration
-	OffPeakDuration time.Duration
-	LoadSize        int
-	ReviewDuration  time.Duration
+	Limit           rate.Limit    `json:"limit"`
+	Burst           int           `json:"burst"`
+	WindowSize      int           `json:"window-size"` // Number of events to track before analysis
+	PeakDuration    time.Duration `json:"peak-duration"`
+	OffPeakDuration time.Duration `json:"off-peak-duration"`
+	ReviewDuration  time.Duration `json:"review-duration"`
 }
 
 func Initialize(m map[string]string) *Limiter {
@@ -49,62 +49,73 @@ func Initialize(m map[string]string) *Limiter {
 		Burst:           burst,
 		PeakDuration:    peakDuration,
 		OffPeakDuration: offPeakDuration,
-		LoadSize:        loadSize,
+		WindowSize:      windowSize,
 	}
 	parseLimiter(l, m)
 	return l
 }
 
-func (l *Limiter) Update(m map[string]string) {
-	parseLimiter(l, m)
+func (l *Limiter) Update(m map[string]string) bool {
+	return parseLimiter(l, m)
 }
 
-func parseLimiter(l *Limiter, m map[string]string) {
+func parseLimiter(l *Limiter, m map[string]string) (changed bool) {
 	if l == nil || m == nil {
 		return
 	}
 	s := m[RateLimitKey]
 	if s != "" {
-		if i, err := strconv.Atoi(s); err == nil {
-			l.Limit = rate.Limit(i)
+		if i, err := strconv.Atoi(s); err == nil && i > 0 {
+			if l.Limit != rate.Limit(i) {
+				l.Limit = rate.Limit(i)
+				changed = true
+			}
 		}
 	}
 	s = m[RateBurstKey]
 	if s != "" {
-		if i, err := strconv.Atoi(s); err == nil {
-			l.Burst = i
+		if i, err := strconv.Atoi(s); err == nil && i > 0 {
+			if l.Burst != i {
+				l.Burst = i
+				changed = true
+			}
 		}
 	}
 	s = m[PeakDurationKey]
 	if s != "" {
-		dur, err := fmtx.ParseDuration(s)
-		if err != nil {
-			//messaging.Reply(m, messaging.ConfigContentStatusError(agent, TimeoutKey), agent.Name())
-			return
+		if dur, err := fmtx.ParseDuration(s); err == nil && dur > 0 {
+			if l.PeakDuration != dur {
+				l.PeakDuration = dur
+				changed = true
+			}
 		}
-		l.PeakDuration = dur
 	}
 	s = m[OffPeakDurationKey]
 	if s != "" {
-		dur, err := fmtx.ParseDuration(s)
-		if err != nil {
-			//messaging.Reply(m, messaging.ConfigContentStatusError(agent, TimeoutKey), agent.Name())
-			return
+		if dur, err := fmtx.ParseDuration(s); err == nil && dur > 0 {
+			if l.OffPeakDuration != dur {
+				l.OffPeakDuration = dur
+				changed = true
+			}
 		}
-		l.OffPeakDuration = dur
 	}
-
-	s = m[LoadSizeKey]
+	s = m[WindowSizeKey]
 	if s != "" {
-		if i, err := strconv.Atoi(s); err == nil {
-			l.LoadSize = i
+		if i, err := strconv.Atoi(s); err == nil && i > 0 {
+			if l.WindowSize != i {
+				l.WindowSize = i
+				changed = true
+			}
 		}
 	}
-
 	s = m[ReviewDurationKey]
 	if s != "" {
-		if dur, err := fmtx.ParseDuration(s); err == nil {
-			l.ReviewDuration = dur
+		if dur, err := fmtx.ParseDuration(s); err == nil && dur > 0 {
+			if l.ReviewDuration != dur {
+				l.ReviewDuration = dur
+				changed = true
+			}
 		}
 	}
+	return
 }

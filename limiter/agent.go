@@ -51,7 +51,7 @@ func newAgent(notifier *notification.Interface) *agentT {
 	state := representation1.Initialize(nil)
 	a.state.Store(state)
 	a.notifier = notifier
-	a.review.Store(messaging.NewReview(0))
+	a.review.Store(messaging.NewReview())
 
 	a.limiter = rate.NewLimiter(state.Limit, state.Burst)
 	a.events = newList()
@@ -76,21 +76,7 @@ func (a *agentT) Message(m *messaging.Message) {
 	}
 	switch m.Name {
 	case messaging.ConfigEvent:
-		if a.running {
-			return
-		}
-		if t, ok := messaging.ConfigContent[map[string]string](m); ok {
-			a.state.Load().Update(t)
-			// Update review
-			dur := a.state.Load().ReviewDuration
-			if dur > 0 {
-				review := a.review.Load()
-				if !review.Started() {
-					a.review.Start(dur)
-					//a.review.Store(review)
-				}
-			}
-		}
+		a.config(m)
 		return
 	case messaging.StartupEvent:
 		if a.running {
@@ -175,13 +161,13 @@ func (a *agentT) bucket() int {
 func (a *agentT) reviseTicker(cnt int) {
 	var newDuration time.Duration
 
-	if cnt == a.state.Load().LoadSize {
+	if cnt == a.state.Load().WindowSize {
 		return
 	}
-	if cnt > 2*a.state.Load().LoadSize {
+	if cnt > 2*a.state.Load().WindowSize {
 		newDuration = a.state.Load().PeakDuration
 	} else {
-		if cnt < a.state.Load().LoadSize/2 {
+		if cnt < a.state.Load().WindowSize/2 {
 			newDuration = a.state.Load().OffPeakDuration
 		}
 	}
