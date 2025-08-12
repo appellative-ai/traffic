@@ -14,7 +14,6 @@ const (
 	CacheControlKey     = "cache-control"
 	TimeoutDurationKey  = "timeout-duration"
 	IntervalDurationKey = "interval-duration"
-	ReviewDurationKey   = "review-duration"
 
 	SundayKey      = "sun"
 	MondayKey      = "mon"
@@ -26,16 +25,15 @@ const (
 	rangeSeparator = "-"
 
 	defaultInterval = time.Minute * 30
-	defaultTimeout  = time.Millisecond * 2000
+	defaultTimeout  = time.Millisecond * 5000
 )
 
 type Cache struct {
-	Timeout        time.Duration
-	Interval       time.Duration
-	ReviewDuration time.Duration
-	Host           string           // User requirement
-	Policy         http.Header      // User requirement
-	Days           map[string]Range // User requirement
+	Timeout  time.Duration
+	Interval time.Duration    // Not changed if running
+	Host     string           // User requirement, not changed if running
+	Policy   http.Header      // User requirement
+	Days     map[string]Range // User requirement
 }
 
 // Initialize - add a default policy
@@ -48,19 +46,6 @@ func Initialize(m map[string]string) *Cache {
 	parseCache(c, m)
 	return c
 }
-
-/*
-func NewCache(name string) *Cache {
-	//m, _ := resource.Resolve[map[string]string](name, Fragment, resource.Resolver)
-	return newCache(nil)
-}
-
-func newCache(m map[string]string) *Cache {
-	c := Initialize(m)
-	return c
-}
-
-*/
 
 func (c *Cache) Now() bool {
 	ts := time.Now()
@@ -120,15 +105,6 @@ func parseCache(c *Cache, m map[string]string) (changed bool) {
 		if dur, err := fmtx.ParseDuration(s); err == nil && dur > 0 {
 			if c.Interval != dur {
 				c.Interval = dur
-				changed = true
-			}
-		}
-	}
-	s = m[ReviewDurationKey]
-	if s != "" {
-		if dur, err := fmtx.ParseDuration(s); err == nil && dur > 0 {
-			if c.ReviewDuration != dur {
-				c.ReviewDuration = dur
 				changed = true
 			}
 		}

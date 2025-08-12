@@ -18,23 +18,13 @@ func (a *agentT) config(m *messaging.Message) {
 	if t, ok := messaging.ConfigContent[map[string]string](m); ok {
 		state := a.state.Load()
 		host := state.Host
-		reviewDuration := state.ReviewDuration
 		// Changed?
 		if !state.Update(t) {
 			return
 		}
 		// If the host has changed, then reset back to original if we are running
-		if host != state.Host {
-			if a.running.Load() {
-				state.Host = host
-			}
-		}
-		dur := a.state.Load().ReviewDuration
-		if reviewDuration != dur && dur > 0 {
-			review := a.review.Load()
-			if !review.Started() {
-				review.Start(dur)
-			}
+		if host != state.Host && a.running.Load() {
+			state.Host = host
 		}
 	}
 	return

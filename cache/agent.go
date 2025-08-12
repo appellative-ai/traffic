@@ -13,11 +13,13 @@ import (
 	"io"
 	"net/http"
 	"sync/atomic"
+	"time"
 )
 
 const (
-	AgentName  = "common:resiliency:agent/cache/request/http"
-	cachedName = "cached" // Sync with core/access
+	AgentName       = "common:resiliency:agent/cache/request/http"
+	cachedName      = "cached"
+	defaultInterval = time.Minute * 30 // Sync with core/access
 )
 
 var (
@@ -32,7 +34,6 @@ type agentT struct {
 	exchange rest.Exchange
 	notifier *notification.Interface
 
-	review   atomic.Pointer[messaging.Review]
 	ticker   *messaging.Ticker
 	emissary *messaging.Channel
 }
@@ -51,9 +52,8 @@ func newAgent(notifier *notification.Interface) *agentT {
 	a.state.Store(representation1.Initialize(nil))
 	a.notifier = notifier
 	a.exchange = httpx.Do
-	a.review.Store(messaging.NewReview())
 
-	a.ticker = messaging.NewTicker(messaging.ChannelEmissary, a.state.Load().Interval)
+	a.ticker = messaging.NewTicker(messaging.ChannelEmissary, defaultInterval)
 	a.emissary = messaging.NewEmissaryChannel()
 	return a
 }
@@ -130,13 +130,6 @@ func (a *agentT) Link(next rest.Exchange) rest.Exchange {
 		}
 		return
 	}
-}
-
-func (a *agentT) trace(task, observation, action string) {
-	if a.review.Load().Expired() {
-		return
-	}
-	a.notifier.Trace(a.Name(), task, observation, action)
 }
 
 func (a *agentT) cacheable(r *http.Request) bool {

@@ -26,6 +26,13 @@ func do(a *agentT, method string, url string, h http.Header, r io.ReadCloser) (r
 		status = std.NewStatus(resp.StatusCode, "", err)
 		return
 	}
-	status = std.StatusOK
+	if a.state.Load().Timeout > 0 {
+		err = httpx.TransformBody(resp)
+	}
+	if err != nil {
+		status = std.NewStatus(resp.StatusCode, "", err)
+	} else {
+		status = std.StatusOK
+	}
 	return
 }
