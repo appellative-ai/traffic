@@ -5,44 +5,42 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"sync/atomic"
 	"time"
 )
 
 const (
-	Fragment        = "v1"
-	HostKey         = "host"
-	CacheControlKey = "cache-control"
-	TimeoutKey      = "timeout"
-	IntervalKey     = "interval"
-	SundayKey       = "sun"
-	MondayKey       = "mon"
-	TuesdayKey      = "tue"
-	WednesdayKey    = "wed"
-	ThursdayKey     = "thu"
-	FridayKey       = "fri"
-	SaturdayKey     = "sat"
-	rangeSeparator  = "-"
+	Fragment            = "v1"
+	HostKey             = "host"
+	CacheControlKey     = "cache-control"
+	TimeoutDurationKey  = "timeout-duration"
+	IntervalDurationKey = "interval-duration"
+	ReviewDurationKey   = "review-duration"
+
+	SundayKey      = "sun"
+	MondayKey      = "mon"
+	TuesdayKey     = "tue"
+	WednesdayKey   = "wed"
+	ThursdayKey    = "thu"
+	FridayKey      = "fri"
+	SaturdayKey    = "sat"
+	rangeSeparator = "-"
 
 	defaultInterval = time.Minute * 30
 	defaultTimeout  = time.Millisecond * 2000
 )
 
 type Cache struct {
-	Running  bool
-	Enabled  *atomic.Bool
-	Timeout  time.Duration
-	Interval time.Duration
-	Host     string           // User requirement
-	Policy   http.Header      // User requirement
-	Days     map[string]Range // User requirement
+	Timeout        time.Duration
+	Interval       time.Duration
+	ReviewDuration time.Duration
+	Host           string           // User requirement
+	Policy         http.Header      // User requirement
+	Days           map[string]Range // User requirement
 }
 
 // Initialize - add a default policy
 func Initialize(m map[string]string) *Cache {
 	c := new(Cache)
-	c.Enabled = new(atomic.Bool)
-	c.Enabled.Store(false)
 	c.Timeout = defaultTimeout
 	c.Interval = defaultInterval
 	c.Policy = make(http.Header)
@@ -56,12 +54,13 @@ func NewCache(name string) *Cache {
 	//m, _ := resource.Resolve[map[string]string](name, Fragment, resource.Resolver)
 	return newCache(nil)
 }
-*/
 
 func newCache(m map[string]string) *Cache {
 	c := Initialize(m)
 	return c
 }
+
+*/
 
 func (c *Cache) Now() bool {
 	ts := time.Now()
@@ -86,11 +85,11 @@ func (c *Cache) Now() bool {
 	return c.Days[s].In(ts)
 }
 
-func (c *Cache) Update(m map[string]string) {
-	parseCache(c, m)
+func (c *Cache) Update(m map[string]string) bool {
+	return parseCache(c, m)
 }
 
-func parseCache(c *Cache, m map[string]string) {
+func parseCache(c *Cache, m map[string]string) (changed bool) {
 	if c == nil || m == nil {
 		return
 	}
@@ -102,44 +101,74 @@ func parseCache(c *Cache, m map[string]string) {
 	}
 	s := m[HostKey]
 	if s != "" {
-		c.Host = s
+		if c.Host != s {
+			c.Host = s
+			changed = true
+		}
+	}
+	s = m[TimeoutDurationKey]
+	if s != "" {
+		if dur, err := fmtx.ParseDuration(s); err == nil && dur > 0 {
+			if c.Timeout != dur {
+				c.Timeout = dur
+				changed = true
+			}
+		}
+	}
+	s = m[IntervalDurationKey]
+	if s != "" {
+		if dur, err := fmtx.ParseDuration(s); err == nil && dur > 0 {
+			if c.Interval != dur {
+				c.Interval = dur
+				changed = true
+			}
+		}
+	}
+	s = m[ReviewDurationKey]
+	if s != "" {
+		if dur, err := fmtx.ParseDuration(s); err == nil && dur > 0 {
+			if c.ReviewDuration != dur {
+				c.ReviewDuration = dur
+				changed = true
+			}
+		}
 	}
 	s = m[CacheControlKey]
 	if s != "" {
-		c.Policy.Set(CacheControlKey, s)
-	}
-	s = m[TimeoutKey]
-	if s != "" {
-		dur, err := fmtx.ParseDuration(s)
-		if err != nil {
-			//messaging.Reply(m, messaging.ConfigContentStatusError(agent, TimeoutKey), agent.Name())
-			return
+		if c.Policy.Get(CacheControlKey) != s {
+			c.Policy.Set(CacheControlKey, s)
+			changed = true
 		}
-		c.Timeout = dur
 	}
-	s = m[IntervalKey]
-	if s != "" {
-		dur, err := fmtx.ParseDuration(s)
-		if err != nil {
-			//messaging.Reply(m, messaging.ConfigContentStatusError(agent, TimeoutKey), agent.Name())
-			return
-		}
-		c.Interval = dur
-	}
-	parseDays(c, m)
+	return parseDays(c, m)
 }
 
-func parseDays(c *Cache, m map[string]string) {
-	parseDay(c, SundayKey, m)
-	parseDay(c, MondayKey, m)
-	parseDay(c, TuesdayKey, m)
-	parseDay(c, WednesdayKey, m)
-	parseDay(c, ThursdayKey, m)
-	parseDay(c, FridayKey, m)
-	parseDay(c, SaturdayKey, m)
+func parseDays(c *Cache, m map[string]string) (changed bool) {
+	if parseDay(c, SundayKey, m) {
+		changed = true
+	}
+	if parseDay(c, MondayKey, m) {
+		changed = true
+	}
+	if parseDay(c, TuesdayKey, m) {
+		changed = true
+	}
+	if parseDay(c, WednesdayKey, m) {
+		changed = true
+	}
+	if parseDay(c, ThursdayKey, m) {
+		changed = true
+	}
+	if parseDay(c, FridayKey, m) {
+		changed = true
+	}
+	if parseDay(c, SaturdayKey, m) {
+		changed = true
+	}
+	return
 }
 
-func parseDay(c *Cache, key string, m map[string]string) {
+func parseDay(c *Cache, key string, m map[string]string) (changed bool) {
 	s := m[key]
 	if s == "" {
 		return
@@ -148,6 +177,7 @@ func parseDay(c *Cache, key string, m map[string]string) {
 	if !r.Empty() {
 		c.Days[key] = r
 	}
+	return true
 }
 
 // Range - hour range

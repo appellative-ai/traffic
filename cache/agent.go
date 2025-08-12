@@ -12,6 +12,7 @@ import (
 	"github.com/appellative-ai/traffic/cache/representation1"
 	"io"
 	"net/http"
+	"sync/atomic"
 )
 
 const (
@@ -25,11 +26,13 @@ var (
 )
 
 type agentT struct {
-	state    *representation1.Cache
-	exchange rest.Exchange //func(r *http.Request) (*http.Response,error)
+	running  atomic.Bool
+	enabled  atomic.Bool
+	state    atomic.Pointer[representation1.Cache]
+	exchange rest.Exchange
 	notifier *notification.Interface
 
-	review   *messaging.Review
+	review   atomic.Pointer[messaging.Review]
 	ticker   *messaging.Ticker
 	emissary *messaging.Channel
 }
@@ -43,11 +46,14 @@ func init() {
 
 func newAgent(notifier *notification.Interface) *agentT {
 	a := new(agentT)
-	a.state = representation1.Initialize(nil)
+	a.running.Store(false)
+	a.enabled.Store(true)
+	a.state.Store(representation1.Initialize(nil))
 	a.notifier = notifier
 	a.exchange = httpx.Do
+	a.review.Store(messaging.NewReview())
 
-	a.ticker = messaging.NewTicker(messaging.ChannelEmissary, a.state.Interval)
+	a.ticker = messaging.NewTicker(messaging.ChannelEmissary, a.state.Load().Interval)
 	a.emissary = messaging.NewEmissaryChannel()
 	return a
 }
@@ -65,27 +71,20 @@ func (a *agentT) Message(m *messaging.Message) {
 	}
 	switch m.Name {
 	case messaging.ConfigEvent:
-		if a.state.Running {
-			return
-		}
-		messaging.UpdateContent[rest.Exchange](m, &a.exchange)
-		messaging.UpdateContent[*messaging.Review](m, &a.review)
-		messaging.UpdateMap(a.Name(), func(cfg map[string]string) {
-			a.state.Update(cfg)
-		}, m)
+		a.config(m)
 		return
 	case messaging.StartupEvent:
-		if a.state.Running {
+		if a.running.Load() {
 			return
 		}
 		a.run()
-		a.state.Running = true
+		a.running.Store(true)
 		return
 	case messaging.ShutdownEvent:
-		if !a.state.Running {
+		if !a.running.Load() {
 			return
 		}
-		a.state.Running = false
+		a.running.Store(false)
 	}
 	if m.Channel() != messaging.ChannelMaster {
 		a.emissary.C <- m
@@ -108,7 +107,7 @@ func (a *agentT) Link(next rest.Exchange) rest.Exchange {
 			status *std.Status
 		)
 		// cache lookup
-		url = uri.BuildURL(a.state.Host, r.URL.Path, r.URL.Query())
+		url = uri.BuildURL(a.state.Load().Host, r.URL.Path, r.URL.Query())
 		h := make(http.Header)
 		h.Add(httpx.XRequestId, r.Header.Get(httpx.XRequestId))
 		resp, status = do(a, http.MethodGet, url, h, nil)
@@ -118,7 +117,7 @@ func (a *agentT) Link(next rest.Exchange) rest.Exchange {
 		}
 		resp.Header.Add(cachedName, "false")
 		if status.Err != nil {
-			a.notifier.Message(messaging.NewStatusMessage(status, a.Name())) //.WithLocation(a.Name()), a.Name()))
+			a.notifier.Status(messaging.NewStatusMessage(status, a.Name())) //.WithLocation(a.Name()), a.Name()))
 		}
 		// cache miss, call next exchange
 		resp, err = next(r)
@@ -134,23 +133,17 @@ func (a *agentT) Link(next rest.Exchange) rest.Exchange {
 }
 
 func (a *agentT) trace(task, observation, action string) {
-	if a.review == nil {
-		return
-	}
-	if !a.review.Started() {
-		a.review.Start()
-	}
-	if a.review.Expired() {
+	if a.review.Load().Expired() {
 		return
 	}
 	a.notifier.Trace(a.Name(), task, observation, action)
 }
 
 func (a *agentT) cacheable(r *http.Request) bool {
-	if a.state.Host == "" || r.Method != http.MethodGet || httpx.CacheControlNoCache(r.Header) {
+	if a.state.Load().Host == "" || r.Method != http.MethodGet || httpx.CacheControlNoCache(r.Header) {
 		return false
 	}
-	return a.state.Enabled.Load()
+	return a.enabled.Load()
 }
 
 func (a *agentT) emissaryShutdown() {
@@ -185,34 +178,3 @@ func (a *agentT) cacheUpdate(url string, r *http.Request, resp *http.Response) e
 	}()
 	return nil
 }
-
-/*
-func (a *agentT) configure2(m *messaging.Message) {
-	switch m.ContentType() {
-	case messaging.ContentTypeMap:
-		cfg, status := messaging.MapContent(m)
-		if !status.OK() {
-			messaging.Reply(m, status, a.Name())
-			return
-		}
-		a.state.Update(cfg)
-	case rest.ContentTypeExchange:
-		ex, status := rest.ExchangeContent(m)
-		if !status.OK() {
-			messaging.Reply(m, status, a.Name())
-			return
-		}
-		a.exchange = ex
-	case messaging.ContentTypeReview:
-		r, status := messaging.ReviewContent(m)
-		if !status.OK() {
-			messaging.Reply(m, status, a.Name())
-			return
-		}
-		a.review = r
-	}
-	messaging.Reply(m, messaging.StatusOK(), a.Name())
-}
-
-
-*/

@@ -7,30 +7,18 @@ import (
 	"net/http"
 )
 
-var (
-// serverErrorResponse = httpx.NewResponse(http.StatusInternalServerError, nil, nil)
-)
-
-/*
-type Requester interface {
-	Timeout() time.Duration
-	Do() rest.Exchange
-}
-
-*/
-
-func do(agent *agentT, method string, url string, h http.Header, r io.ReadCloser) (resp *http.Response, status *std.Status) {
-	if agent == nil {
+func do(a *agentT, method string, url string, h http.Header, r io.ReadCloser) (resp *http.Response, status *std.Status) {
+	if a == nil {
 		return serverErrorResponse, std.StatusNotFound
 	}
-	ctx, cancel := httpx.NewContext(nil, agent.state.Timeout)
+	ctx, cancel := httpx.NewContext(nil, a.state.Load().Timeout)
 	defer cancel()
 	req, err := http.NewRequestWithContext(ctx, method, url, r)
 	if err != nil {
 		return serverErrorResponse, std.NewStatus(std.StatusInvalidArgument, "", err)
 	}
 	req.Header = h
-	resp, err = agent.exchange(req)
+	resp, err = a.exchange(req)
 	if resp.Header == nil {
 		resp.Header = make(http.Header)
 	}

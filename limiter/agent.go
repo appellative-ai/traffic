@@ -23,7 +23,7 @@ const (
 )
 
 type agentT struct {
-	running  bool
+	running  atomic.Bool
 	enabled  atomic.Bool
 	state    atomic.Pointer[representation1.Limiter]
 	limiter  *rate.Limiter
@@ -47,7 +47,7 @@ func init() {
 func newAgent(notifier *notification.Interface) *agentT {
 	a := new(agentT)
 	a.enabled.Store(true)
-
+	a.running.Store(false)
 	state := representation1.Initialize(nil)
 	a.state.Store(state)
 	a.notifier = notifier
@@ -79,17 +79,17 @@ func (a *agentT) Message(m *messaging.Message) {
 		a.config(m)
 		return
 	case messaging.StartupEvent:
-		if a.running {
+		if a.running.Load() {
 			return
 		}
-		a.running = true
+		a.running.Store(true)
 		a.run()
 		return
 	case messaging.ShutdownEvent:
-		if !a.running {
+		if !a.running.Load() {
 			return
 		}
-		a.running = false
+		a.running.Store(false)
 	case messaging.PauseEvent:
 		// TODO : remove enqueued events
 		a.enabled.Store(false)
