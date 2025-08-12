@@ -11,18 +11,18 @@ var (
 // serverErrorResponse = httpx.NewResponse(http.StatusInternalServerError, nil, nil)
 )
 
-func do(agent *agentT, method string, url string, h http.Header, r io.ReadCloser) (resp *http.Response, status *std.Status) {
-	if agent == nil {
+func do(a *agentT, method string, url string, h http.Header, r io.ReadCloser) (resp *http.Response, status *std.Status) {
+	if a == nil {
 		return serverErrorResponse, std.StatusNotFound
 	}
-	ctx, cancel := httpx.NewContext(nil, agent.state.Timeout)
+	ctx, cancel := httpx.NewContext(nil, a.state.Timeout)
 	defer cancel()
 	req, err := http.NewRequestWithContext(ctx, method, url, r)
 	if err != nil {
 		return serverErrorResponse, std.NewStatus(std.StatusInvalidArgument, "", err)
 	}
 	req.Header = h
-	resp, err = agent.exchange(req)
+	resp, err = a.exchange(req)
 	if resp.Header == nil {
 		resp.Header = make(http.Header)
 	}
@@ -30,6 +30,14 @@ func do(agent *agentT, method string, url string, h http.Header, r io.ReadCloser
 		status = std.NewStatus(resp.StatusCode, "", err)
 		return
 	}
-	status = std.StatusOK
+	if a.state.Timeout > 0 {
+		err = httpx.TransformBody(resp)
+	}
+	if err != nil {
+		status = std.NewStatus(resp.StatusCode, "", err)
+	} else {
+		status = std.StatusOK
+	}
+
 	return
 }
