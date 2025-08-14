@@ -48,7 +48,7 @@ func ExampleDo_Get_Timeout() {
 	url := "https://www.google.com/search?q=golang"
 	a := newAgent(nil)
 	a.exchange = httpx.Do
-	a.state.Load().Timeout = time.Millisecond * 10
+	a.state.Load().TimeoutDuration = time.Millisecond * 10
 
 	h := make(http.Header)
 	h.Add(iox.AcceptEncoding, "gzip")

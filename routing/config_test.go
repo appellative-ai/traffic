@@ -19,8 +19,16 @@ func ExampleConfig_Host() {
 	a.Message(messaging.NewConfigMessage(m))
 	fmt.Printf("test: Message() -> [app:%v] [cache:%v]\n", a.state.Load().AppHost, a.state.Load().CacheHost)
 
+	a.running.Store(true)
+	m = make(map[string]string)
+	m[representation1.AppHostKey] = "google-reset.com"
+	m[representation1.CacheHostKey] = "localhost-reset:8080"
+	a.Message(messaging.NewConfigMessage(m))
+	fmt.Printf("test: Message() -> [app:%v] [cache:%v]\n", a.state.Load().AppHost, a.state.Load().CacheHost)
+
 	//Output:
 	//test: newAgent() -> [app:] [cache:]
+	//test: Message() -> [app:google.com] [cache:localhost:8080]
 	//test: Message() -> [app:google.com] [cache:localhost:8080]
 
 }

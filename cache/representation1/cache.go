@@ -27,16 +27,16 @@ const (
 )
 
 type Cache struct {
-	Timeout time.Duration
-	Host    string           // User requirement, not changed if running
-	Policy  http.Header      // User requirement
-	Days    map[string]Range // User requirement
+	TimeoutDuration time.Duration
+	Host            string           // User requirement, not changed if running
+	Policy          http.Header      // User requirement
+	Days            map[string]Range // User requirement
 }
 
 // Initialize - add a default policy
 func Initialize(m map[string]string) *Cache {
 	c := new(Cache)
-	c.Timeout = defaultTimeout
+	c.TimeoutDuration = defaultTimeout
 	c.Policy = make(http.Header)
 	c.Days = make(map[string]Range)
 	parseCache(c, m)
@@ -90,8 +90,8 @@ func parseCache(c *Cache, m map[string]string) (changed bool) {
 	s = m[TimeoutDurationKey]
 	if s != "" {
 		if dur, err := fmtx.ParseDuration(s); err == nil && dur > 0 {
-			if c.Timeout != dur {
-				c.Timeout = dur
+			if c.TimeoutDuration != dur {
+				c.TimeoutDuration = dur
 				changed = true
 			}
 		}
@@ -103,7 +103,10 @@ func parseCache(c *Cache, m map[string]string) (changed bool) {
 			changed = true
 		}
 	}
-	return parseDays(c, m)
+	if parseDays(c, m) {
+		changed = true
+	}
+	return
 }
 
 func parseDays(c *Cache, m map[string]string) (changed bool) {

@@ -12,7 +12,7 @@ func do(a *agentT, method string, url string, h http.Header, r io.ReadCloser) (r
 	if a == nil {
 		return serverErrorResponse, std.StatusNotFound
 	}
-	ctx, cancel := httpx.NewContext(nil, a.state.Load().Timeout)
+	ctx, cancel := httpx.NewContext(nil, a.state.Load().TimeoutDuration)
 	defer cancel()
 	start := time.Now().UTC()
 	req, err := http.NewRequestWithContext(ctx, method, url, r)
@@ -25,13 +25,13 @@ func do(a *agentT, method string, url string, h http.Header, r io.ReadCloser) (r
 		resp.Header = make(http.Header)
 	}
 	if a.logAgent != nil {
-		a.logAgent.LogEgress(start, time.Since(start), cacheRouteName, req, resp, a.state.Load().Timeout)
+		a.logAgent.LogEgress(start, time.Since(start), cacheRouteName, req, resp, a.state.Load().TimeoutDuration)
 	}
 	if err != nil {
 		status = std.NewStatus(resp.StatusCode, "", err)
 		return
 	}
-	if a.state.Load().Timeout > 0 {
+	if a.state.Load().TimeoutDuration > 0 {
 		err = httpx.TransformBody(resp)
 	}
 	if err != nil {

@@ -18,10 +18,17 @@ func ExampleConfig_Host() {
 	a.Message(messaging.NewConfigMessage(m))
 	fmt.Printf("test: Message() -> [host:%v]\n", a.state.Load().Host)
 
+	a.running.Store(true)
+	m = make(map[string]string)
+	m[representation1.HostKey] = "google-reset.com"
+	a.Message(messaging.NewConfigMessage(m))
+	fmt.Printf("test: Message() -> [host:%v]\n", a.state.Load().Host)
+
 	//Output:
 	//test: newAgent() -> [host:]
 	//test: Message() -> [host:google.com]
-
+	//test: Message() -> [host:google.com]
+	
 }
 
 func ExampleConfig_Exchange() {

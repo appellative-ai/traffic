@@ -118,7 +118,7 @@ func (a *agentT) Link(next rest.Exchange) rest.Exchange {
 			a.notifier.Status(messaging.NewStatusMessage(status, a.Name()))
 		}
 		if resp.StatusCode == http.StatusGatewayTimeout {
-			resp.Header.Add(timeoutName, fmt.Sprintf("%v", a.state.Load().Timeout))
+			resp.Header.Add(timeoutName, fmt.Sprintf("%v", a.state.Load().TimeoutDuration))
 		}
 		return resp, status.Err
 	}
