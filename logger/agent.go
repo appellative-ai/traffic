@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	AgentName    = "common:resiliency:agent/log/request"
+	AgentName    = "common:resiliency:agent/logging/request"
 	defaultRoute = "host"
 )
 
