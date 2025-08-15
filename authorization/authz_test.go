@@ -9,13 +9,13 @@ import (
 
 func ExampleAuthorization_Chain() {
 	name := "agent/authorization"
-	chain := rest.BuildExchangeChain([]any{Authorization})
+	chain := rest.BuildNetwork([]any{Authorization})
 	fmt.Printf("test: BuildExchangeChain() -> %v\n", chain != nil)
 
 	exchange.RegisterExchangeHandler(name, Authorization)
 	l := exchange.ExchangeHandler(name)
 	fmt.Printf("test: ExchangeLink() -> %v %v\n", reflect.TypeOf(Authorization), reflect.TypeOf(l))
-	chain = rest.BuildExchangeChain([]any{l})
+	chain = rest.BuildNetwork([]any{l})
 	fmt.Printf("test: repository.ExchangeLink() -> %v\n", chain != nil)
 
 	//Output:
