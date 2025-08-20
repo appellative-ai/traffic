@@ -2,6 +2,7 @@ package cache
 
 import (
 	"bytes"
+	"github.com/appellative-ai/agency/logger"
 	"github.com/appellative-ai/collective/exchange"
 	"github.com/appellative-ai/collective/notification"
 	"github.com/appellative-ai/core/httpx"
@@ -10,7 +11,6 @@ import (
 	"github.com/appellative-ai/core/std"
 	"github.com/appellative-ai/core/uri"
 	"github.com/appellative-ai/traffic/cache/representation1"
-	"github.com/appellative-ai/traffic/logger"
 	"io"
 	"net/http"
 	"sync/atomic"
@@ -30,11 +30,11 @@ var (
 )
 
 type agentT struct {
-	running  atomic.Bool
-	enabled  atomic.Bool
-	state    atomic.Pointer[representation1.Cache]
+	running atomic.Bool
+	enabled atomic.Bool
+	state   atomic.Pointer[representation1.Cache]
+
 	exchange rest.Exchange
-	logAgent logger.Agent
 	notifier *notification.Interface
 
 	ticker   *messaging.Ticker
@@ -53,9 +53,9 @@ func newAgent(notifier *notification.Interface) *agentT {
 	a.running.Store(false)
 	a.enabled.Store(true)
 	a.state.Store(representation1.Initialize(nil))
-	if l, ok := exchange.AgentT[logger.Agent](logger.AgentName); ok {
-		a.logAgent = l
-	}
+	//if l, ok := exchange.AgentT[logger.Agent](logger.AgentName); ok {
+	//	a.logAgent = l
+	//}
 	a.notifier = notifier
 	a.exchange = httpx.Do
 
@@ -123,7 +123,7 @@ func (a *agentT) Link(next rest.Exchange) rest.Exchange {
 		}
 		resp.Header.Add(cachedName, "false")
 		if status.Err != nil {
-			a.notifier.Status(messaging.NewStatusMessage(status, a.Name())) //.WithLocation(a.Name()), a.Name()))
+			logger.Agent.LogStatus(a.Name(), status) //messaging.NewStatusMessage(status, a.Name()))
 		}
 		// cache miss, call next exchange
 		resp, err = next(r)
@@ -159,8 +159,9 @@ func (a *agentT) cacheUpdate(url string, r *http.Request, resp *http.Response) e
 	// TODO: Need to reset the body in the response after reading it.
 	buf, err = io.ReadAll(resp.Body)
 	if err != nil {
-		status = std.NewStatus(std.StatusIOError, a.Name(), err)
-		a.notifier.Message(messaging.NewStatusMessage(status, a.Name()))
+		status = std.NewStatus(std.StatusIOError, err).SetLocation(a.Name())
+		//a.notifier.Message(messaging.NewStatusMessage(status, a.Name()))
+		logger.Agent.LogStatus(a.Name(), status) //messaging.NewStatusMessage(status, a.Name()))
 		return err
 	}
 	resp.ContentLength = int64(len(buf))

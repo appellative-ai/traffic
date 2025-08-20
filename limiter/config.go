@@ -6,9 +6,6 @@ func (a *agentT) config(m *messaging.Message) {
 	if m == nil || m.Name != messaging.ConfigEvent {
 		return
 	}
-	//if a.running {
-	//	return
-	//}
 	if t, ok := messaging.ConfigContent[map[string]string](m); ok {
 		state := a.state.Load()
 		limit := state.Limit

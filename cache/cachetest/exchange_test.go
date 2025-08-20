@@ -3,7 +3,6 @@ package cachetest
 import (
 	"fmt"
 	"github.com/appellative-ai/collective/exchange"
-	"github.com/appellative-ai/core/host"
 	"github.com/appellative-ai/core/httpx"
 	"github.com/appellative-ai/core/iox"
 	"github.com/appellative-ai/core/messaging"
@@ -13,6 +12,18 @@ import (
 	"net/http"
 	"net/http/httptest"
 )
+
+func newEndpoint(pattern string, operatives []any) rest.Endpoint {
+	net := rest.BuildNetwork(operatives)
+	return rest.NewEndpoint(pattern, exchangeHandler, init2, net)
+}
+func exchangeHandler(w http.ResponseWriter, req *http.Request, resp *http.Response) {
+	httpx.WriteResponse(w, resp.Header, resp.StatusCode, resp.Body, req.Header)
+}
+
+func init2(r *http.Request) {
+	httpx.AddRequestId(r)
+}
 
 func nextExchange(next rest.Exchange) rest.Exchange {
 	return func(r *http.Request) (resp *http.Response, err error) {
@@ -33,7 +44,7 @@ func ExampleExchange() {
 	//repository.Message(httpx.NewConfigExchangeMessage(Exchange))
 	cfg := make(map[string]string)
 	cfg[representation1.HostKey] = "localhost:8082"
-	exchange.Message(messaging.NewMapMessage(cfg))
+	exchange.Message(messaging.NewConfigMessage(cfg))
 
 	// create request
 	url := "https://localhost:8081/search?q=golang"
@@ -42,7 +53,7 @@ func ExampleExchange() {
 	httpx.AddRequestId(req)
 
 	// create endpoint and server Http
-	e := host.NewEndpoint("pattern", []any{exchange.Agent(cache.NamespaceName), nextExchange})
+	e := newEndpoint("pattern", []any{exchange.Agent(cache.AgentName), nextExchange})
 	r := httptest.NewRecorder()
 	e.ServeHTTP(r, req)
 	r.Flush()

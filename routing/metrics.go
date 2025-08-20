@@ -68,7 +68,7 @@ func newMetricsMessage(metrics metrics) *messaging.Message {
 
 func metricsContent(m *messaging.Message) (metrics, *std.Status) {
 	if !messaging.ValidContent(m, metricsEvent, contentTypeMetrics) {
-		return metrics{}, std.NewStatus(std.StatusInvalidContent, "", nil)
+		return metrics{}, std.NewStatus(std.StatusInvalidContent, nil)
 	}
 	return std.New[metrics](m.Content)
 

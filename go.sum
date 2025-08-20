@@ -1,3 +1,9 @@
+github.com/appellative-ai/agency v0.0.0-20250818180007-517e14b7d143 h1:p0W7lpW9eAS+WMAp+jwFFioB8sLxyLZXS3J62+epoYU=
+github.com/appellative-ai/agency v0.0.0-20250818180007-517e14b7d143/go.mod h1:7SbrLYNbvWLX2eDpmOqUkOf5Avmejrq28lfJGcge1vk=
+github.com/appellative-ai/agency v0.0.0-20250818202702-09b698d85a70 h1:MDEoJx7rw1/CBXSPhyQRpLTb/MQIm/LCF8GEyE8111A=
+github.com/appellative-ai/agency v0.0.0-20250818202702-09b698d85a70/go.mod h1:LTPNoU9N2gwnYUQpRzC2cFfugIE8aFqKAnXo1IOk4yM=
+github.com/appellative-ai/agency v0.0.0-20250820102553-594b7ab96745 h1:OqCKfKDq2hWu6AgBYkBzPbgKyJTr9q1t+Q/sxKZTm8Q=
+github.com/appellative-ai/agency v0.0.0-20250820102553-594b7ab96745/go.mod h1:Y/jITYNhAzp51SHIZhXPFEhO6V56X4OHJtvK65ClcrY=
 github.com/appellative-ai/collective v0.0.0-20250716192820-806bbc60d6dc h1:3BJ6rbZQzDVTngo8feLpmkq/g4F1t1qB0irzsEVGsFc=
 github.com/appellative-ai/collective v0.0.0-20250716192820-806bbc60d6dc/go.mod h1:WLgXEq90cU+gcj/k2D+qa8ZuXL0McOtduEOC82WiPW0=
 github.com/appellative-ai/collective v0.0.0-20250718103010-04756c5ec6e5 h1:SiUWJ5Gl5uXCD9kKnd/gcA6brz8RGufgz5W9KoQqA+c=
@@ -18,6 +24,14 @@ github.com/appellative-ai/collective v0.0.0-20250811150630-6ac97687c0dc h1:6XU7n
 github.com/appellative-ai/collective v0.0.0-20250811150630-6ac97687c0dc/go.mod h1:tkyRU33dlurdyJxqvdJSCQTeWuNA3gjyfQCJY1sgd6Y=
 github.com/appellative-ai/collective v0.0.0-20250815125425-a64c7ffda950 h1:22mq1rXX7OGsfIKft9hvROsS3s22P39sKhs7rY6kotE=
 github.com/appellative-ai/collective v0.0.0-20250815125425-a64c7ffda950/go.mod h1:oD7NI3EJUpFknx405ym2f0hpMy+icwfM9EHR233u2Xw=
+github.com/appellative-ai/collective v0.0.0-20250818144224-de9b527a6b79 h1:k8GyGUZH8PGJLem3HyqRMW7L/FEbFFaY7/WNVa00ndM=
+github.com/appellative-ai/collective v0.0.0-20250818144224-de9b527a6b79/go.mod h1:oD7NI3EJUpFknx405ym2f0hpMy+icwfM9EHR233u2Xw=
+github.com/appellative-ai/collective v0.0.0-20250818181015-8f3fbd32b28b h1:FOpxr4+dPdWdlQBJEhUsOnzJD6an0OQOzszKcGkTR2g=
+github.com/appellative-ai/collective v0.0.0-20250818181015-8f3fbd32b28b/go.mod h1:fr+qkZd21tkn8jYkxuHLKQTO3w3fnarC7QvgzYzQ4cU=
+github.com/appellative-ai/collective v0.0.0-20250818194115-0e798980feb5 h1:KW0zRzD+JCofph9Xw1vxSHMlDficU/I68/WdV6x1Lcc=
+github.com/appellative-ai/collective v0.0.0-20250818194115-0e798980feb5/go.mod h1:WqeMHPVEPnEoH+S3M/lFYWu024raytqYS8YfVJ5zthM=
+github.com/appellative-ai/collective v0.0.0-20250819193859-13844a2e5b50 h1:hltrxt8zGBJRfETWJk0I+H7osTZ69DXhz3Zbcy5Oypg=
+github.com/appellative-ai/collective v0.0.0-20250819193859-13844a2e5b50/go.mod h1:4o86mGogjCmnWidG38FSAdz65GXfve6wbR5VTum2rxg=
 github.com/appellative-ai/core v0.0.0-20250716191654-e43fbfd4d1fc h1:rpknpCFb1pFxpNlxrIB2fcBgmx9TTSUzM9JhE6N7ens=
 github.com/appellative-ai/core v0.0.0-20250716191654-e43fbfd4d1fc/go.mod h1:a8kfuZMJHcdtdksSK+aYw2Mp6lT+i25oQEB+UCqwyhs=
 github.com/appellative-ai/core v0.0.0-20250718214136-5f1b6f89c8bc h1:EnU+940jwQOWWhg6r0a9rxIfObl9zogSugXnhy5sYcU=
@@ -41,6 +55,12 @@ github.com/appellative-ai/core v0.0.0-20250812104341-e45bd6077904 h1:aSbjnAs8qCp
 github.com/appellative-ai/core v0.0.0-20250812104341-e45bd6077904/go.mod h1:a8kfuZMJHcdtdksSK+aYw2Mp6lT+i25oQEB+UCqwyhs=
 github.com/appellative-ai/core v0.0.0-20250815122620-d6c9ef48503c h1:PXOO8rVhSLAd2I017+A50HSZL51FxhCqr45txuJhjJg=
 github.com/appellative-ai/core v0.0.0-20250815122620-d6c9ef48503c/go.mod h1:a8kfuZMJHcdtdksSK+aYw2Mp6lT+i25oQEB+UCqwyhs=
+github.com/appellative-ai/core v0.0.0-20250818144858-eb3444610413 h1:rfmjNZhKf4keEEH/KFFbdnxZBTVzBbDeMmDHw53P85s=
+github.com/appellative-ai/core v0.0.0-20250818144858-eb3444610413/go.mod h1:a8kfuZMJHcdtdksSK+aYw2Mp6lT+i25oQEB+UCqwyhs=
+github.com/appellative-ai/core v0.0.0-20250818193759-5a393a47130a h1:ZivAm1PHN4r4tey0E8G3fPp6r8IpoeYONMFNn5VbZSI=
+github.com/appellative-ai/core v0.0.0-20250818193759-5a393a47130a/go.mod h1:a8kfuZMJHcdtdksSK+aYw2Mp6lT+i25oQEB+UCqwyhs=
+github.com/appellative-ai/core v0.0.0-20250818203108-5886a4fed0fa h1:kmDF8XeOHUTqgvwDDU60fixqj1JyJuv5gmpWKFWIl2k=
+github.com/appellative-ai/core v0.0.0-20250818203108-5886a4fed0fa/go.mod h1:a8kfuZMJHcdtdksSK+aYw2Mp6lT+i25oQEB+UCqwyhs=
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/dchest/siphash v1.2.2/go.mod h1:q+IRvb2gOSrUnYoPqHiyHXS0FOBBOdl6tONBlVnOnt4=

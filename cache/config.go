@@ -12,8 +12,8 @@ func (a *agentT) config(m *messaging.Message) {
 	if ex, ok := messaging.ConfigContent[rest.Exchange](m); ok && ex != nil {
 		if !a.running.Load() {
 			a.exchange = ex
-			return
 		}
+		return
 	}
 	if t, ok := messaging.ConfigContent[map[string]string](m); ok {
 		state := a.state.Load()

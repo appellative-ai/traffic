@@ -2,6 +2,7 @@ package routing
 
 import (
 	"fmt"
+	"github.com/appellative-ai/agency/logger"
 	"github.com/appellative-ai/collective/exchange"
 	"github.com/appellative-ai/collective/notification"
 	"github.com/appellative-ai/core/httpx"
@@ -115,7 +116,7 @@ func (a *agentT) Link(next rest.Exchange) rest.Exchange {
 		// TODO : need to check and remove Caching header.
 		resp, status = do(a, r.Method, url, httpx.CloneHeaderWithEncoding(r), r.Body)
 		if status.Err != nil {
-			a.notifier.Status(messaging.NewStatusMessage(status, a.Name()))
+			logger.Agent.LogStatus(a.Name(), status)
 		}
 		if resp.StatusCode == http.StatusGatewayTimeout {
 			resp.Header.Add(timeoutName, fmt.Sprintf("%v", a.state.Load().TimeoutDuration))

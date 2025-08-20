@@ -3,7 +3,7 @@ package routingtest
 import (
 	"fmt"
 	"github.com/appellative-ai/collective/exchange"
-	"github.com/appellative-ai/core/host"
+	"github.com/appellative-ai/core/httpx"
 	"github.com/appellative-ai/core/iox"
 	"github.com/appellative-ai/core/messaging"
 	"github.com/appellative-ai/core/rest"
@@ -13,6 +13,18 @@ import (
 	"net/http"
 	"net/http/httptest"
 )
+
+func newEndpoint(pattern string, operatives []any) rest.Endpoint {
+	net := rest.BuildNetwork(operatives)
+	return rest.NewEndpoint(pattern, exchangeHandler, init2, net)
+}
+func exchangeHandler(w http.ResponseWriter, req *http.Request, resp *http.Response) {
+	httpx.WriteResponse(w, resp.Header, resp.StatusCode, resp.Body, req.Header)
+}
+
+func init2(r *http.Request) {
+	httpx.AddRequestId(r)
+}
 
 func ExampleExchange_Override() {
 	cfg := make(map[string]string)
@@ -31,7 +43,7 @@ func ExampleExchange_Override() {
 	req.Header = make(http.Header)
 
 	// create endpoint and run
-	e := host.NewEndpoint("/", []any{a})
+	e := newEndpoint("/", []any{a})
 	r := httptest.NewRecorder()
 	e.ServeHTTP(r, req)
 	r.Flush()
@@ -71,7 +83,7 @@ func _ExampleExchange() {
 	req.Header = make(http.Header)
 
 	// create endpoint and run
-	e := host.NewEndpoint("/", []any{agent})
+	e := newEndpoint("/", []any{agent})
 	r := httptest.NewRecorder()
 	e.ServeHTTP(r, req)
 	r.Flush()

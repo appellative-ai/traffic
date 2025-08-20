@@ -19,7 +19,7 @@ func do(a *agentT, method string, url string, h http.Header, r io.ReadCloser) (r
 	defer cancel()
 	req, err := http.NewRequestWithContext(ctx, method, url, r)
 	if err != nil {
-		return serverErrorResponse, std.NewStatus(std.StatusInvalidArgument, "", err)
+		return serverErrorResponse, std.NewStatus(std.StatusInvalidArgument, err)
 	}
 	req.Header = h
 	resp, err = a.exchange(req)
@@ -27,14 +27,14 @@ func do(a *agentT, method string, url string, h http.Header, r io.ReadCloser) (r
 		resp.Header = make(http.Header)
 	}
 	if err != nil {
-		status = std.NewStatus(resp.StatusCode, "", err)
+		status = std.NewStatus(resp.StatusCode, err)
 		return
 	}
 	if a.state.Load().TimeoutDuration > 0 {
 		err = httpx.TransformBody(resp)
 	}
 	if err != nil {
-		status = std.NewStatus(resp.StatusCode, "", err)
+		status = std.NewStatus(resp.StatusCode, err)
 	} else {
 		status = std.StatusOK
 	}
