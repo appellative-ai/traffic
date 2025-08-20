@@ -14,10 +14,6 @@ import (
 	"net/http/httptest"
 )
 
-func newEndpoint(pattern string, operatives []any) rest.Endpoint {
-	net := rest.BuildNetwork(operatives)
-	return rest.NewEndpoint(pattern, exchangeHandler, init2, net)
-}
 func exchangeHandler(w http.ResponseWriter, req *http.Request, resp *http.Response) {
 	httpx.WriteResponse(w, resp.Header, resp.StatusCode, resp.Body, req.Header)
 }
@@ -43,7 +39,7 @@ func ExampleExchange_Override() {
 	req.Header = make(http.Header)
 
 	// create endpoint and run
-	e := newEndpoint("/", []any{a})
+	e := rest.NewEndpoint("/", exchangeHandler, init2, []any{a})
 	r := httptest.NewRecorder()
 	e.ServeHTTP(r, req)
 	r.Flush()
@@ -83,7 +79,7 @@ func _ExampleExchange() {
 	req.Header = make(http.Header)
 
 	// create endpoint and run
-	e := newEndpoint("/", []any{agent})
+	e := rest.NewEndpoint("/", exchangeHandler, init2, []any{agent})
 	r := httptest.NewRecorder()
 	e.ServeHTTP(r, req)
 	r.Flush()

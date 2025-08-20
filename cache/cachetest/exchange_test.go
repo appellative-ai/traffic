@@ -13,10 +13,6 @@ import (
 	"net/http/httptest"
 )
 
-func newEndpoint(pattern string, operatives []any) rest.Endpoint {
-	net := rest.BuildNetwork(operatives)
-	return rest.NewEndpoint(pattern, exchangeHandler, init2, net)
-}
 func exchangeHandler(w http.ResponseWriter, req *http.Request, resp *http.Response) {
 	httpx.WriteResponse(w, resp.Header, resp.StatusCode, resp.Body, req.Header)
 }
@@ -53,7 +49,7 @@ func ExampleExchange() {
 	httpx.AddRequestId(req)
 
 	// create endpoint and server Http
-	e := newEndpoint("pattern", []any{exchange.Agent(cache.AgentName), nextExchange})
+	e := rest.NewEndpoint("pattern", exchangeHandler, init2, []any{exchange.Agent(cache.AgentName), nextExchange})
 	r := httptest.NewRecorder()
 	e.ServeHTTP(r, req)
 	r.Flush()

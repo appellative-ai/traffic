@@ -61,6 +61,8 @@ github.com/appellative-ai/core v0.0.0-20250818193759-5a393a47130a h1:ZivAm1PHN4r
 github.com/appellative-ai/core v0.0.0-20250818193759-5a393a47130a/go.mod h1:a8kfuZMJHcdtdksSK+aYw2Mp6lT+i25oQEB+UCqwyhs=
 github.com/appellative-ai/core v0.0.0-20250818203108-5886a4fed0fa h1:kmDF8XeOHUTqgvwDDU60fixqj1JyJuv5gmpWKFWIl2k=
 github.com/appellative-ai/core v0.0.0-20250818203108-5886a4fed0fa/go.mod h1:a8kfuZMJHcdtdksSK+aYw2Mp6lT+i25oQEB+UCqwyhs=
+github.com/appellative-ai/core v0.0.0-20250820105212-5734a8ded1d6 h1:+cH/FWNWI4FndwIYa6aBjRcm0Y+CXs5+pE/GpgnaQiI=
+github.com/appellative-ai/core v0.0.0-20250820105212-5734a8ded1d6/go.mod h1:a8kfuZMJHcdtdksSK+aYw2Mp6lT+i25oQEB+UCqwyhs=
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/dchest/siphash v1.2.2/go.mod h1:q+IRvb2gOSrUnYoPqHiyHXS0FOBBOdl6tONBlVnOnt4=
