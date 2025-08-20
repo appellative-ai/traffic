@@ -4,6 +4,8 @@ github.com/appellative-ai/agency v0.0.0-20250818202702-09b698d85a70 h1:MDEoJx7rw
 github.com/appellative-ai/agency v0.0.0-20250818202702-09b698d85a70/go.mod h1:LTPNoU9N2gwnYUQpRzC2cFfugIE8aFqKAnXo1IOk4yM=
 github.com/appellative-ai/agency v0.0.0-20250820102553-594b7ab96745 h1:OqCKfKDq2hWu6AgBYkBzPbgKyJTr9q1t+Q/sxKZTm8Q=
 github.com/appellative-ai/agency v0.0.0-20250820102553-594b7ab96745/go.mod h1:Y/jITYNhAzp51SHIZhXPFEhO6V56X4OHJtvK65ClcrY=
+github.com/appellative-ai/agency v0.0.0-20250820120629-4ebd36b375f5 h1:Pgs54ZMDzR/vmcibCRDRSRkxxiqv1hWvMqKF9yUqcgM=
+github.com/appellative-ai/agency v0.0.0-20250820120629-4ebd36b375f5/go.mod h1:Y/jITYNhAzp51SHIZhXPFEhO6V56X4OHJtvK65ClcrY=
 github.com/appellative-ai/collective v0.0.0-20250716192820-806bbc60d6dc h1:3BJ6rbZQzDVTngo8feLpmkq/g4F1t1qB0irzsEVGsFc=
 github.com/appellative-ai/collective v0.0.0-20250716192820-806bbc60d6dc/go.mod h1:WLgXEq90cU+gcj/k2D+qa8ZuXL0McOtduEOC82WiPW0=
 github.com/appellative-ai/collective v0.0.0-20250718103010-04756c5ec6e5 h1:SiUWJ5Gl5uXCD9kKnd/gcA6brz8RGufgz5W9KoQqA+c=
@@ -32,6 +34,8 @@ github.com/appellative-ai/collective v0.0.0-20250818194115-0e798980feb5 h1:KW0zR
 github.com/appellative-ai/collective v0.0.0-20250818194115-0e798980feb5/go.mod h1:WqeMHPVEPnEoH+S3M/lFYWu024raytqYS8YfVJ5zthM=
 github.com/appellative-ai/collective v0.0.0-20250819193859-13844a2e5b50 h1:hltrxt8zGBJRfETWJk0I+H7osTZ69DXhz3Zbcy5Oypg=
 github.com/appellative-ai/collective v0.0.0-20250819193859-13844a2e5b50/go.mod h1:4o86mGogjCmnWidG38FSAdz65GXfve6wbR5VTum2rxg=
+github.com/appellative-ai/collective v0.0.0-20250820130418-74adfaa005f3 h1:V9LhhFIOkooYUWqkmP/N1eYseXpbXzg6qG/ZqRo7l1s=
+github.com/appellative-ai/collective v0.0.0-20250820130418-74adfaa005f3/go.mod h1:4o86mGogjCmnWidG38FSAdz65GXfve6wbR5VTum2rxg=
 github.com/appellative-ai/core v0.0.0-20250716191654-e43fbfd4d1fc h1:rpknpCFb1pFxpNlxrIB2fcBgmx9TTSUzM9JhE6N7ens=
 github.com/appellative-ai/core v0.0.0-20250716191654-e43fbfd4d1fc/go.mod h1:a8kfuZMJHcdtdksSK+aYw2Mp6lT+i25oQEB+UCqwyhs=
 github.com/appellative-ai/core v0.0.0-20250718214136-5f1b6f89c8bc h1:EnU+940jwQOWWhg6r0a9rxIfObl9zogSugXnhy5sYcU=
@@ -63,6 +67,8 @@ github.com/appellative-ai/core v0.0.0-20250818203108-5886a4fed0fa h1:kmDF8XeOHUT
 github.com/appellative-ai/core v0.0.0-20250818203108-5886a4fed0fa/go.mod h1:a8kfuZMJHcdtdksSK+aYw2Mp6lT+i25oQEB+UCqwyhs=
 github.com/appellative-ai/core v0.0.0-20250820105212-5734a8ded1d6 h1:+cH/FWNWI4FndwIYa6aBjRcm0Y+CXs5+pE/GpgnaQiI=
 github.com/appellative-ai/core v0.0.0-20250820105212-5734a8ded1d6/go.mod h1:a8kfuZMJHcdtdksSK+aYw2Mp6lT+i25oQEB+UCqwyhs=
+github.com/appellative-ai/core v0.0.0-20250820111950-2c383ce94c33 h1:9V+CAWQ7ES/DzoFiVD0VSSho6G3ZF4kLQ5zRc5r7JKk=
+github.com/appellative-ai/core v0.0.0-20250820111950-2c383ce94c33/go.mod h1:a8kfuZMJHcdtdksSK+aYw2Mp6lT+i25oQEB+UCqwyhs=
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/dchest/siphash v1.2.2/go.mod h1:q+IRvb2gOSrUnYoPqHiyHXS0FOBBOdl6tONBlVnOnt4=

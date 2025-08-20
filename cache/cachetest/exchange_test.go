@@ -17,8 +17,9 @@ func exchangeHandler(w http.ResponseWriter, req *http.Request, resp *http.Respon
 	httpx.WriteResponse(w, resp.Header, resp.StatusCode, resp.Body, req.Header)
 }
 
-func init2(r *http.Request) {
+func init2(r *http.Request) *http.Request {
 	httpx.AddRequestId(r)
+	return r
 }
 
 func nextExchange(next rest.Exchange) rest.Exchange {
